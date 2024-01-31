@@ -10,7 +10,7 @@ import { Enum } from "./generator/enum";
 generatorHandler({
 	onManifest() {
 		return {
-			defaultOutput: "./typebox",
+			defaultOutput: "./prismabox",
 			prettyName: "Prisma Typebox Generator",
 		};
 	},
