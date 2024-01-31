@@ -1,20 +1,23 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "baseUrl": "src",
-    "outDir": "dist",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "lib": ["esnext", "dom"], // dom is added for prismjs :(
-    "strict": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    /* Linting */
     "skipLibCheck": true,
-    "noEmit": true
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+
   }
 }

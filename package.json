@@ -1,6 +1,6 @@
 {
   "name": "prisma-typebox-generator",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "main": "dist/index.js",
   "license": "MIT",
   "files": [
@@ -8,8 +8,7 @@
   ],
   "description": "Typebox generator for prisma schema",
   "author": {
-    "name": "Ade Yahya Prasetyo@gmail.com",
-    "email": "adeyahyaprasetyo@gmail.com"
+    "name": "Ade Yahya Prasetyo, m1212e"
   },
   "keywords": [
     "prisma2",
@@ -20,59 +19,25 @@
     "typebox",
     "typebox-generator"
   ],
-  "homepage": "https://github.com/adeyahya/prisma-typebox-generator",
+  "homepage": "https://github.com/m1212e/prisma-typebox-generator",
   "repository": {
-    "url": "https://github.com/adeyahya/prisma-typebox-generator.git"
-  },
-  "bugs": {
-    "email": "adeyahyaprasetyo@gmail.com",
-    "url": "https://github.com/adeyahya/prisma-typebox-generator/issues"
+    "url": "https://github.com/m1212e/prisma-typebox-generator.git"
   },
   "dependencies": {
-    "@prisma/generator-helper": "^2.20.1",
-    "@prisma/sdk": "^2.20.1",
-    "core-js": "3.10.0",
-    "prettier": "^2.3.0"
+    "@prisma/generator-helper": "^5.9.0",
+    "@prisma/sdk": "^4.0.0",
+    "core-js": "3.35.1",
+    "esbuild": "^0.20.0",
+    "prettier": "^3.2.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.13.14",
-    "@babel/core": "^7.13.14",
-    "@babel/preset-env": "^7.13.12",
-    "@babel/preset-typescript": "^7.13.0",
-    "@prisma/client": "^2.20.1",
-    "@semantic-release/changelog": "^5.0.1",
-    "@semantic-release/commit-analyzer": "^8.0.1",
-    "@semantic-release/git": "^9.0.0",
-    "@semantic-release/github": "^7.2.0",
-    "@semantic-release/npm": "^7.1.0",
-    "@semantic-release/release-notes-generator": "^9.0.2",
-    "@sinclair/typebox": "^0.16.7",
-    "@types/jest": "26.0.22",
-    "@types/node": "^14.14.37",
-    "ajv": "^8.0.5",
-    "ajv-formats": "^2.0.2",
-    "babel-jest": "^26.6.3",
-    "jest": "26.6.3",
-    "prisma": "^2.20.1",
-    "semantic-release": "^17.4.2",
-    "ts-jest": "^26.5.4",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "@prisma/client": "^5.9.0",
+    "@sinclair/typebox": "^0.32.13",
+    "prisma": "^5.9.0",
+    "@types/bun": "latest",
+    "typescript": "^5.3.3"
   },
   "scripts": {
-    "generate": "prisma generate",
-    "clean": "rm -rf dist",
-    "type-check": "tsc",
-    "build": "npm run clean && babel src --out-dir dist --extensions '.ts'",
-    " ": "semantic-release"
-  },
-  "prettier": {
-    "tabWidth": 2,
-    "singleQuote": true,
-    "semi": true,
-    "trailingComma": "all"
-  },
-  "bin": {
-    "prisma-typebox-generator": "dist/cli.js"
+    "dev": "bun build.ts && bunx prisma generate"
   }
 }

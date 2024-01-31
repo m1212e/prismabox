@@ -1,53 +1,29 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-generator docs {
-  provider = "node ./dist/index.js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-/// model description
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator typebox {
+  provider = "node ./dist/index.js"
+}
+
+/// The user model
 model User {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  email       String   @unique
-  weight      Float?
-  is18        Boolean?
+  id          Int     @id @default(autoincrement())
   name        String?
-  successorId Int?
-  role        Role     @default(USER)
-  posts       Post[]
-  /// @docs.opt minLength: 3
-  /// @docs.listopt maxItems: 10
-  keywords    String[]
-  /// field description
-  biography   Json
-  /// ignored description
-  /// @docs.opt description: "used description"
-  decimal     Decimal
-  /// multiline
-  /// description
-  biginteger  BigInt
-  /// @docs.opt minimum: 0
-  /// @docs.type Integer
-  unsigned    Int
-  /// @docs.hide
-  hidden      Int
+
+  posts Post[]
 }
 
+/// The post model
 model Post {
-  id     Int   @id @default(autoincrement())
-  /// @docs.hide
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?
-}
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
 
-enum Role {
-  USER
-  ADMIN
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
 }
