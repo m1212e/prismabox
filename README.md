@@ -24,6 +24,7 @@ Prismabox offers decorators to adjust the output of models and fields.
 | Decorator | Example | Description |
 ---|---|---
 | @prismabox.hide | - | Hides the field or model from the output |
+| @prismabox.hidden | - | Alias for @prismabox.hide |
 | @prismabox.options | @prismabox.options{ min: 10, max: 20 } | Uses the provided options for the field or model in the generated schema. Be careful to use valid JS/TS syntax! |
 
 A schema using decorators could look like this:
