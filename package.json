@@ -1,43 +1,42 @@
 {
-  "name": "prisma-typebox-generator",
-  "version": "2.2.0",
-  "main": "dist/index.js",
-  "license": "MIT",
-  "files": [
-    "dist"
-  ],
-  "description": "Typebox generator for prisma schema",
-  "author": {
-    "name": "Ade Yahya Prasetyo, m1212e"
-  },
-  "keywords": [
-    "prisma2",
-    "prisma",
-    "prisma-generator",
-    "prisma-schema",
-    "code-generation",
-    "typebox",
-    "typebox-generator"
-  ],
-  "homepage": "https://github.com/m1212e/prisma-typebox-generator",
-  "repository": {
-    "url": "https://github.com/m1212e/prisma-typebox-generator.git"
-  },
-  "dependencies": {
-    "@prisma/generator-helper": "^5.9.0",
-    "@prisma/sdk": "^4.0.0",
-    "core-js": "3.35.1",
-    "esbuild": "^0.20.0",
-    "prettier": "^3.2.4"
-  },
-  "devDependencies": {
-    "@prisma/client": "^5.9.0",
-    "@sinclair/typebox": "^0.32.13",
-    "prisma": "^5.9.0",
-    "@types/bun": "latest",
-    "typescript": "^5.3.3"
-  },
-  "scripts": {
-    "dev": "bun build.ts && bunx prisma generate"
-  }
+	"name": "prismabox",
+	"version": "2.2.0",
+	"main": "dist/index.js",
+	"license": "MIT",
+	"files": ["dist"],
+	"description": "Typebox generator for prisma schema",
+	"author": {
+		"name": "Ade Yahya Prasetyo, m1212e"
+	},
+	"keywords": [
+		"prisma2",
+		"prisma",
+		"prisma-generator",
+		"prisma-schema",
+		"code-generation",
+		"typebox",
+		"typebox-generator"
+	],
+	"homepage": "https://github.com/m1212e/prismabox",
+	"repository": {
+		"url": "https://github.com/m1212e/prismabox.git"
+	},
+	"dependencies": {
+		"@prisma/generator-helper": "^5.9.0",
+		"@prisma/sdk": "^4.0.0",
+		"core-js": "3.35.1",
+		"esbuild": "^0.20.0",
+		"prettier": "^3.2.4"
+	},
+	"devDependencies": {
+		"@prisma/client": "^5.9.0",
+		"@sinclair/typebox": "^0.32.13",
+		"prisma": "^5.9.0",
+		"@types/bun": "latest",
+		"typescript": "^5.3.3"
+	},
+	"scripts": {
+		"dev": "bun build.ts && bunx prisma generate",
+		"build": "bun build.ts"
+	}
 }

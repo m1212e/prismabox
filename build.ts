@@ -1,5 +1,5 @@
 import { build } from "esbuild";
-import { exists, rm } from "fs/promises";
+import { exists, rm, copyFile, writeFile } from "fs/promises";
 import packagejson from "./package.json";
 
 if (await exists("./dist")) {
@@ -25,3 +25,14 @@ if (output.errors) {
 } else {
 	console.info("Built successfully!");
 }
+
+let version = process.env.REF_NAME ?? packagejson.version;
+if (!version) {
+	version = "0.0.1";
+}
+
+await copyFile("./README.md", "./dist/README.md");
+await writeFile(
+	"./dist/package.json",
+	JSON.stringify({ ...packagejson, version }),
+);
