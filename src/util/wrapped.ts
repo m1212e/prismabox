@@ -13,13 +13,3 @@ export function wrappedIfTrue({
 	}
 	return { opener, closer };
 }
-
-export function textIfTrue({
-	condition,
-	text,
-}: { condition: boolean; text: string }) {
-	if (!condition) {
-		return "";
-	}
-	return text;
-}

@@ -1,27 +1,27 @@
 import type { DMMF } from "@prisma/generator-helper";
 import { typeboxImportVariableName } from "./typeboxImport";
-import {
-	Field,
-	ReferenceFieldDeep,
-	isPrimitivePrismaFieldType,
-} from "./field";
+import { Field, isPrimitivePrismaFieldType } from "./field";
 import {
 	deepIdentifier,
 	plainIdentifier,
 	referencesIdentifier,
 	typeIdentifier,
 } from "../util/identifiers";
-import { textIfTrue, wrappedIfTrue, type Wrapped } from "../util/wrapped";
+import { wrappedIfTrue, type Wrapped } from "../util/wrapped";
+import { Decorator, parseDocumentation } from "./documentation";
 
 export function Model(
 	data: Pick<DMMF.Model, "name" | "fields" | "documentation">,
 ) {
 	const fields = data.fields;
 	const name = data.name;
-	const options = textIfTrue({
-		condition: data.documentation !== undefined,
-		text: `, {description: "${data.documentation}"}`,
-	});
+	const parsedDocumentation = parseDocumentation(data.documentation);
+	if (parsedDocumentation.decorators.includes(Decorator.HIDDEN))
+		return {
+			name,
+			needsImportsFrom: [],
+			str: "\n\n// prismabox has hidden this schema",
+		};
 
 	const referencedModels = data.fields.filter(
 		(f) => !isPrimitivePrismaFieldType(f.type),
@@ -37,12 +37,21 @@ export function Model(
 		.filter((f) => f.type !== data.name)
 		.map((f) => f.type);
 
-	const plain = Plain({ fields, name, options });
-	const references = References({ fields, name, options, recursive });
-	const referencesDeep = ReferencesDeep({ fields, name, options, recursive });
+	const plain = Plain({ fields, name, options: parsedDocumentation.options });
+	const references = References({
+		fields,
+		name,
+		options: parsedDocumentation.options,
+		recursive,
+	});
+	const referencesDeep = ReferencesDeep({
+		fields,
+		name,
+		options: parsedDocumentation.options,
+		recursive,
+	});
 	const modelComposite = `export const ${name} = ${typeboxImportVariableName}.Composite([${name}${plainIdentifier}, ${name}${referencesIdentifier}]); export type ${name}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}>;`;
 	const modelCompositeDeep = `export const ${name}${deepIdentifier} = ${typeboxImportVariableName}.Composite([${name}${plainIdentifier}, ${name}${referencesIdentifier}${deepIdentifier}]); export type ${name}${deepIdentifier}${typeIdentifier} = Static<typeof ${name}${deepIdentifier}>;`;
-
 
 	return {
 		name,
@@ -69,9 +78,10 @@ function Plain({
 				modelName: name,
 			}),
 		)
+		.filter((f) => f)
 		.join(",");
 
-	const modelString = `export const ${name}${plainIdentifier} = ${typeboxImportVariableName}.Object({${fieldsString}}${options});`;
+	const modelString = `export const ${name}${plainIdentifier} = ${typeboxImportVariableName}.Object({${fieldsString}},${options});`;
 	const typeString = `export type ${name}${plainIdentifier}${typeIdentifier} = Static<typeof ${name}${plainIdentifier}>;`;
 
 	return modelString + typeString;
@@ -97,9 +107,10 @@ function References({
 				deep: false,
 			}),
 		)
+		.filter((f) => f)
 		.join(",");
 
-	const modelString = `export const ${name}${referencesIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}}${options})${recursive.closer};`;
+	const modelString = `export const ${name}${referencesIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}},${options})${recursive.closer};`;
 	const modelType = `export type ${name}${referencesIdentifier}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}>;`;
 
 	return modelString + modelType;
@@ -125,9 +136,10 @@ function ReferencesDeep({
 				deep: true,
 			}),
 		)
+		.filter((f) => f)
 		.join(",");
 
-	const modelString = `export const ${name}${referencesIdentifier}${deepIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}}${options})${recursive.closer};`;
+	const modelString = `export const ${name}${referencesIdentifier}${deepIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}},${options})${recursive.closer};`;
 	const modelType = `export type ${name}${referencesIdentifier}${deepIdentifier}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}${deepIdentifier}>;`;
 
 	return modelString + modelType;

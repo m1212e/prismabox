@@ -2,7 +2,8 @@ import type { DMMF } from "@prisma/generator-helper";
 import type { Model } from "./model";
 import { typeboxImportVariableName } from "./typeboxImport";
 import { deepIdentifier, plainIdentifier } from "../util/identifiers";
-import { textIfTrue, wrappedIfTrue, type Wrapped } from "../util/wrapped";
+import { wrappedIfTrue, type Wrapped } from "../util/wrapped";
+import { Decorator, parseDocumentation } from "./documentation";
 
 type PrimitivePrismaFieldType =
 	| "Int"
@@ -55,15 +56,20 @@ export function Field({
 		closer: ")",
 	});
 
-	const options = textIfTrue({
-		condition: data.documentation !== undefined,
-		text: `{description: "${data.documentation}"}`,
-	});
+	const parsedDocumentation = parseDocumentation(data.documentation);
+	if (parsedDocumentation.decorators.includes(Decorator.HIDDEN)) return undefined;
+
 
 	const name = data.name;
 	const fieldType = data.type;
 	if (isPrimitivePrismaFieldType(fieldType)) {
-		return PrimitiveField({ name, fieldType, options,  optional, list });
+		return PrimitiveField({
+			name,
+			fieldType,
+			options: parsedDocumentation.options,
+			optional,
+			list,
+		});
 	}
 
 	if (deep) {
