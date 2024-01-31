@@ -7,14 +7,17 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator typebox {
-  provider = "node ./dist/index.js"
+generator prismabox {
+  provider = "node ./dist/cli.js"
 }
 
 /// The user model
 model User {
-  id          Int     @id @default(autoincrement())
-  name        String?
+  id   Int     @id @default(autoincrement())
+  name String?
+
+  type Account
+  age Int
 
   posts Post[]
 }
@@ -26,4 +29,9 @@ model Post {
 
   User   User? @relation(fields: [userId], references: [id])
   userId Int?
+}
+
+enum Account {
+  PASSKEY
+  PASSWORD
 }

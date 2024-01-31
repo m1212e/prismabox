@@ -43,8 +43,8 @@ export function Field({
 	deep?: boolean;
 	modelName: string;
 }) {
-	const required = wrappedIfTrue({
-		condition: data.isRequired,
+	const optional = wrappedIfTrue({
+		condition: !data.isRequired,
 		opener: `${typeboxImportVariableName}.Optional(`,
 		closer: ")",
 	});
@@ -63,7 +63,7 @@ export function Field({
 	const name = data.name;
 	const fieldType = data.type;
 	if (isPrimitivePrismaFieldType(fieldType)) {
-		return PrimitiveField({ name, fieldType, options, required, list });
+		return PrimitiveField({ name, fieldType, options,  optional, list });
 	}
 
 	if (deep) {
@@ -72,7 +72,7 @@ export function Field({
 			fieldType,
 			list,
 			modelName,
-			required,
+			optional,
 		});
 	}
 	return ReferenceField({
@@ -80,7 +80,7 @@ export function Field({
 		fieldType,
 		list,
 		modelName,
-		required,
+		optional,
 	});
 }
 
@@ -88,13 +88,13 @@ function PrimitiveField({
 	name,
 	fieldType,
 	options,
-	required,
+	optional,
 	list,
 }: {
 	fieldType: PrimitivePrismaFieldType;
 	options: string;
 	name: string;
-	required: Wrapped;
+	optional: Wrapped;
 	list: Wrapped;
 }) {
 	let type: string;
@@ -112,20 +112,20 @@ function PrimitiveField({
 		type = `${typeboxImportVariableName}.Boolean(${options})`;
 	} else throw new Error("Invalid type for primitive generation");
 
-	return `${name}: ${required.opener}${list.opener}${type}${list.closer}${required.closer}`;
+	return `${name}: ${optional.opener}${list.opener}${type}${list.closer}${optional.closer}`;
 }
 
 function ReferenceField({
 	name,
 	modelName,
 	fieldType,
-	required,
+	optional,
 	list,
 }: {
 	fieldType: string;
 	name: string;
 	modelName: string;
-	required: Wrapped;
+	optional: Wrapped;
 	list: Wrapped;
 }) {
 	let type: string;
@@ -135,20 +135,20 @@ function ReferenceField({
 		type = fieldType + plainIdentifier;
 	}
 
-	return `${name}: ${required.opener}${list.opener}${type}${list.closer}${required.closer}`;
+	return `${name}: ${optional.opener}${list.opener}${type}${list.closer}${optional.closer}`;
 }
 
 export function ReferenceFieldDeep({
 	name,
 	modelName,
 	fieldType,
-	required,
+	optional,
 	list,
 }: {
 	fieldType: string;
 	name: string;
 	modelName: string;
-	required: Wrapped;
+	optional: Wrapped;
 	list: Wrapped;
 }) {
 	let type: string;
@@ -158,5 +158,5 @@ export function ReferenceFieldDeep({
 		type = fieldType;
 	}
 
-	return `${name}: ${required.opener}${list.opener}${type}${list.closer}${required.closer}`;
+	return `${name}: ${optional.opener}${list.opener}${type}${list.closer}${optional.closer}`;
 }

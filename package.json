@@ -22,14 +22,12 @@
 	},
 	"dependencies": {
 		"@prisma/generator-helper": "^5.9.0",
-		"@prisma/sdk": "^4.0.0",
-		"core-js": "3.35.1",
-		"prettier": "^3.2.4"
+		"prettier": "^3.2.4",
+		"@sinclair/typebox": "^0.32.13"
 	},
 	"devDependencies": {
 		"esbuild": "^0.20.0",
 		"@prisma/client": "^5.9.0",
-		"@sinclair/typebox": "^0.32.13",
 		"prisma": "^5.9.0",
 		"@types/bun": "latest",
 		"typescript": "^5.3.3"

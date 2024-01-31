@@ -1,45 +1,28 @@
 import type { DMMF } from "@prisma/generator-helper";
-import { TypeboxImport } from "./typeboxImport";
+import { TypeboxImport, typeboxImportVariableName } from "./typeboxImport";
+import { textIfTrue } from "../util/wrapped";
+import { plainIdentifier, typeIdentifier } from "../util/identifiers";
 
-export class Enum extends Part {
-	readonly name: string;
-	private variants: EnumVariant[];
-	private documentation: string | undefined;
-	constructor(
-		data: Pick<DMMF.DatamodelEnum, "name" | "values" | "documentation">,
-	) {
-		super();
-		this.name = data.name;
-		this.variants = data.values.map((v) => new EnumVariant(v));
-		this.documentation = data.documentation;
-	}
+export function Enum(
+	data: Pick<DMMF.DatamodelEnum, "name" | "values" | "documentation">,
+) {
+	const options = textIfTrue({
+		condition: data.documentation !== undefined,
+		text: `, {description: "${data.documentation}"}`,
+	});
 
-	private optionsString() {
-		if (!this.documentation) {
-			return "";
-		}
+	const variantsString = data.values.map((v) => Variant(v.name)).join(",");
 
-		return `, {description: "${this.documentation}"}`;
-	}
+	const typeString = `export type ${data.name}${typeIdentifier} = Static<typeof ${data.name}>;`;
 
-	stringify(): string {
-		return `
-export const ${this.name} = ${TypeboxImport.variableName}.Union([
-    ${this.variants
-			.map((v) => v.stringify())
-			.reduce((prev, curr) => `${prev + curr},`, "")}
-]${this.optionsString()});`;
-	}
+	const plainCompatibilityFiller = `export const ${data.name}${plainIdentifier} = ${data.name};`;
+
+	return {
+		str: `export const ${data.name} = ${typeboxImportVariableName}.Union([${variantsString}]${options});${plainCompatibilityFiller}${typeString}`,
+		name: data.name,
+	};
 }
 
-class EnumVariant extends Part {
-	private variantName: string;
-	constructor(data: Pick<DMMF.DatamodelEnum["values"][number], "name">) {
-		super();
-		this.variantName = data.name;
-	}
-
-	stringify(): string {
-		return `${TypeboxImport.variableName}.Literal('${this.variantName}')`;
-	}
+function Variant(identifier: string) {
+	return `${typeboxImportVariableName}.Literal('${identifier}')`;
 }

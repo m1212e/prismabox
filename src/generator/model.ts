@@ -69,7 +69,7 @@ function Plain({
 				modelName: name,
 			}),
 		)
-		.reduce((prev, curr) => `${prev + curr},`, "");
+		.join(",");
 
 	const modelString = `export const ${name}${plainIdentifier} = ${typeboxImportVariableName}.Object({${fieldsString}}${options});`;
 	const typeString = `export type ${name}${plainIdentifier}${typeIdentifier} = Static<typeof ${name}${plainIdentifier}>;`;
@@ -97,7 +97,7 @@ function References({
 				deep: false,
 			}),
 		)
-		.reduce((prev, curr) => `${prev + curr},`, "");
+		.join(",");
 
 	const modelString = `export const ${name}${referencesIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}}${options})${recursive.closer};`;
 	const modelType = `export type ${name}${referencesIdentifier}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}>;`;
@@ -125,7 +125,7 @@ function ReferencesDeep({
 				deep: true,
 			}),
 		)
-		.reduce((prev, curr) => `${prev + curr},`, "");
+		.join(",");
 
 	const modelString = `export const ${name}${referencesIdentifier}${deepIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}}${options})${recursive.closer};`;
 	const modelType = `export type ${name}${referencesIdentifier}${deepIdentifier}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}${deepIdentifier}>;`;
