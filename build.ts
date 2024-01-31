@@ -7,7 +7,7 @@ if (await exists("./dist")) {
 }
 
 const output = await build({
-	entryPoints: ["./src/index.ts"],
+	entryPoints: ["./src/cli.ts"],
 	outdir: "./dist",
 	platform: "node",
 	format: "cjs",
@@ -34,5 +34,9 @@ if (!version) {
 await copyFile("./README.md", "./dist/README.md");
 await writeFile(
 	"./dist/package.json",
-	JSON.stringify({ ...packagejson, version, main: "index.js" }),
+	JSON.stringify({
+		...packagejson,
+		version,
+		bin: { prismabox: "cli.js" },
+	}),
 );
