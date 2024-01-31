@@ -34,5 +34,5 @@ if (!version) {
 await copyFile("./README.md", "./dist/README.md");
 await writeFile(
 	"./dist/package.json",
-	JSON.stringify({ ...packagejson, version }),
+	JSON.stringify({ ...packagejson, version, main: "index.js" }),
 );

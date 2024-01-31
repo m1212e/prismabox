@@ -1,9 +1,7 @@
 {
 	"name": "prismabox",
 	"version": "2.2.0",
-	"main": "dist/index.js",
 	"license": "MIT",
-	"files": ["dist"],
 	"description": "Typebox generator for prisma schema",
 	"author": {
 		"name": "Ade Yahya Prasetyo, m1212e"
@@ -15,7 +13,8 @@
 		"prisma-schema",
 		"code-generation",
 		"typebox",
-		"typebox-generator"
+		"typebox-generator",
+		"prismabox"
 	],
 	"homepage": "https://github.com/m1212e/prismabox",
 	"repository": {
