@@ -6,6 +6,7 @@ import {
 	plainIdentifier,
 	referencesIdentifier,
 	typeIdentifier,
+	uniqueIdentifier,
 } from "../util/identifiers";
 import { wrappedIfTrue, type Wrapped } from "../util/wrapped";
 import { Decorator, parseDocumentation } from "./documentation";
@@ -33,10 +34,6 @@ export function Model(
 		closer: ", { $id: 'Node' })",
 	});
 
-	const needsImportsFrom = referencedModels
-		.filter((f) => f.type !== data.name)
-		.map((f) => f.type);
-
 	const plain = Plain({ fields, name, options: parsedDocumentation.options });
 	const references = References({
 		fields,
@@ -50,14 +47,29 @@ export function Model(
 		options: parsedDocumentation.options,
 		recursive,
 	});
+	const unique = Unique({
+		fields,
+		name,
+	});
 	const modelComposite = `export const ${name} = ${typeboxImportVariableName}.Composite([${name}${plainIdentifier}, ${name}${referencesIdentifier}]); export type ${name}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}>;`;
 	const modelCompositeDeep = `export const ${name}${deepIdentifier} = ${typeboxImportVariableName}.Composite([${name}${plainIdentifier}, ${name}${referencesIdentifier}${deepIdentifier}]); export type ${name}${deepIdentifier}${typeIdentifier} = Static<typeof ${name}${deepIdentifier}>;`;
+
+	const needsImportsFrom = Array.from(
+		new Set([...references.references, ...referencesDeep.references]).values(),
+	)
+		.filter((f) => f.type !== data.name)
+		.map((f) => f.type);
 
 	return {
 		name,
 		needsImportsFrom,
 		str:
-			plain + references + referencesDeep + modelComposite + modelCompositeDeep,
+			plain +
+			references.str +
+			referencesDeep.str +
+			unique +
+			modelComposite +
+			modelCompositeDeep,
 	};
 }
 
@@ -98,22 +110,27 @@ function References({
 	options: string;
 	recursive: Wrapped;
 }) {
-	const fieldsString = fields
+	const results = fields
 		.filter((f) => !isPrimitivePrismaFieldType(f.type))
-		.map((f) =>
-			Field({
+		.map((f) => ({
+			str: Field({
 				data: f,
 				modelName: name,
 				deep: false,
 			}),
-		)
-		.filter((f) => f)
-		.join(",");
+			field: f,
+		}))
+		.filter((f) => f.str);
+
+	const fieldsString = results.map((r) => r.str).join(",");
 
 	const modelString = `export const ${name}${referencesIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}},${options})${recursive.closer};`;
 	const modelType = `export type ${name}${referencesIdentifier}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}>;`;
 
-	return modelString + modelType;
+	return {
+		str: modelString + modelType,
+		references: results.map((r) => r.field),
+	};
 }
 
 function ReferencesDeep({
@@ -127,20 +144,49 @@ function ReferencesDeep({
 	options: string;
 	recursive: Wrapped;
 }) {
-	const fieldsString = fields
+	const results = fields
 		.filter((f) => !isPrimitivePrismaFieldType(f.type))
+		.map((f) => ({
+			str: Field({
+				data: f,
+				modelName: name,
+				deep: true,
+			}),
+			field: f,
+		}))
+		.filter((f) => f.str);
+
+	const fieldsString = results.map((r) => r.str).join(",");
+
+	const modelString = `export const ${name}${referencesIdentifier}${deepIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}},${options})${recursive.closer};`;
+	const modelType = `export type ${name}${referencesIdentifier}${deepIdentifier}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}${deepIdentifier}>;`;
+
+	return {
+		str: modelString + modelType,
+		references: results.map((r) => r.field),
+	};
+}
+
+function Unique({
+	name,
+	fields,
+}: {
+	fields: DMMF.Model["fields"];
+	name: string;
+}) {
+	const fieldsString = fields
+		.filter((f) => f.isUnique || f.isId)
 		.map((f) =>
 			Field({
 				data: f,
 				modelName: name,
-				deep: true,
 			}),
 		)
 		.filter((f) => f)
 		.join(",");
 
-	const modelString = `export const ${name}${referencesIdentifier}${deepIdentifier} = ${recursive.opener}${typeboxImportVariableName}.Object({${fieldsString}},${options})${recursive.closer};`;
-	const modelType = `export type ${name}${referencesIdentifier}${deepIdentifier}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}${deepIdentifier}>;`;
+	const modelString = `export const ${name}${uniqueIdentifier} = ${typeboxImportVariableName}.Object({${fieldsString}});`;
+	const modelType = `export type ${name}${uniqueIdentifier}${typeIdentifier} = Static<typeof ${name}${uniqueIdentifier}>;`;
 
 	return modelString + modelType;
 }
