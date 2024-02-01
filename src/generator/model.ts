@@ -3,6 +3,7 @@ import { typeboxImportVariableName } from "./typeboxImport";
 import { Field, isPrimitivePrismaFieldType } from "./field";
 import {
 	deepIdentifier,
+	inputIdentifier,
 	plainIdentifier,
 	referencesIdentifier,
 	typeIdentifier,
@@ -51,6 +52,10 @@ export function Model(
 		fields,
 		name,
 	});
+	const input = Input({
+		fields,
+		name,
+	});
 	const modelComposite = `export const ${name} = ${typeboxImportVariableName}.Composite([${name}${plainIdentifier}, ${name}${referencesIdentifier}]); export type ${name}${typeIdentifier} = Static<typeof ${name}${referencesIdentifier}>;`;
 	const modelCompositeDeep = `export const ${name}${deepIdentifier} = ${typeboxImportVariableName}.Composite([${name}${plainIdentifier}, ${name}${referencesIdentifier}${deepIdentifier}]); export type ${name}${deepIdentifier}${typeIdentifier} = Static<typeof ${name}${deepIdentifier}>;`;
 
@@ -67,9 +72,10 @@ export function Model(
 			plain +
 			references.str +
 			referencesDeep.str +
-			unique +
 			modelComposite +
-			modelCompositeDeep,
+			modelCompositeDeep +
+			unique +
+			input,
 	};
 }
 
@@ -174,19 +180,37 @@ function Unique({
 	fields: DMMF.Model["fields"];
 	name: string;
 }) {
-	const fieldsString = fields
+	const uniqueFieldNamesString = fields
 		.filter((f) => f.isUnique || f.isId)
-		.map((f) =>
-			Field({
-				data: f,
-				modelName: name,
-			}),
-		)
-		.filter((f) => f)
+		.map((f) => `"${f.name}"`)
 		.join(",");
 
-	const modelString = `export const ${name}${uniqueIdentifier} = ${typeboxImportVariableName}.Object({${fieldsString}});`;
+	const modelString = `export const ${name}${uniqueIdentifier} = ${typeboxImportVariableName}.Pick(${name}, [${uniqueFieldNamesString}]);`;
 	const modelType = `export type ${name}${uniqueIdentifier}${typeIdentifier} = Static<typeof ${name}${uniqueIdentifier}>;`;
+
+	return modelString + modelType;
+}
+
+function Input({
+	name,
+	fields,
+}: {
+	fields: DMMF.Model["fields"];
+	name: string;
+}) {
+	const uniqueFieldNamesString = fields
+		.filter(
+			(f) =>
+				!f.isId &&
+				isPrimitivePrismaFieldType(f.type) &&
+				!f.isUpdatedAt &&
+				!f.isGenerated,
+		)
+		.map((f) => `"${f.name}"`)
+		.join(",");
+
+	const modelString = `export const ${name}${inputIdentifier} = ${typeboxImportVariableName}.Pick(${name}, [${uniqueFieldNamesString}]);`;
+	const modelType = `export type ${name}${inputIdentifier}${typeIdentifier} = Static<typeof ${name}${inputIdentifier}>;`;
 
 	return modelString + modelType;
 }

@@ -13,6 +13,7 @@ generator prismabox {
 
 /// The user model
 model User {
+  /// @prismabox.hidden
   id   Int     @id @default(autoincrement())
   name String?
 
@@ -25,6 +26,8 @@ model User {
 
 /// The post model
 model Post {
+  /// @prismabox.hidden
+
   id        Int      @id @default(autoincrement())
   /// @prismabox.hidden
   createdAt DateTime @default(now())
