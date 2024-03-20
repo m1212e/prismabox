@@ -1,4 +1,5 @@
 import type { Models } from "../util/modelMap";
+import { parseDocumentation } from "./documentation";
 import { typeboxImportVariableName } from "./typeboxImport";
 
 export function Composite(models: Models) {
@@ -6,5 +7,7 @@ export function Composite(models: Models) {
     .map(([name, _content]) => name)
     .join(", ");
 
-  return `${typeboxImportVariableName}.Composite([${modelList}])`;
+  const modelDoc = parseDocumentation(`Composition of ${modelList}`);
+
+  return `${typeboxImportVariableName}.Composite([${modelList}], ${modelDoc.options})`;
 }

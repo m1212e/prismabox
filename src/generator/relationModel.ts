@@ -5,10 +5,12 @@ import type { Models } from "../util/modelMap";
 import { isPrimitivePrismaFieldType } from "./plainModel";
 
 export function RelationModel(
-  data: Pick<DMMF.Model, "fields">,
-  referenceablePlainModels: Models,
-  options?: string
+  data: Pick<DMMF.Model, "fields" | "documentation">,
+  referenceablePlainModels: Models
 ) {
+  const modelDoc = parseDocumentation(data.documentation);
+  if (modelDoc.annotations.includes(Annotation.HIDDEN)) return undefined;
+
   const fields = data.fields
     .map((field) => {
       if (isPrimitivePrismaFieldType(field.type)) return undefined;
@@ -26,9 +28,7 @@ export function RelationModel(
     })
     .filter((x) => x) as string[];
 
-  return `${typeboxImportVariableName}.Object({${fields.join(",")}}${
-    options ? "," + options : ""
-  })\n`;
+  return `${typeboxImportVariableName}.Object({${fields.join(",")}},${modelDoc.options})\n`;
 }
 
 function RelationField({
@@ -64,7 +64,9 @@ function RelationField({
 
   const referencedFieldModel = referenceablePlainModels.get(fieldType);
   if (!referencedFieldModel) {
-    console.warn(`Could not find model for field type: ${fieldType}. It may annotated as hidden. Ignoring field: ${name} (${fieldType})`);
+    console.warn(
+      `Could not find model for field type: ${fieldType}. It may annotated as hidden. Ignoring field: ${name} (${fieldType})`
+    );
     return undefined;
   }
   ret += referencedFieldModel;

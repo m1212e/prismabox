@@ -12,7 +12,7 @@ import type { Models } from "./util/modelMap";
 import { Compose } from "./generator/composer";
 import { RelationModel } from "./generator/relationModel";
 import { setAdditionalProperties } from "./generator/documentation";
-import { Composite } from "./generator/merge";
+import { Composite } from "./generator/composite";
 
 generatorHandler({
   onManifest() {
@@ -58,13 +58,19 @@ generatorHandler({
 
     plainTasks.push(
       ...options.dmmf.datamodel.enums.map(async (e) => {
-        plainTypes.set(e.name, Enum(e));
+        const en = Enum(e);
+        if (en) {
+          plainTypes.set(e.name, en);
+        }
       })
     );
 
     plainTasks.push(
       ...options.dmmf.datamodel.models.map(async (e) => {
-        plainTypes.set(e.name, PlainModel(e));
+        const model = PlainModel(e);
+        if (model) {
+          plainTypes.set(e.name, model);
+        }
       })
     );
     await Promise.all(plainTasks);
@@ -74,7 +80,10 @@ generatorHandler({
 
     relationTasks.push(
       ...options.dmmf.datamodel.models.map(async (e) => {
-        relationTypes.set(e.name, RelationModel(e, plainTypes));
+        const model = RelationModel(e, plainTypes);
+        if (model) {
+          relationTypes.set(e.name, model);
+        }
       })
     );
     await Promise.all(relationTasks);
