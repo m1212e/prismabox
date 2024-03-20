@@ -12,6 +12,7 @@ import type { Models } from "./util/modelMap";
 import { Compose } from "./generator/composer";
 import { RelationModel } from "./generator/relationModel";
 import { setAdditionalProperties } from "./generator/documentation";
+import { Composite } from "./generator/merge";
 
 generatorHandler({
   onManifest() {
@@ -86,8 +87,10 @@ generatorHandler({
 
       const relationTypeForThisName = relationTypes.get(name);
       if (relationTypeForThisName) {
-        models.set(`${name}Relation`, relationTypeForThisName);
+        models.set(`${name}Relations`, relationTypeForThisName);
       }
+
+      models.set(name, Composite(models));
 
       await writeFile(
         join(outputDirectory, `${name}.ts`),
