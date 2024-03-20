@@ -64,7 +64,7 @@ function RelationField({
 
   const referencedFieldModel = referenceablePlainModels.get(fieldType);
   if (!referencedFieldModel) {
-    console.warn(`Could not find model for field type: ${fieldType}`);
+    console.warn(`Could not find model for field type: ${fieldType}. It may annotated as hidden. Ignoring field: ${name} (${fieldType})`);
     return undefined;
   }
   ret += referencedFieldModel;
