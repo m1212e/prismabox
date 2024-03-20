@@ -22,9 +22,12 @@ generator prismabox {
   typeboxImportVariableName = "t"
   // you also can specify the dependency from which the above import should happen. This is useful if a package re-exports the typebox package and you would like to use that
   typeboxImportDependencyName = "elysia"
+  // by default the generated schemas do not allow additional properties. You can allow them by setting this to true
+  additionalProperties = true
 }
 ```
 to your `prisma.schema`. The generated schema files will be located at prisma/prismabox.
+You can modify the settings to your liking, please see the respective comments for info on what the option does.
 
 ## Annotations
 Prismabox offers annotations to adjust the output of models and fields.

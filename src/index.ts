@@ -11,6 +11,7 @@ import {
 import type { Models } from "./util/modelMap";
 import { Compose } from "./generator/composer";
 import { RelationModel } from "./generator/relationModel";
+import { setAdditionalProperties } from "./generator/documentation";
 
 generatorHandler({
   onManifest() {
@@ -35,6 +36,12 @@ generatorHandler({
     if (options.generator.config?.typeboxImportDependencyName) {
       setTypeboxImportDependencyName(
         options.generator.config.typeboxImportDependencyName as string
+      );
+    }
+
+    if (options.generator.config?.additionalProperties) {
+      setAdditionalProperties(
+        options.generator.config.additionalProperties === "true"
       );
     }
 
