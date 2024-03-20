@@ -1,6 +1,14 @@
-export const typeboxImportVariableName: string = "Type";
+export let typeboxImportVariableName = "Type";
+let typeboxImportDependencyName = "@sinclair/typebox";
 
-export function TypeboxImport() {
-	return `import { ${typeboxImportVariableName} } from "@sinclair/typebox";
-import type { Static } from "@sinclair/typebox";`;
+export function setTypeboxImportVariableName(name: string) {
+  typeboxImportVariableName = name;
+}
+
+export function setTypeboxImportDependencyName(name: string) {
+  typeboxImportDependencyName = name;
+}
+
+export function TypeboxImportStatement() {
+  return `import { ${typeboxImportVariableName} } from "${typeboxImportDependencyName}"\n`;
 }

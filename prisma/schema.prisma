@@ -36,6 +36,10 @@ model Post {
   /// @prismabox.options{max: 10}
   /// this is the user id
   userId Int?
+
+  successorId Int?  @unique
+  successor   Post? @relation("history", fields: [successorId], references: [id])
+  predecessor Post? @relation("history")
 }
 
 /// @prismabox.hidden

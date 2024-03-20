@@ -16,20 +16,26 @@ bun i -D prismabox
 ```prisma
 generator prismabox {
   provider = "prismabox"
+  // you can optionally specify the output location. Defaults to ./prismabox
+  output = "./myCoolPrismaboxDirectory"
+  // if you want, you can customize the imported variable name that is used for the schemas. Defaults to "Type" which is what the standard typebox package offers
+  typeboxImportVariableName = "t"
+  // you also can specify the dependency from which the above import should happen. This is useful if a package re-exports the typebox package and you would like to use that
+  typeboxImportDependencyName = "elysia"
 }
 ```
 to your `prisma.schema`. The generated schema files will be located at prisma/prismabox.
 
-## Decorators
-Prismabox offers decorators to adjust the output of models and fields.
+## Annotations
+Prismabox offers annotations to adjust the output of models and fields.
 
-| Decorator | Example | Description |
+| Annotation | Example | Description |
 ---|---|---
 | @prismabox.hide | - | Hides the field or model from the output |
 | @prismabox.hidden | - | Alias for @prismabox.hide |
 | @prismabox.options | @prismabox.options{ min: 10, max: 20 } | Uses the provided options for the field or model in the generated schema. Be careful to use valid JS/TS syntax! |
 
-A schema using decorators could look like this:
+A schema using annotations could look like this:
 ```prisma
 /// The post model
 model Post {

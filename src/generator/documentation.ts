@@ -1,6 +1,6 @@
 import type { DMMF } from "@prisma/generator-helper";
 
-export enum Decorator {
+export enum Annotation {
 	HIDDEN = 0,
 }
 
@@ -8,10 +8,10 @@ export function parseDocumentation(
 	raw: DMMF.Model["fields"][number]["documentation"],
 ) {
 	if (!raw) {
-		return { options: "", decorators: [] };
+		return { options: "", annotations: [] };
 	}
 
-	const decorators: Decorator[] = [];
+	const annotations: Annotation[] = [];
 
 	let options = "{";
 	let description = "";
@@ -21,7 +21,7 @@ export function parseDocumentation(
 			line.startsWith("@prismabox.hide") ||
 			line.startsWith("@prismabox.hidden")
 		) {
-			decorators.push(Decorator.HIDDEN);
+			annotations.push(Annotation.HIDDEN);
 		} else if (line.startsWith("@prismabox.options")) {
 			if (!line.startsWith("@prismabox.options{")) {
 				throw new Error(
@@ -46,5 +46,5 @@ export function parseDocumentation(
 
 	options += "}";
 
-	return { options, decorators };
+	return { options, annotations: annotations };
 }
