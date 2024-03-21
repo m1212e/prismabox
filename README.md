@@ -1,4 +1,4 @@
-# Prismabox
+# prismabox
 Generate versatile typebox schemas from your prisma schema.
 
 > This is still under development, expect bugs and breaks!
