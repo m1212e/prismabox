@@ -26,8 +26,7 @@ generator prismabox {
   additionalProperties = true
 }
 ```
-to your `prisma.schema`. The generated schema files will be located at prisma/prismabox.
-You can modify the settings to your liking, please see the respective comments for info on what the option does.
+to your `prisma.schema`. You can modify the settings to your liking, please see the respective comments for info on what the option does.
 
 ## Annotations
 Prismabox offers annotations to adjust the output of models and fields.
