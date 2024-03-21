@@ -13,6 +13,7 @@ import { Compose } from "./generator/composer";
 import { RelationModel } from "./generator/relationModel";
 import { setAdditionalProperties } from "./generator/documentation";
 import { Composite } from "./generator/composite";
+import { WhereModel } from "./generator/whereModel";
 
 generatorHandler({
   onManifest() {
@@ -73,6 +74,19 @@ generatorHandler({
         }
       })
     );
+
+    const whereTasks: Promise<void>[] = [];
+    const whereTypes: Models = new Map<string, string>();
+
+    whereTasks.push(
+      ...options.dmmf.datamodel.models.map(async (e) => {
+        const en = WhereModel(e);
+        if (en) {
+          whereTypes.set(e.name, en);
+        }
+      })
+    );
+
     await Promise.all(plainTasks);
 
     const relationTasks: Promise<void>[] = [];
@@ -86,7 +100,7 @@ generatorHandler({
         }
       })
     );
-    await Promise.all(relationTasks);
+    await Promise.all([...relationTasks, ...whereTasks]);
 
     for (const [name, content] of plainTypes) {
       const models = new Map<string, string>();
@@ -98,12 +112,17 @@ generatorHandler({
       if (relationTypeForThisName) {
         models.set(`${name}Relations`, relationTypeForThisName);
       }
-
       models.set(name, Composite(models));
+
+      const whereTypeForThisName = whereTypes.get(name);
+      if (whereTypeForThisName) {
+        models.set(`${name}Where`, whereTypeForThisName);
+      }
 
       await writeFile(
         join(outputDirectory, `${name}.ts`),
         await format(Compose(models))
+        // Compose(models)
       );
     }
   },

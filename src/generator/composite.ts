@@ -9,5 +9,5 @@ export function Composite(models: Models) {
 
   const modelDoc = parseDocumentation(`Composition of ${modelList}`);
 
-  return `${typeboxImportVariableName}.Composite([${modelList}], ${modelDoc.options})`;
+  return `${typeboxImportVariableName}.Composite([${modelList}], ${modelDoc.options})\n`;
 }

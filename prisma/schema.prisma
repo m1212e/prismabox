@@ -14,20 +14,24 @@ generator prismabox {
 /// The user model
 model User {
   /// @prismabox.hidden
-  id   Int     @id @default(autoincrement())
-  name String?
+  id       Int     @id @default(autoincrement())
+  name     String? @unique
+  title    String
+  subtitle String
+  misc     String  @unique
 
   /// @prismabox.hidden
   type Account
   age  Int
 
   posts Post[]
+
+  @@unique([title, subtitle])
 }
 
 /// The post model
 model Post {
   /// @prismabox.hidden
-
   id        Int      @id @default(autoincrement())
   /// @prismabox.hidden
   createdAt DateTime @default(now())

@@ -12,5 +12,5 @@ export function Enum(
     .map((v) => `${typeboxImportVariableName}.Literal('${v.name}')`)
     .join(",");
 
-  return `${typeboxImportVariableName}.Union([${variantsString}],${modelDoc.options});`;
+  return `${typeboxImportVariableName}.Union([${variantsString}],${modelDoc.options})\n`;
 }
