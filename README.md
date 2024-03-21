@@ -1,5 +1,5 @@
 # prismabox
-Generate versatile typebox schemas from your prisma schema.
+Generate versatile typebox schemes from your prisma schema.
 
 > This is still under development, expect bugs and breaks!
 
@@ -18,11 +18,11 @@ generator prismabox {
   provider = "prismabox"
   // you can optionally specify the output location. Defaults to ./prismabox
   output = "./myCoolPrismaboxDirectory"
-  // if you want, you can customize the imported variable name that is used for the schemas. Defaults to "Type" which is what the standard typebox package offers
+  // if you want, you can customize the imported variable name that is used for the schemes. Defaults to "Type" which is what the standard typebox package offers
   typeboxImportVariableName = "t"
   // you also can specify the dependency from which the above import should happen. This is useful if a package re-exports the typebox package and you would like to use that
   typeboxImportDependencyName = "elysia"
-  // by default the generated schemas do not allow additional properties. You can allow them by setting this to true
+  // by default the generated schemes do not allow additional properties. You can allow them by setting this to true
   additionalProperties = true
 }
 ```
