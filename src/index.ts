@@ -19,7 +19,7 @@ generatorHandler({
   onManifest() {
     return {
       defaultOutput: "./prismabox",
-      prettyName: "Prisma Typebox Generator",
+      prettyName: "prismabox",
     };
   },
   async onGenerate(options) {
