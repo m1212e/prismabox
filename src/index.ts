@@ -14,6 +14,7 @@ import { RelationModel } from "./generator/relationModel";
 import { setAdditionalProperties } from "./generator/documentation";
 import { Composite } from "./generator/composite";
 import { WhereModel } from "./generator/whereModel";
+import { Nullable } from "./generator/nullable";
 
 generatorHandler({
   onManifest() {
@@ -135,5 +136,10 @@ generatorHandler({
         );
       }),
     ]);
+
+    await writeFile(
+      join(outputDirectory, "__nullable__.ts"),
+      await format(Nullable())
+    );
   },
 });

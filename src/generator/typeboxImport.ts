@@ -1,5 +1,5 @@
 export let typeboxImportVariableName = "Type";
-let typeboxImportDependencyName = "@sinclair/typebox";
+export let typeboxImportDependencyName = "@sinclair/typebox";
 
 export function setTypeboxImportVariableName(name: string) {
   typeboxImportVariableName = name;

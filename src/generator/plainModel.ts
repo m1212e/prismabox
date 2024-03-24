@@ -68,7 +68,7 @@ function PrimitiveField({
   let ret = `${name}: `;
 
   if (optional) {
-    ret += `${typeboxImportVariableName}.Optional(`;
+    ret += "Nullable(";
   }
 
   if (list) {
