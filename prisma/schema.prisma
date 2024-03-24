@@ -41,6 +41,8 @@ model Post {
   /// this is the user id
   userId Int?
 
+  status Status
+
   successorId Int?  @unique
   successor   Post? @relation("history", fields: [successorId], references: [id])
   predecessor Post? @relation("history")
@@ -50,4 +52,9 @@ model Post {
 enum Account {
   PASSKEY
   PASSWORD
+}
+
+enum Status {
+  ENABLED
+  DISABLED
 }

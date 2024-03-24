@@ -8,7 +8,7 @@ import {
   setTypeboxImportDependencyName,
   setTypeboxImportVariableName,
 } from "./generator/typeboxImport";
-import type { Models } from "./util/modelMap";
+import { mergeModels, type Models } from "./util/modelMap";
 import { Compose } from "./generator/composer";
 import { RelationModel } from "./generator/relationModel";
 import { setAdditionalProperties } from "./generator/documentation";
@@ -58,19 +58,22 @@ generatorHandler({
     const plainTypes: Models = new Map<string, string>();
 
     plainTasks.push(
-      ...options.dmmf.datamodel.enums.map(async (e) => {
-        const en = Enum(e);
-        if (en) {
-          plainTypes.set(e.name, en);
-        }
-      })
-    );
-
-    plainTasks.push(
       ...options.dmmf.datamodel.models.map(async (e) => {
         const model = PlainModel(e);
         if (model) {
           plainTypes.set(e.name, model);
+        }
+      })
+    );
+
+    const enumTasks: Promise<void>[] = [];
+    const enumTypes: Models = new Map<string, string>();
+
+    enumTasks.push(
+      ...options.dmmf.datamodel.enums.map(async (e) => {
+        const en = Enum(e);
+        if (en) {
+          enumTypes.set(e.name, en);
         }
       })
     );
@@ -80,21 +83,21 @@ generatorHandler({
 
     whereTasks.push(
       ...options.dmmf.datamodel.models.map(async (e) => {
-        const en = WhereModel(e);
-        if (en) {
-          whereTypes.set(e.name, en);
+        const model = WhereModel(e);
+        if (model) {
+          whereTypes.set(e.name, model);
         }
       })
     );
 
-    await Promise.all(plainTasks);
+    await Promise.all([...plainTasks, ...enumTasks]);
 
     const relationTasks: Promise<void>[] = [];
     const relationTypes: Models = new Map<string, string>();
 
     relationTasks.push(
       ...options.dmmf.datamodel.models.map(async (e) => {
-        const model = RelationModel(e, plainTypes);
+        const model = RelationModel(e, mergeModels(plainTypes, enumTypes));
         if (model) {
           relationTypes.set(e.name, model);
         }
@@ -102,28 +105,35 @@ generatorHandler({
     );
     await Promise.all([...relationTasks, ...whereTasks]);
 
-    for (const [name, content] of plainTypes) {
-      const models = new Map<string, string>();
-      // join relation types with plain types
+    await Promise.all([
+      ...Array.from(plainTypes).map(async ([name, content]) => {
+        const models = new Map<string, string>();
+        // join relation types with plain types
 
-      models.set(`${name}Plain`, content);
+        models.set(`${name}Plain`, content);
 
-      const relationTypeForThisName = relationTypes.get(name);
-      if (relationTypeForThisName) {
-        models.set(`${name}Relations`, relationTypeForThisName);
-      }
-      models.set(name, Composite(models));
+        const relationTypeForThisName = relationTypes.get(name);
+        if (relationTypeForThisName) {
+          models.set(`${name}Relations`, relationTypeForThisName);
+        }
+        models.set(name, Composite(models));
 
-      const whereTypeForThisName = whereTypes.get(name);
-      if (whereTypeForThisName) {
-        models.set(`${name}Where`, whereTypeForThisName);
-      }
+        const whereTypeForThisName = whereTypes.get(name);
+        if (whereTypeForThisName) {
+          models.set(`${name}Where`, whereTypeForThisName);
+        }
 
-      await writeFile(
-        join(outputDirectory, `${name}.ts`),
-        await format(Compose(models))
-        // Compose(models)
-      );
-    }
+        await writeFile(
+          join(outputDirectory, `${name}.ts`),
+          await format(Compose(models))
+        );
+      }),
+      ...Array.from(enumTypes).map(async (p) => {
+        await writeFile(
+          join(outputDirectory, `${p[0]}.ts`),
+          await format(Compose(new Map([p])))
+        );
+      }),
+    ]);
   },
 });
