@@ -6,7 +6,7 @@ import { isPrimitivePrismaFieldType } from "./plainModel";
 
 export function RelationModel(
   data: Pick<DMMF.Model, "fields" | "documentation">,
-  referenceablePlainModels: Models
+  referenceableModels: Models
 ) {
   const modelDoc = parseDocumentation(data.documentation);
   if (modelDoc.annotations.includes(Annotation.HIDDEN)) return undefined;
@@ -23,7 +23,7 @@ export function RelationModel(
         list: field.isList,
         optional: !field.isRequired,
         options: doc.options,
-        referenceablePlainModels,
+        referenceableModels,
       });
     })
     .filter((x) => x) as string[];
@@ -31,20 +31,20 @@ export function RelationModel(
   return `${typeboxImportVariableName}.Object({${fields.join(",")}},${modelDoc.options})\n`;
 }
 
-function RelationField({
+export function RelationField({
   name,
   fieldType,
   options,
   optional,
   list,
-  referenceablePlainModels,
+  referenceableModels,
 }: {
   fieldType: string;
   options: string;
   name: string;
   optional: boolean;
   list: boolean;
-  referenceablePlainModels: Models;
+  referenceableModels: Models;
 }) {
   if (options.length > 0) {
     console.warn(
@@ -62,7 +62,7 @@ function RelationField({
     ret += `${typeboxImportVariableName}.Array(`;
   }
 
-  const referencedFieldModel = referenceablePlainModels.get(fieldType);
+  const referencedFieldModel = referenceableModels.get(fieldType);
   if (!referencedFieldModel) {
     console.warn(
       `Could not find model for field type: ${fieldType}. It may annotated as hidden. Ignoring field: ${name} (${fieldType})`

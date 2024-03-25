@@ -24,6 +24,8 @@ generator prismabox {
   typeboxImportDependencyName = "elysia"
   // by default the generated schemes do not allow additional properties. You can allow them by setting this to true
   additionalProperties = true
+  // optionally enable the data model generation. See the data model section below for more info
+  dataModel = true
 }
 ```
 to your `prisma.schema`. You can modify the settings to your liking, please see the respective comments for info on what the option does.
@@ -35,6 +37,7 @@ Prismabox offers annotations to adjust the output of models and fields.
 ---|---|---
 | @prismabox.hide | - | Hides the field or model from the output |
 | @prismabox.hidden | - | Alias for @prismabox.hide |
+| @prismabox.hide.data | - | Hides the field or model from the output only in the data model |
 | @prismabox.options | @prismabox.options{ min: 10, max: 20 } | Uses the provided options for the field or model in the generated schema. Be careful to use valid JS/TS syntax! |
 
 A schema using annotations could look like this:
@@ -76,4 +79,28 @@ export const Post = ...
 // this can be passed to e.g. a `findUnique()` query in prisma
 export const PostWhere = ...
 
+// a model for input data validation. Only contains non relation fields and filters out
+// some typically auto generated fields like "id" or "createdAt"
+// can be used for entity creation
+// respects the @prismabox.hide.data annotation to ignore fields specifically for the data model
+export const PostData = ...
+
 ```
+
+### Data models
+To simplify the validation of input data, prismabox is able to generate schemas specifically for input data.
+These are called "DataModels" and need to be explicitly enabled in the generator settings (`dataModel = true`) because they expect some conventions/field naming pattern to work properly. If you want to see the specifics on how the model works, see [the code](./src/generator/dataModel.ts).
+
+1. Foreign Ids need to end in Id (case is ignored)
+2. To be detected as foreign key id, a relation field with a matching name must exist (case is ignored):
+```prisma
+  User   User? @relation(fields: [userId], references: [id])
+  // will be detected
+  userId Int?
+
+  // we change the name to something other than post
+  myCoolPost   Post? @relation(fields: [postId], references: [id])
+  // will NOT be detected (and therefore ignored)
+  postId Int?
+```
+3. createdAt will be detected and ignored if it follows exactly this pattern: `createdAt DateTime @default(now())`

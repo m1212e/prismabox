@@ -15,6 +15,7 @@ import { setAdditionalProperties } from "./generator/documentation";
 import { Composite } from "./generator/composite";
 import { WhereModel } from "./generator/whereModel";
 import { Nullable } from "./generator/nullable";
+import { DataModel, enableDataModel } from "./generator/dataModel";
 
 generatorHandler({
   onManifest() {
@@ -46,6 +47,10 @@ generatorHandler({
       setAdditionalProperties(
         options.generator.config.additionalProperties === "true"
       );
+    }
+
+    if (options.generator.config?.dataModel === "true") {
+      enableDataModel();
     }
 
     try {
@@ -91,6 +96,18 @@ generatorHandler({
       })
     );
 
+    const dataTasks: Promise<void>[] = [];
+    const dataTypes: Models = new Map<string, string>();
+
+    dataTasks.push(
+      ...options.dmmf.datamodel.models.map(async (e) => {
+        const model = DataModel(e, enumTypes);
+        if (model) {
+          dataTypes.set(e.name, model);
+        }
+      })
+    );
+
     await Promise.all([...plainTasks, ...enumTasks]);
 
     const relationTasks: Promise<void>[] = [];
@@ -104,7 +121,8 @@ generatorHandler({
         }
       })
     );
-    await Promise.all([...relationTasks, ...whereTasks]);
+
+    await Promise.all([...relationTasks, ...whereTasks, ...dataTasks]);
 
     await Promise.all([
       ...Array.from(plainTypes).map(async ([name, content]) => {
@@ -122,6 +140,11 @@ generatorHandler({
         const whereTypeForThisName = whereTypes.get(name);
         if (whereTypeForThisName) {
           models.set(`${name}Where`, whereTypeForThisName);
+        }
+
+        const dataTypeForThisName = dataTypes.get(name);
+        if (dataTypeForThisName) {
+          models.set(`${name}Data`, dataTypeForThisName);
         }
 
         await writeFile(

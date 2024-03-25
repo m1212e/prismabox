@@ -36,5 +36,5 @@ export function WhereModel(
 
   const baseType = `${typeboxImportVariableName}.Composite([${typeboxImportVariableName}.Object({${uniqueIndexFields.join(",")}}),${typeboxImportVariableName}.Pick(${data.name}Plain, [${plainUniqueFieldNames.map((f) => `"${f}"`).join(",")}])])`;
 
-  return `${typeboxImportVariableName}.Union([${[...plainUniqueFieldNames, ...uniqueIndexFieldNames].map((fieldname) => `${typeboxImportVariableName}.Composite([${typeboxImportVariableName}.Pick(${typeboxImportVariableName}.Required(${baseType}), ["${fieldname}"]),${typeboxImportVariableName}.Omit(${typeboxImportVariableName}.Partial(${baseType}), ["${fieldname}"])])`).join(",")}])`;
+  return `${typeboxImportVariableName}.Union([${[...plainUniqueFieldNames, ...uniqueIndexFieldNames].map((fieldname) => `${typeboxImportVariableName}.Composite([${typeboxImportVariableName}.Pick(${typeboxImportVariableName}.Required(${baseType}), ["${fieldname}"]),${typeboxImportVariableName}.Omit(${typeboxImportVariableName}.Partial(${baseType}), ["${fieldname}"])])`).join(",")}])\n`;
 }

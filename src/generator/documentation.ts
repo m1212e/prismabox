@@ -2,6 +2,7 @@ import type { DMMF } from "@prisma/generator-helper";
 
 export enum Annotation {
   HIDDEN = 0,
+  HIDDEN_DATA = 1,
 }
 
 /**
@@ -25,12 +26,19 @@ export function parseDocumentation(
   let options = "{";
   let description = "";
 
-  for (const line of raw.split("\n")) {
+  for (const line of raw.split("\n").map((l) => l.trim())) {
     if (
       line.startsWith("@prismabox.hide") ||
       line.startsWith("@prismabox.hidden")
     ) {
-      annotations.push(Annotation.HIDDEN);
+      if (
+        line.startsWith("@prismabox.hide.data") ||
+        line.startsWith("@prismabox.hidden.data")
+      ) {
+        annotations.push(Annotation.HIDDEN_DATA);
+      } else {
+        annotations.push(Annotation.HIDDEN);
+      }
     } else if (line.startsWith("@prismabox.options")) {
       if (!line.startsWith("@prismabox.options{")) {
         throw new Error(

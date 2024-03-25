@@ -4,6 +4,7 @@ import { Annotation, parseDocumentation } from "./documentation";
 
 export function PlainModel(data: Pick<DMMF.Model, "fields" | "documentation">) {
   const modelDoc = parseDocumentation(data.documentation);
+  
   if (modelDoc.annotations.includes(Annotation.HIDDEN)) return undefined;
 
   const fields = data.fields
@@ -52,7 +53,7 @@ export function isPrimitivePrismaFieldType(
   ].includes(str);
 }
 
-function PrimitiveField({
+export function PrimitiveField({
   name,
   fieldType,
   options,
