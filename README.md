@@ -61,95 +61,19 @@ enum Account {
 ```
 > Please note that you cannot use multiple annotations in one line! Each needs to be in its own!
 ## Generated Schemas
-The generator will output schema objects based on the models. It will output three variables for each model:
+The generator will output schema objects based on the models. It will output multiple variables for each model:
 ```ts
 // the plain object without any relations
-export const PostPlain = Type.Object(
-  {
-    id: Type.Integer(),
-    title: Type.String(),
-    userId: Type.Optional(
-      Type.Integer({
-        max: 10,
-        description: `this is the user id`,
-        additionalProperties: false,
-      }),
-    ),
-  },
-  { description: `The post model`, additionalProperties: false },
-);
-```
-```ts
+export const PostPlain = ...
+
 // only the relations of a model
-export const PostRelations = Type.Object(
-  {
-    User: Type.Optional(
-      Type.Object(
-        {
-          name: Type.Optional(Type.String()),
-          title: Type.String(),
-          subtitle: Type.String(),
-          misc: Type.String(),
-          age: Type.Integer(),
-        },
-        { description: `The user model`, additionalProperties: false },
-      ),
-    ),
-  },
-  { description: `The post model`, additionalProperties: false },
-);
-```
-```ts
+export const PostRelations = ...
+
 // a composite model of the two, providing the full type
-export const Post = Type.Composite([PostPlain, PostRelations], {
-  description: `Composition of PostPlain, PostRelations`,
-  additionalProperties: false,
-});
-```
-```ts
+export const Post = ...
+
 // a model enforcing a unique selector for a query to an entity
 // this can be passed to e.g. a `findUnique()` query in prisma
-export const PostWhere = Type.Union([
-  Type.Composite([
-    Type.Pick(
-      Type.Required(
-        Type.Composite([
-          Type.Object({}),
-          Type.Pick(PostPlain, ["id", "title"]),
-        ]),
-      ),
-      ["id"],
-    ),
-    Type.Omit(
-      Type.Partial(
-        Type.Composite([
-          Type.Object({}),
-          Type.Pick(PostPlain, ["id", "title"]),
-        ]),
-      ),
-      ["id"],
-    ),
-  ]),
-  Type.Composite([
-    Type.Pick(
-      Type.Required(
-        Type.Composite([
-          Type.Object({}),
-          Type.Pick(PostPlain, ["id", "title"]),
-        ]),
-      ),
-      ["title"],
-    ),
-    Type.Omit(
-      Type.Partial(
-        Type.Composite([
-          Type.Object({}),
-          Type.Pick(PostPlain, ["id", "title"]),
-        ]),
-      ),
-      ["title"],
-    ),
-  ]),
-]);
+export const PostWhere = ...
 
 ```
