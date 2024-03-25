@@ -12,7 +12,8 @@ export function enableDataModel() {
 
 export function DataModel(
   data: Pick<DMMF.Model, "fields" | "documentation">,
-  referenceableEnums: Models
+  referenceableEnums: Models,
+  optional = false
 ) {
   if (!enabled) return undefined;
   const modelDoc = parseDocumentation(data.documentation);
@@ -42,7 +43,7 @@ export function DataModel(
           fieldType: field.type,
           list: field.isList,
           name: field.name,
-          optional: true,
+          optional,
           options: doc.options,
           referenceableModels: referenceableEnums,
         });
@@ -76,7 +77,7 @@ export function DataModel(
         fieldType: field.type as any, // we checked earlier if it's a primitive type
         list: field.isList,
         name: field.name,
-        optional: true,
+        optional,
         options: parseDocumentation(field.documentation).options,
       });
     })

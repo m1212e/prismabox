@@ -84,12 +84,15 @@ export const PostWhere = ...
 // can be used for entity creation
 // respects the @prismabox.hide.data annotation to ignore fields specifically for the data model
 export const PostData = ...
+// just like the above but allows each field to be nullable (null or undefined)
+export const PostDataOptional = ...
+
 
 ```
 
 ### Data models
 To simplify the validation of input data, prismabox is able to generate schemas specifically for input data.
-These are called "DataModels" and need to be explicitly enabled in the generator settings (`dataModel = true`) because they expect some conventions/field naming pattern to work properly. If you want to see the specifics on how the model works, see [the code](./src/generator/dataModel.ts).
+These are called "DataModels" and need to be explicitly enabled in the generator settings (`dataModel = true`) because they expect some conventions/field naming patterns to work properly. If you want to see the specifics on how the model works, see [the code](./src/generator/dataModel.ts).
 
 1. Foreign Ids need to end in Id (case is ignored)
 2. To be detected as foreign key id, a relation field with a matching name must exist (case is ignored):
@@ -100,7 +103,7 @@ These are called "DataModels" and need to be explicitly enabled in the generator
 
   // we change the name to something other than post
   myCoolPost   Post? @relation(fields: [postId], references: [id])
-  // will NOT be detected (and therefore ignored)
+  // will NOT be detected
   postId Int?
 ```
 3. createdAt will be detected and ignored if it follows exactly this pattern: `createdAt DateTime @default(now())`

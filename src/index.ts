@@ -108,6 +108,18 @@ generatorHandler({
       })
     );
 
+    const optionalDataTasks: Promise<void>[] = [];
+    const optionalDataTypes: Models = new Map<string, string>();
+
+    optionalDataTasks.push(
+      ...options.dmmf.datamodel.models.map(async (e) => {
+        const model = DataModel(e, enumTypes, true);
+        if (model) {
+          optionalDataTypes.set(e.name, model);
+        }
+      })
+    );
+
     await Promise.all([...plainTasks, ...enumTasks]);
 
     const relationTasks: Promise<void>[] = [];
@@ -145,6 +157,11 @@ generatorHandler({
         const dataTypeForThisName = dataTypes.get(name);
         if (dataTypeForThisName) {
           models.set(`${name}Data`, dataTypeForThisName);
+        }
+
+        const optionalDataTypeForThisName = optionalDataTypes.get(name);
+        if (optionalDataTypeForThisName) {
+          models.set(`${name}DataOptional`, optionalDataTypeForThisName);
         }
 
         await writeFile(
