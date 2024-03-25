@@ -8,7 +8,7 @@ generator client {
 }
 
 generator prismabox {
-  provider = "node ./dist/cli.js"
+  provider  = "node ./dist/cli.js"
   dataModel = true
 }
 
@@ -33,11 +33,16 @@ model User {
 model Post {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  User   User? @relation(fields: [userId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
   /// @prismabox.options{max: 10}
   /// this is the user id
-  userId Int?
-  status Status
+  userId    Int?
+
+  status  Status
+  status2 Status?
+
+  blah  String
+  blah2 String?
 
   successorId Int?  @unique
   successor   Post? @relation("history", fields: [successorId], references: [id])

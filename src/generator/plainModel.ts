@@ -2,9 +2,15 @@ import type { DMMF } from "@prisma/generator-helper";
 import { typeboxImportVariableName } from "./typeboxImport";
 import { Annotation, parseDocumentation } from "./documentation";
 
+export enum NullableVariant {
+  NULLABLE = 0, // null, undefined or the value
+  OPTIONAL = 1, // undefined or the value
+  REQUIRED = 2, // the value
+}
+
 export function PlainModel(data: Pick<DMMF.Model, "fields" | "documentation">) {
   const modelDoc = parseDocumentation(data.documentation);
-  
+
   if (modelDoc.annotations.includes(Annotation.HIDDEN)) return undefined;
 
   const fields = data.fields
@@ -17,7 +23,9 @@ export function PlainModel(data: Pick<DMMF.Model, "fields" | "documentation">) {
         name: field.name,
         fieldType: field.type,
         list: field.isList,
-        optional: !field.isRequired,
+        optional: field.isRequired
+          ? NullableVariant.REQUIRED
+          : NullableVariant.NULLABLE,
         options: doc.options,
       });
     })
@@ -63,13 +71,15 @@ export function PrimitiveField({
   fieldType: PrimitivePrismaFieldType;
   options: string;
   name: string;
-  optional: boolean;
+  optional: NullableVariant;
   list: boolean;
 }) {
   let ret = `${name}: `;
 
-  if (optional) {
+  if (optional === NullableVariant.NULLABLE) {
     ret += "Nullable(";
+  } else if (optional === NullableVariant.OPTIONAL) {
+    ret += `${typeboxImportVariableName}.Optional(`;
   }
 
   if (list) {
@@ -90,7 +100,10 @@ export function PrimitiveField({
     ret += `${typeboxImportVariableName}.Boolean(${options})`;
   } else throw new Error("Invalid type for primitive generation");
 
-  if (optional) {
+  if (
+    optional === NullableVariant.NULLABLE ||
+    optional === NullableVariant.OPTIONAL
+  ) {
     ret += ")";
   }
 

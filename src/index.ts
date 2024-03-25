@@ -15,7 +15,7 @@ import { setAdditionalProperties } from "./generator/documentation";
 import { Composite } from "./generator/composite";
 import { WhereModel } from "./generator/whereModel";
 import { Nullable } from "./generator/nullable";
-import { DataModel, enableDataModel } from "./generator/dataModel";
+import { DataModel, DataModelOptional, enableDataModel } from "./generator/dataModel";
 
 generatorHandler({
   onManifest() {
@@ -113,7 +113,7 @@ generatorHandler({
 
     optionalDataTasks.push(
       ...options.dmmf.datamodel.models.map(async (e) => {
-        const model = DataModel(e, enumTypes, true);
+        const model = DataModelOptional(e, enumTypes);
         if (model) {
           optionalDataTypes.set(e.name, model);
         }

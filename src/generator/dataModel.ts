@@ -1,7 +1,11 @@
 import type { DMMF } from "@prisma/generator-helper";
 import { typeboxImportVariableName } from "./typeboxImport";
 import { Annotation, parseDocumentation } from "./documentation";
-import { PrimitiveField, isPrimitivePrismaFieldType } from "./plainModel";
+import {
+  NullableVariant,
+  PrimitiveField,
+  isPrimitivePrismaFieldType,
+} from "./plainModel";
 import type { Models } from "../util/modelMap";
 import { RelationField } from "./relationModel";
 
@@ -12,8 +16,22 @@ export function enableDataModel() {
 
 export function DataModel(
   data: Pick<DMMF.Model, "fields" | "documentation">,
+  referenceableEnums: Models
+) {
+  return internal(data, referenceableEnums, false);
+}
+
+export function DataModelOptional(
+  data: Pick<DMMF.Model, "fields" | "documentation">,
+  referenceableEnums: Models
+) {
+  return internal(data, referenceableEnums, true);
+}
+
+function internal(
+  data: Pick<DMMF.Model, "fields" | "documentation">,
   referenceableEnums: Models,
-  optional = false
+  optional: boolean
 ) {
   if (!enabled) return undefined;
   const modelDoc = parseDocumentation(data.documentation);
@@ -43,7 +61,11 @@ export function DataModel(
           fieldType: field.type,
           list: field.isList,
           name: field.name,
-          optional,
+          optional: field.isRequired
+            ? optional
+              ? NullableVariant.OPTIONAL
+              : NullableVariant.REQUIRED
+            : NullableVariant.NULLABLE,
           options: doc.options,
           referenceableModels: referenceableEnums,
         });
@@ -77,7 +99,11 @@ export function DataModel(
         fieldType: field.type as any, // we checked earlier if it's a primitive type
         list: field.isList,
         name: field.name,
-        optional,
+        optional: field.isRequired
+            ? optional
+              ? NullableVariant.OPTIONAL
+              : NullableVariant.REQUIRED
+            : NullableVariant.NULLABLE,
         options: parseDocumentation(field.documentation).options,
       });
     })
