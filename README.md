@@ -59,6 +59,7 @@ enum Account {
 }
 
 ```
+> Please note that you cannot use multiple annotations in one line! Each needs to be in its own!
 ## Generated Schemas
 The generator will output schema objects based on the models. It will output three variables for each model:
 ```ts
