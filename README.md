@@ -63,7 +63,7 @@ enum Account {
 
 ```
 > Please note that you cannot use multiple annotations in one line! Each needs to be in its own!
-## Generated Schemas
+## Generated Schemes
 The generator will output schema objects based on the models. It will output multiple variables for each model:
 ```ts
 // the plain object without any relations
@@ -91,7 +91,7 @@ export const PostDataOptional = ...
 ```
 
 ### Data models
-To simplify the validation of input data, prismabox is able to generate schemas specifically for input data.
+To simplify the validation of input data, prismabox is able to generate schemes specifically for input data.
 These are called "DataModels" and need to be explicitly enabled in the generator settings (`dataModel = true`) because they expect some conventions/field naming patterns to work properly. If you want to see the specifics on how the model works, see [the code](./src/generator/dataModel.ts).
 
 1. Foreign Ids need to end in Id (case is ignored)
