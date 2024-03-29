@@ -14,8 +14,12 @@ import { RelationModel } from "./generator/relationModel";
 import { setAdditionalProperties } from "./generator/documentation";
 import { Composite } from "./generator/composite";
 import { WhereModel } from "./generator/whereModel";
-import { Nullable } from "./generator/nullable";
-import { DataModel, DataModelOptional, enableDataModel } from "./generator/dataModel";
+import { NullableType } from "./generator/nullable";
+import {
+  DataModel,
+  DataModelOptional,
+  enableDataModel,
+} from "./generator/dataModel";
 
 generatorHandler({
   onManifest() {
@@ -179,7 +183,7 @@ generatorHandler({
 
     await writeFile(
       join(outputDirectory, "__nullable__.ts"),
-      await format(Nullable())
+      await format(NullableType())
     );
   },
 });

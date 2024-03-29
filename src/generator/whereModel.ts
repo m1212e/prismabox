@@ -30,7 +30,7 @@ export function WhereModel(
       const fields = data.fields.filter((field) =>
         uniqueFieldFields.includes(field.name)
       );
-      return `${uniqueFieldFields.join("_")}: ${PlainModel({ fields })}`;
+      return `${uniqueFieldFields.join("_")}: ${PlainModel({ fields }, true)}`;
     })
     .filter((x) => x) as string[];
 

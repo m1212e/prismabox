@@ -33,7 +33,8 @@
     "@sinclair/typebox": "^0.32.15"
   },
   "scripts": {
-    "dev": "bun build.ts && bunx prisma generate && bun playground/main.ts",
-    "build": "bun build.ts"
+    "dev": "bun run build && bunx prisma generate",
+    "build": "bun run typecheck && bun build.ts",
+    "typecheck": "tsc --noEmit"
   }
 }

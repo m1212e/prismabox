@@ -12,50 +12,272 @@ generator prismabox {
   dataModel = true
 }
 
-/// The user model
+
+model Password {
+  id           String @id @default(uuid())
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       String
+  /// @prismabox.hide
+  passwordHash String
+}
+
+model Token {
+  id        String   @id @default(uuid())
+  /// @prismabox.hide
+  tokenHash String
+  expiresAt DateTime
+
+  pendingEmailConfirmations  Email[]
+  pendingCredentialCreations PendingCredentialCreateTask[]
+}
+
+model PendingCredentialCreateTask {
+  id String @id @default(uuid())
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId  String
+  token   Token  @relation(fields: [tokenId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tokenId String
+}
+
+model Email {
+  email  String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  validated         Boolean @default(false)
+  validationToken   Token?  @relation(fields: [validationTokenId], references: [id])
+  validationTokenId String?
+
+  @@unique([userId, email])
+}
+
+/// A user in the system
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String? @unique
-  title    String
-  subtitle String
-  misc     String  @unique
-
-  /// @prismabox.hidden
-  type Account
-  age  Int
-
-  posts Post[]
-
-  @@unique([title, subtitle])
+  id                             String                        @id @default(uuid())
+  name                           String
+  conferenceMemberships          ConferenceMember[]
+  committeeMemberships           CommitteeMember[]
+  messages                       Message[]
+  emails                         Email[]
+  passwords                      Password[]
+  pendingCredentialCreationTasks PendingCredentialCreateTask[]
 }
 
-/// The post model
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  User      User?    @relation(fields: [userId], references: [id])
-  /// @prismabox.options{max: 10}
-  /// this is the user id
-  userId    Int?
-
-  status  Status
-  status2 Status?
-
-  blah  String
-  blah2 String?
-
-  successorId Int?  @unique
-  successor   Post? @relation("history", fields: [successorId], references: [id])
-  predecessor Post? @relation("history")
+/// Consumeable token which grants the creation of a conference
+model ConferenceCreateToken {
+  token String @id
 }
 
-/// @prismabox.hidden
-enum Account {
-  PASSKEY
-  PASSWORD
+/// A conference in the system
+model Conference {
+  id          String             @id @default(uuid())
+  name        String             @unique
+  committees  Committee[]
+  start       DateTime?
+  end         DateTime?
+  delegations Delegation[]
+  members     ConferenceMember[]
 }
 
-enum Status {
-  ENABLED
-  DISABLED
+/// The role of a user in a conference
+enum ConferenceRole {
+  ADMIN
+  SECRETARIAT
+  CHAIR
+  COMMITTEE_ADVISOR
+  NON_STATE_ACTOR
+  PRESS_CORPS
+  GUEST
+  PARTICIPANT_CARE
+  MISCELLANEOUS_TEAM
+}
+
+/// A user's membership in a conference, providing them with a role in the conference
+model ConferenceMember {
+  id           String         @id @default(uuid())
+  conference   Conference     @relation(fields: [conferenceId], references: [id])
+  conferenceId String
+  user         User?          @relation(fields: [userId], references: [id])
+  userId       String?
+  role         ConferenceRole
+
+  @@unique([userId, conferenceId])
+}
+
+/// The type of a committee in a conference
+enum CommitteeCategory {
+  /// A standard committee
+  COMMITTEE
+  /// A crisis simulation
+  CRISIS
+  /// A International Court of Justice simulation
+  ICJ
+}
+
+enum CommitteeStatus {
+  FORMAL
+  INFORMAL
+  PAUSE
+  SUSPENSION
+  CLOSED /// Don't display a Widget
+}
+
+/// A committee in a conference
+model Committee {
+  id                                            String            @id @default(uuid())
+  name                                          String
+  abbreviation                                  String
+  category                                      CommitteeCategory
+  conference                                    Conference        @relation(fields: [conferenceId], references: [id])
+  conferenceId                                  String
+  members                                       CommitteeMember[]
+  parent                                        Committee?        @relation("subCommittee", fields: [parentId], references: [id])
+  parentId                                      String?
+  subCommittees                                 Committee[]       @relation("subCommittee")
+  messages                                      Message[]
+  agendaItems                                   AgendaItem[]
+  whiteboardContent                             String            @default("<h1>Hello, World</h1>")
+  status                                        CommitteeStatus   @default(CLOSED)
+  stateOfDebate                                 String?
+  statusHeadline                                String?
+  statusUntil                                   DateTime?
+  allowDelegationsToAddThemselvesToSpeakersList Boolean           @default(false)
+
+  @@unique([name, conferenceId])
+  @@unique([abbreviation, conferenceId])
+}
+
+/// The presence status of a CommitteeMember
+enum Presence {
+  PRESENT
+  EXCUSED
+  ABSENT
+}
+
+/// A user's membership in a committee, providing them with a role in the committee
+model CommitteeMember {
+  id           String          @id @default(uuid())
+  committee    Committee       @relation(fields: [committeeId], references: [id])
+  committeeId  String
+  user         User?           @relation(fields: [userId], references: [id])
+  userId       String?
+  speakerLists SpeakerOnList[]
+  delegation   Delegation?     @relation(fields: [delegationId], references: [id])
+  delegationId String?
+  presence     Presence        @default(ABSENT)
+
+  @@unique([committeeId, delegationId])
+  @@unique([committeeId, userId])
+}
+
+/// An agenda item in a committee. This is a topic of discussion in a committee.
+model AgendaItem {
+  id           String         @id @default(uuid())
+  committee    Committee      @relation(fields: [committeeId], references: [id])
+  committeeId  String
+  title        String
+  description  String?
+  speakerLists SpeakersList[]
+  isActive     Boolean        @default(false)
+}
+
+/// The type of a speakers list
+enum SpeakersListCategory {
+  /// A standard speakers list
+  SPEAKERS_LIST
+  /// A comment list
+  COMMENT_LIST
+  /// A moderated caucus
+  MODERATED_CAUCUS
+}
+
+/// A speakers list in a committee
+model SpeakersList {
+  id             String               @id @default(uuid())
+  agendaItem     AgendaItem           @relation(fields: [agendaItemId], references: [id])
+  agendaItemId   String
+  type           SpeakersListCategory
+  speakers       SpeakerOnList[]
+  /// The time in seconds that a speaker has to speak
+  speakingTime   Int
+  timeLeft       Int?
+  startTimestamp DateTime?
+  isClosed       Boolean              @default(false)
+
+  @@unique([agendaItemId, type])
+}
+
+/// A speaker on a speakers list, storing their position in the list
+model SpeakerOnList {
+  id                String          @id @default(uuid())
+  speakersList      SpeakersList    @relation(fields: [speakersListId], references: [id])
+  speakersListId    String
+  committeeMember   CommitteeMember @relation(fields: [committeeMemberId], references: [id])
+  committeeMemberId String
+  position          Int
+
+  @@unique([speakersListId, position])
+  @@unique([speakersListId, committeeMemberId])
+}
+
+model Delegation {
+  id           String            @id @default(uuid())
+  conference   Conference        @relation(fields: [conferenceId], references: [id])
+  conferenceId String
+  nation       Nation            @relation(fields: [nationId], references: [id])
+  nationId     String
+  members      CommitteeMember[]
+
+  @@unique([conferenceId, nationId])
+}
+
+enum NationVariant {
+  NATION
+  NON_STATE_ACTOR
+  SPECIAL_PERSON
+}
+
+/// A nation in the system. E.g. Germany
+model Nation {
+  id          String        @id @default(uuid())
+  alpha3Code  String        @unique
+  variant     NationVariant @default(NATION)
+  delegations Delegation[]
+}
+
+enum MessageCategory {
+  TO_CHAIR
+  GUEST_SPEAKER
+  FACT_CHECK
+  INFORMATION
+  GENERAL_SECRETARY
+  OTHER
+}
+
+enum MessageStatus {
+  UNREAD
+  PRIORITY
+  ASSIGNED
+  ARCHIVED
+}
+
+model Message {
+  id          String          @id @default(uuid())
+  subject     String
+  category    MessageCategory @default(TO_CHAIR)
+  message     String
+  committee   Committee       @relation(fields: [committeeId], references: [id])
+  committeeId String
+  author      User            @relation(fields: [authorId], references: [id])
+  authorId    String
+  timestamp   DateTime
+  status      MessageStatus[] @default([UNREAD])
+  forwarded   Boolean         @default(false) /// If the message was forwarded to the Research Service
+
+  /// Saved Metadata without relation
+  metaEmail      String?
+  metaDelegation String?
+  metaCommittee  String?
+  metaAgendaItem String?
 }

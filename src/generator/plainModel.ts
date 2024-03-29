@@ -1,14 +1,15 @@
 import type { DMMF } from "@prisma/generator-helper";
 import { typeboxImportVariableName } from "./typeboxImport";
 import { Annotation, parseDocumentation } from "./documentation";
+import { NullableVariant, nullableVariableName } from "./nullable";
 
-export enum NullableVariant {
-  NULLABLE = 0, // null, undefined or the value
-  OPTIONAL = 1, // undefined or the value
-  REQUIRED = 2, // the value
-}
-
-export function PlainModel(data: Pick<DMMF.Model, "fields" | "documentation">) {
+/**
+ * @param allowUndefinedFields In case we want to create input schemes, we want to allow fields to be undefined (just not set) if they are optional
+ */
+export function PlainModel(
+  data: Pick<DMMF.Model, "fields" | "documentation">,
+  allowUndefinedFields = false
+) {
   const modelDoc = parseDocumentation(data.documentation);
 
   if (modelDoc.annotations.includes(Annotation.HIDDEN)) return undefined;
@@ -25,7 +26,9 @@ export function PlainModel(data: Pick<DMMF.Model, "fields" | "documentation">) {
         list: field.isList,
         optional: field.isRequired
           ? NullableVariant.REQUIRED
-          : NullableVariant.NULLABLE,
+          : allowUndefinedFields
+            ? NullableVariant.OPTIONAL_NULLABLE
+            : NullableVariant.NULLABLE,
         options: doc.options,
       });
     })
@@ -77,9 +80,11 @@ export function PrimitiveField({
   let ret = `${name}: `;
 
   if (optional === NullableVariant.NULLABLE) {
-    ret += "Nullable(";
+    ret += `${nullableVariableName}(`;
   } else if (optional === NullableVariant.OPTIONAL) {
     ret += `${typeboxImportVariableName}.Optional(`;
+  } else if (optional === NullableVariant.OPTIONAL_NULLABLE) {
+    ret += `${typeboxImportVariableName}.Optional(${nullableVariableName}(`;
   }
 
   if (list) {
@@ -105,6 +110,8 @@ export function PrimitiveField({
     optional === NullableVariant.OPTIONAL
   ) {
     ret += ")";
+  } else if (optional === NullableVariant.OPTIONAL_NULLABLE) {
+    ret += "))";
   }
 
   if (list) {

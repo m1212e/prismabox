@@ -2,12 +2,12 @@ import type { DMMF } from "@prisma/generator-helper";
 import { typeboxImportVariableName } from "./typeboxImport";
 import { Annotation, parseDocumentation } from "./documentation";
 import {
-  NullableVariant,
   PrimitiveField,
   isPrimitivePrismaFieldType,
 } from "./plainModel";
 import type { Models } from "../util/modelMap";
 import { RelationField } from "./relationModel";
+import { NullableVariant } from "./nullable";
 
 let enabled = false;
 export function enableDataModel() {
@@ -65,7 +65,7 @@ function internal(
             ? optional
               ? NullableVariant.OPTIONAL
               : NullableVariant.REQUIRED
-            : NullableVariant.NULLABLE,
+            : NullableVariant.OPTIONAL_NULLABLE,
           options: doc.options,
           referenceableModels: referenceableEnums,
         });
@@ -103,7 +103,7 @@ function internal(
             ? optional
               ? NullableVariant.OPTIONAL
               : NullableVariant.REQUIRED
-            : NullableVariant.NULLABLE,
+            : NullableVariant.OPTIONAL_NULLABLE,
         options: parseDocumentation(field.documentation).options,
       });
     })

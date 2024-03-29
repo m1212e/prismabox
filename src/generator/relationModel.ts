@@ -2,7 +2,8 @@ import type { DMMF } from "@prisma/generator-helper";
 import { typeboxImportVariableName } from "./typeboxImport";
 import { Annotation, parseDocumentation } from "./documentation";
 import type { Models } from "../util/modelMap";
-import { NullableVariant, isPrimitivePrismaFieldType } from "./plainModel";
+import { isPrimitivePrismaFieldType } from "./plainModel";
+import { NullableVariant, nullableVariableName } from "./nullable";
 
 export function RelationModel(
   data: Pick<DMMF.Model, "fields" | "documentation">,
@@ -57,9 +58,11 @@ export function RelationField({
   let ret = `${name}: `;
 
   if (optional === NullableVariant.NULLABLE) {
-    ret += "Nullable(";
+    ret += `${nullableVariableName}(`;
   } else if (optional === NullableVariant.OPTIONAL) {
     ret += `${typeboxImportVariableName}.Optional(`;
+  } else if (optional === NullableVariant.OPTIONAL_NULLABLE) {
+    ret += `${typeboxImportVariableName}.Optional(${nullableVariableName}(`;
   }
 
   if (list) {
@@ -80,6 +83,8 @@ export function RelationField({
     optional === NullableVariant.OPTIONAL
   ) {
     ret += ")";
+  } else if (optional === NullableVariant.OPTIONAL_NULLABLE) {
+    ret += "))";
   }
 
   if (list) {
