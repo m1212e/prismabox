@@ -10,7 +10,7 @@ export enum NullableVariant {
   OPTIONAL_NULLABLE = 3, // null, undefined or the value
 }
 
-export const nullableVariableName = "Nullable";
+export const nullableVariableName = "_Nullable";
 
 export function NullableType() {
   return `import { ${typeboxImportVariableName}, type TSchema } from "${typeboxImportDependencyName}"
