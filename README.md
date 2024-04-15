@@ -1,5 +1,5 @@
 # prismabox
-Generate versatile typebox schemes from your prisma schema.
+Generate versatile [typebox](https://github.com/sinclairzx81/typebox) schemes from your prisma schema.
 
 > This is still under development, expect bugs and breaks!
 
