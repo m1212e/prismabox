@@ -1,8 +1,6 @@
 # prismabox
 Generate versatile [typebox](https://github.com/sinclairzx81/typebox) schemes from your [prisma](https://github.com/prisma) schema.
 
-> This is still under development, expect bugs and breaks!
-
 > Currently does not support mongoDB composite types (https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-composite-types)
 
 Install it in your project,
