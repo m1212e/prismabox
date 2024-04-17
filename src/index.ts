@@ -1,12 +1,12 @@
 import { generatorHandler } from "@prisma/generator-helper";
-import { writeFile, mkdir, rm, access } from "fs/promises";
-import { join } from "path";
+import { writeFile, mkdir, rm, access } from "node:fs/promises";
+import { join } from "node:path";
 import { PlainModel } from "./generator/plainModel";
 import { format } from "./util/format";
 import { Enum } from "./generator/enum";
 import {
-  setTypeboxImportDependencyName,
-  setTypeboxImportVariableName,
+	setTypeboxImportDependencyName,
+	setTypeboxImportVariableName,
 } from "./generator/typeboxImport";
 import { mergeModels, type Models } from "./util/modelMap";
 import { Compose } from "./generator/composer";
@@ -16,174 +16,230 @@ import { Composite } from "./generator/composite";
 import { WhereModel } from "./generator/whereModel";
 import { NullableType } from "./generator/nullable";
 import {
-  DataModel,
-  DataModelOptional,
-  enableDataModel,
+	DataModelPlain,
+	DataModelPlainOptional,
+	DataModelRelations,
+	DataModelRelationsOptional,
+	enableDataModel,
 } from "./generator/dataModel";
 
 generatorHandler({
-  onManifest() {
-    return {
-      defaultOutput: "./prismabox",
-      prettyName: "prismabox",
-    };
-  },
-  async onGenerate(options) {
-    if (!options.generator.output?.value) {
-      throw new Error("Could not find output directory in generator settings");
-    }
+	onManifest() {
+		return {
+			defaultOutput: "./prismabox",
+			prettyName: "prismabox",
+		};
+	},
+	async onGenerate(options) {
+		if (!options.generator.output?.value) {
+			throw new Error("Could not find output directory in generator settings");
+		}
 
-    const outputDirectory = options.generator.output.value;
+		const outputDirectory = options.generator.output.value;
 
-    if (options.generator.config?.typeboxImportVariableName) {
-      setTypeboxImportVariableName(
-        options.generator.config.typeboxImportVariableName as string
-      );
-    }
+		if (options.generator.config?.typeboxImportVariableName) {
+			setTypeboxImportVariableName(
+				options.generator.config.typeboxImportVariableName as string,
+			);
+		}
 
-    if (options.generator.config?.typeboxImportDependencyName) {
-      setTypeboxImportDependencyName(
-        options.generator.config.typeboxImportDependencyName as string
-      );
-    }
+		if (options.generator.config?.typeboxImportDependencyName) {
+			setTypeboxImportDependencyName(
+				options.generator.config.typeboxImportDependencyName as string,
+			);
+		}
 
-    if (options.generator.config?.additionalProperties) {
-      setAdditionalProperties(
-        options.generator.config.additionalProperties === "true"
-      );
-    }
+		if (options.generator.config?.additionalProperties) {
+			setAdditionalProperties(
+				options.generator.config.additionalProperties === "true",
+			);
+		}
 
-    if (options.generator.config?.dataModel === "true") {
-      enableDataModel();
-    }
+		if (options.generator.config?.dataModel === "true") {
+			enableDataModel();
+		}
 
-    try {
-      await access(outputDirectory);
-      await rm(outputDirectory, { recursive: true });
-    } catch (error) {}
+		try {
+			await access(outputDirectory);
+			await rm(outputDirectory, { recursive: true });
+		} catch (error) {}
 
-    await mkdir(outputDirectory, { recursive: true });
+		await mkdir(outputDirectory, { recursive: true });
 
-    const plainTasks: Promise<void>[] = [];
-    const plainTypes: Models = new Map<string, string>();
+		const plainTasks: Promise<void>[] = [];
+		const plainTypes: Models = new Map<string, string>();
 
-    plainTasks.push(
-      ...options.dmmf.datamodel.models.map(async (e) => {
-        const model = PlainModel(e);
-        if (model) {
-          plainTypes.set(e.name, model);
-        }
-      })
-    );
+		plainTasks.push(
+			...options.dmmf.datamodel.models.map(async (e) => {
+				const model = PlainModel(e);
+				if (model) {
+					plainTypes.set(e.name, model);
+				}
+			}),
+		);
 
-    const enumTasks: Promise<void>[] = [];
-    const enumTypes: Models = new Map<string, string>();
+		const enumTasks: Promise<void>[] = [];
+		const enumTypes: Models = new Map<string, string>();
 
-    enumTasks.push(
-      ...options.dmmf.datamodel.enums.map(async (e) => {
-        const en = Enum(e);
-        if (en) {
-          enumTypes.set(e.name, en);
-        }
-      })
-    );
+		enumTasks.push(
+			...options.dmmf.datamodel.enums.map(async (e) => {
+				const en = Enum(e);
+				if (en) {
+					enumTypes.set(e.name, en);
+				}
+			}),
+		);
 
-    const whereTasks: Promise<void>[] = [];
-    const whereTypes: Models = new Map<string, string>();
+		const whereTasks: Promise<void>[] = [];
+		const whereTypes: Models = new Map<string, string>();
 
-    whereTasks.push(
-      ...options.dmmf.datamodel.models.map(async (e) => {
-        const model = WhereModel(e);
-        if (model) {
-          whereTypes.set(e.name, model);
-        }
-      })
-    );
+		whereTasks.push(
+			...options.dmmf.datamodel.models.map(async (e) => {
+				const model = WhereModel(e);
+				if (model) {
+					whereTypes.set(e.name, model);
+				}
+			}),
+		);
 
-    const dataTasks: Promise<void>[] = [];
-    const dataTypes: Models = new Map<string, string>();
+		const dataPlainTasks: Promise<void>[] = [];
+		const dataPlainTypes: Models = new Map<string, string>();
 
-    dataTasks.push(
-      ...options.dmmf.datamodel.models.map(async (e) => {
-        const model = DataModel(e, enumTypes);
-        if (model) {
-          dataTypes.set(e.name, model);
-        }
-      })
-    );
+		dataPlainTasks.push(
+			...options.dmmf.datamodel.models.map(async (e) => {
+				const model = DataModelPlain(e, enumTypes);
+				if (model) {
+					dataPlainTypes.set(e.name, model);
+				}
+			}),
+		);
 
-    const optionalDataTasks: Promise<void>[] = [];
-    const optionalDataTypes: Models = new Map<string, string>();
+		const optionalDataPlainTasks: Promise<void>[] = [];
+		const optionalDataPlainTypes: Models = new Map<string, string>();
 
-    optionalDataTasks.push(
-      ...options.dmmf.datamodel.models.map(async (e) => {
-        const model = DataModelOptional(e, enumTypes);
-        if (model) {
-          optionalDataTypes.set(e.name, model);
-        }
-      })
-    );
+		optionalDataPlainTasks.push(
+			...options.dmmf.datamodel.models.map(async (e) => {
+				const model = DataModelPlainOptional(e, enumTypes);
+				if (model) {
+					optionalDataPlainTypes.set(e.name, model);
+				}
+			}),
+		);
 
-    await Promise.all([...plainTasks, ...enumTasks]);
+		const dataRelationTasks: Promise<void>[] = [];
+		const dataRelationTypes: Models = new Map<string, string>();
 
-    const relationTasks: Promise<void>[] = [];
-    const relationTypes: Models = new Map<string, string>();
+		dataRelationTasks.push(
+			...options.dmmf.datamodel.models.map(async (e) => {
+				const model = DataModelRelations(e, enumTypes);
+				if (model) {
+					dataRelationTypes.set(e.name, model);
+				}
+			}),
+		);
 
-    relationTasks.push(
-      ...options.dmmf.datamodel.models.map(async (e) => {
-        const model = RelationModel(e, mergeModels(plainTypes, enumTypes));
-        if (model) {
-          relationTypes.set(e.name, model);
-        }
-      })
-    );
+		const optionalDataRelationTasks: Promise<void>[] = [];
+		const optionalDataRelationTypes: Models = new Map<string, string>();
 
-    await Promise.all([...relationTasks, ...whereTasks, ...dataTasks]);
+		optionalDataRelationTasks.push(
+			...options.dmmf.datamodel.models.map(async (e) => {
+				const model = DataModelRelationsOptional(e, enumTypes);
+				if (model) {
+					optionalDataRelationTypes.set(e.name, model);
+				}
+			}),
+		);
 
-    await Promise.all([
-      ...Array.from(plainTypes).map(async ([name, content]) => {
-        const models = new Map<string, string>();
-        // join relation types with plain types
+		await Promise.all([
+			...plainTasks,
+			...optionalDataPlainTasks,
+			...dataRelationTasks,
+			...optionalDataRelationTasks,
+			...enumTasks,
+		]);
 
-        models.set(`${name}Plain`, content);
+		const relationTasks: Promise<void>[] = [];
+		const relationTypes: Models = new Map<string, string>();
 
-        const relationTypeForThisName = relationTypes.get(name);
-        if (relationTypeForThisName) {
-          models.set(`${name}Relations`, relationTypeForThisName);
-        }
-        models.set(name, Composite(models));
+		relationTasks.push(
+			...options.dmmf.datamodel.models.map(async (e) => {
+				const model = RelationModel(e, mergeModels(plainTypes, enumTypes));
+				if (model) {
+					relationTypes.set(e.name, model);
+				}
+			}),
+		);
 
-        const whereTypeForThisName = whereTypes.get(name);
-        if (whereTypeForThisName) {
-          models.set(`${name}Where`, whereTypeForThisName);
-        }
+		await Promise.all([...relationTasks, ...whereTasks, ...dataPlainTasks]);
 
-        const dataTypeForThisName = dataTypes.get(name);
-        if (dataTypeForThisName) {
-          models.set(`${name}Data`, dataTypeForThisName);
-        }
+		await Promise.all([
+			...Array.from(plainTypes).map(async ([name, content]) => {
+				const models = new Map<string, string>();
 
-        const optionalDataTypeForThisName = optionalDataTypes.get(name);
-        if (optionalDataTypeForThisName) {
-          models.set(`${name}DataOptional`, optionalDataTypeForThisName);
-        }
+				models.set(`${name}Plain`, content);
 
-        await writeFile(
-          join(outputDirectory, `${name}.ts`),
-          await format(Compose(models))
-        );
-      }),
-      ...Array.from(enumTypes).map(async (p) => {
-        await writeFile(
-          join(outputDirectory, `${p[0]}.ts`),
-          await format(Compose(new Map([p])))
-        );
-      }),
-    ]);
+				const relationTypeForThisName = relationTypes.get(name);
+				if (relationTypeForThisName) {
+					models.set(`${name}Relations`, relationTypeForThisName);
+				}
+				// join relation types with plain types
+				models.set(name, Composite(models));
 
-    await writeFile(
-      join(outputDirectory, "__nullable__.ts"),
-      await format(NullableType())
-    );
-  },
+				const whereTypeForThisName = whereTypes.get(name);
+				if (whereTypeForThisName) {
+					models.set(`${name}Where`, whereTypeForThisName);
+				}
+
+				const dataModels = new Map<string, string>();
+				const dataModelsOptional = new Map<string, string>();
+
+				const dataTypePlainForThisName = dataPlainTypes.get(name);
+				if (dataTypePlainForThisName) {
+					dataModels.set(`${name}DataPlain`, dataTypePlainForThisName);
+				}
+
+				const optionalDataTypePlainForThisName =
+					optionalDataPlainTypes.get(name);
+				if (optionalDataTypePlainForThisName) {
+					dataModelsOptional.set(
+						`${name}DataPlainOptional`,
+						optionalDataTypePlainForThisName,
+					);
+				}
+
+				const dataTypeRelationsForThisName = dataRelationTypes.get(name);
+				if (dataTypeRelationsForThisName) {
+					dataModels.set(`${name}DataRelations`, dataTypeRelationsForThisName);
+				}
+
+				const optionalDataRelationsTypeForThisName =
+					optionalDataRelationTypes.get(name);
+				if (optionalDataRelationsTypeForThisName) {
+					dataModelsOptional.set(
+						`${name}DataRelationsOptional`,
+						optionalDataRelationsTypeForThisName,
+					);
+				}
+
+				dataModels.set(`${name}Data`, Composite(dataModels));
+				dataModelsOptional.set(`${name}DataOptional`, Composite(dataModelsOptional));
+
+				await writeFile(
+					join(outputDirectory, `${name}.ts`),
+					await format(Compose(mergeModels(models, dataModels, dataModelsOptional))),
+				);
+			}),
+			...Array.from(enumTypes).map(async (p) => {
+				await writeFile(
+					join(outputDirectory, `${p[0]}.ts`),
+					await format(Compose(new Map([p]))),
+				);
+			}),
+		]);
+
+		await writeFile(
+			join(outputDirectory, "__nullable__.ts"),
+			await format(NullableType()),
+		);
+	},
 });
