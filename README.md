@@ -76,16 +76,6 @@ export const Post = ...
 // a model enforcing a unique selector for a query to an entity
 // this can be passed to e.g. a `findUnique()` query in prisma
 export const PostWhere = ...
-
-// a model for input data validation. Only contains non relation fields and filters out
-// some typically auto generated fields like "id" or "createdAt"
-// can be used for entity creation
-// respects the @prismabox.hide.data annotation to ignore fields specifically for the data model
-export const PostData = ...
-// just like the above but allows each field to be not set. Useful for updating entities
-export const PostDataOptional = ...
-
-
 ```
 
 ### Data models
