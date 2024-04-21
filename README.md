@@ -25,7 +25,7 @@ generator prismabox {
   // optionally enable the data model generation. See the data model section below for more info
   dataModel = true
   // adds the $kind: Type.String() to every plain model
-  plainAdditionalFields = ["$kind: String"]
+  plainAdditionalFields = ["$kind: String", "$kindOptional: String?", "$kindArray: String[]", "$kindOptionalArray: String[]?"]
 }
 ```
 to your `prisma.schema`. You can modify the settings to your liking, please see the respective comments for info on what the option does.

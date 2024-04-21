@@ -17,6 +17,8 @@ export function parseAdditionalFields(config: Dictionary<string | string[]>) {
 				: config.plainAdditionalFields,
 		);
 		plainAdditionalFields.push(...fields);
+		console.log(plainAdditionalFields);
+		
 	}
 
 	if (config.relationsAdditionalFields) {
@@ -69,14 +71,14 @@ function parseFields(strings: string[]): DMMF.Model["fields"][number][] {
 	return strings.map((field) => {
 		let [name, fieldType] = field.split(":").map((s) => s.trim());
 		let isRequired = true;
-		if (name.endsWith("?")) {
-			name = name.slice(0, name.length - 1);
+		if (fieldType.endsWith("?")) {
+			fieldType = fieldType.slice(0, fieldType.length - 1);
 			isRequired = false;
 		}
 
 		let isList = false;
-		if (name.endsWith("[]")) {
-			name = name.slice(0, name.length - 2);
+		if (fieldType.endsWith("[]")) {
+			fieldType = fieldType.slice(0, fieldType.length - 2);
 			isList = true;
 		}
 		return {
