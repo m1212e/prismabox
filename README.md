@@ -24,9 +24,36 @@ generator prismabox {
   additionalProperties = true
   // optionally enable the data model generation. See the data model section below for more info
   dataModel = true
+  // adds the $kind: Type.String() to every plain model
+  plainAdditionalFields = ["$kind: String"]
 }
 ```
 to your `prisma.schema`. You can modify the settings to your liking, please see the respective comments for info on what the option does.
+
+### Additional fields
+You can configure additional fields for various generated output via the below config fields. Doing so will add the specified fields to every schema of that type. E.g. adding
+```prisma
+plainAdditionalFields = ["$kind: String"]
+```
+to the config will result in the field added in every plain model:
+```ts
+const ... = Type.Object(
+  {
+    ...
+    $kind: Type.String(),
+  }
+);
+```
+Syntax for field definition is `<name>: <PrimitiveFieldType>`. Please note, that you can only use primitive types.
+
+| Available options
+---
+plainAdditionalFields
+relationsAdditionalFields
+plainDataAdditionalFields
+relationsDataAdditionalFields
+plainDataOptionalAdditionalFields
+relationsDataOptionalAdditionalFields
 
 ## Annotations
 Prismabox offers annotations to adjust the output of models and fields.

@@ -7,12 +7,13 @@ import { NullableVariant, nullableVariableName } from "./nullable";
 
 export function RelationModel(
   data: Pick<DMMF.Model, "fields" | "documentation">,
-  referenceableModels: Models
+  referenceableModels: Models,
+	additionalFields: DMMF.Model["fields"][number][] = [],
 ) {
   const modelDoc = parseDocumentation(data.documentation);
   if (modelDoc.annotations.includes(Annotation.HIDDEN)) return undefined;
 
-  const fields = data.fields
+  const fields = data.fields.concat(additionalFields)
     .map((field) => {
       if (isPrimitivePrismaFieldType(field.type)) return undefined;
       const doc = parseDocumentation(field.documentation);

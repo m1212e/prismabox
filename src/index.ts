@@ -22,6 +22,15 @@ import {
 	DataModelRelationsOptional,
 	enableDataModel,
 } from "./generator/dataModel";
+import {
+	relationsAdditionalFields,
+	parseAdditionalFields,
+	plainAdditionalFields,
+	plainDataAdditionalFields,
+	plainDataOptionalAdditionalFields,
+	relationsDataAdditionalFields,
+	relationsDataOptionalAdditionalFields,
+} from "./generator/additionalFields";
 
 generatorHandler({
 	onManifest() {
@@ -59,6 +68,8 @@ generatorHandler({
 			enableDataModel();
 		}
 
+		parseAdditionalFields(options.generator.config || {});
+
 		try {
 			await access(outputDirectory);
 			await rm(outputDirectory, { recursive: true });
@@ -71,7 +82,7 @@ generatorHandler({
 
 		plainTasks.push(
 			...options.dmmf.datamodel.models.map(async (e) => {
-				const model = PlainModel(e);
+				const model = PlainModel(e, false, plainAdditionalFields);
 				if (model) {
 					plainTypes.set(e.name, model);
 				}
@@ -107,7 +118,7 @@ generatorHandler({
 
 		dataPlainTasks.push(
 			...options.dmmf.datamodel.models.map(async (e) => {
-				const model = DataModelPlain(e, enumTypes);
+				const model = DataModelPlain(e, enumTypes, plainDataAdditionalFields);
 				if (model) {
 					dataPlainTypes.set(e.name, model);
 				}
@@ -119,7 +130,11 @@ generatorHandler({
 
 		optionalDataPlainTasks.push(
 			...options.dmmf.datamodel.models.map(async (e) => {
-				const model = DataModelPlainOptional(e, enumTypes);
+				const model = DataModelPlainOptional(
+					e,
+					enumTypes,
+					plainDataOptionalAdditionalFields,
+				);
 				if (model) {
 					optionalDataPlainTypes.set(e.name, model);
 				}
@@ -131,7 +146,11 @@ generatorHandler({
 
 		dataRelationTasks.push(
 			...options.dmmf.datamodel.models.map(async (e) => {
-				const model = DataModelRelations(e, enumTypes);
+				const model = DataModelRelations(
+					e,
+					enumTypes,
+					relationsDataAdditionalFields,
+				);
 				if (model) {
 					dataRelationTypes.set(e.name, model);
 				}
@@ -143,7 +162,11 @@ generatorHandler({
 
 		optionalDataRelationTasks.push(
 			...options.dmmf.datamodel.models.map(async (e) => {
-				const model = DataModelRelationsOptional(e, enumTypes);
+				const model = DataModelRelationsOptional(
+					e,
+					enumTypes,
+					relationsDataOptionalAdditionalFields,
+				);
 				if (model) {
 					optionalDataRelationTypes.set(e.name, model);
 				}
@@ -163,7 +186,11 @@ generatorHandler({
 
 		relationTasks.push(
 			...options.dmmf.datamodel.models.map(async (e) => {
-				const model = RelationModel(e, mergeModels(plainTypes, enumTypes));
+				const model = RelationModel(
+					e,
+					mergeModels(plainTypes, enumTypes),
+					relationsAdditionalFields,
+				);
 				if (model) {
 					relationTypes.set(e.name, model);
 				}
@@ -222,11 +249,16 @@ generatorHandler({
 				}
 
 				dataModels.set(`${name}Data`, Composite(dataModels));
-				dataModelsOptional.set(`${name}DataOptional`, Composite(dataModelsOptional));
+				dataModelsOptional.set(
+					`${name}DataOptional`,
+					Composite(dataModelsOptional),
+				);
 
 				await writeFile(
 					join(outputDirectory, `${name}.ts`),
-					await format(Compose(mergeModels(models, dataModels, dataModelsOptional))),
+					await format(
+						Compose(mergeModels(models, dataModels, dataModelsOptional)),
+					),
 				);
 			}),
 			...Array.from(enumTypes).map(async (p) => {

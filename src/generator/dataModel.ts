@@ -14,29 +14,33 @@ export function enableDataModel() {
 export function DataModelPlain(
 	data: Pick<DMMF.Model, "fields" | "documentation">,
 	referenceableEnums: Models,
+	additionalFields: DMMF.Model["fields"][number][] = [],
 ) {
-	return internal(data, referenceableEnums, false, false);
+	return internal(data, referenceableEnums, false, false, additionalFields);
 }
 
 export function DataModelPlainOptional(
 	data: Pick<DMMF.Model, "fields" | "documentation">,
 	referenceableEnums: Models,
+	additionalFields: DMMF.Model["fields"][number][] = [],
 ) {
-	return internal(data, referenceableEnums, true, false);
+	return internal(data, referenceableEnums, true, false, additionalFields);
 }
 
 export function DataModelRelations(
 	data: Pick<DMMF.Model, "fields" | "documentation">,
 	referenceableEnums: Models,
+	additionalFields: DMMF.Model["fields"][number][] = [],
 ) {
-	return internal(data, referenceableEnums, false, true);
+	return internal(data, referenceableEnums, false, true, additionalFields);
 }
 
 export function DataModelRelationsOptional(
 	data: Pick<DMMF.Model, "fields" | "documentation">,
 	referenceableEnums: Models,
+	additionalFields: DMMF.Model["fields"][number][] = [],
 ) {
-	return internal(data, referenceableEnums, true, true);
+	return internal(data, referenceableEnums, true, true, additionalFields);
 }
 
 function internal(
@@ -44,6 +48,7 @@ function internal(
 	referenceableEnums: Models,
 	optional: boolean,
 	relations: boolean,
+	additionalFields: DMMF.Model["fields"][number][] = [],
 ) {
 	if (!enabled) return undefined;
 	const modelDoc = parseDocumentation(data.documentation);
@@ -54,6 +59,7 @@ function internal(
 		return undefined;
 
 	const fields = data.fields
+		.concat(additionalFields)
 		.map((field) => {
 			const doc = parseDocumentation(field.documentation);
 			if (
@@ -108,9 +114,9 @@ function internal(
 				return undefined;
 			}
 
-      if(relations) {
-        return undefined;
-      }
+			if (relations) {
+				return undefined;
+			}
 
 			if (field.isId) {
 				return undefined;
