@@ -46,14 +46,14 @@ const ... = Type.Object(
 ```
 Syntax for field definition is `<name>: <PrimitiveFieldType><[]><?>`. Please note, that you can only use primitive types.
 
-| Available options
----
-plainAdditionalFields
-relationsAdditionalFields
-plainDataAdditionalFields
-relationsDataAdditionalFields
-plainDataOptionalAdditionalFields
-relationsDataOptionalAdditionalFields
+| Available options |
+---|
+|plainAdditionalFields|
+|relationsAdditionalFields|
+|plainDataAdditionalFields|
+|relationsDataAdditionalFields|
+|plainDataOptionalAdditionalFields|
+|relationsDataOptionalAdditionalFields|
 
 ## Annotations
 Prismabox offers annotations to adjust the output of models and fields.
