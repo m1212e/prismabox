@@ -7,6 +7,7 @@ import { NullableVariant, nullableVariableName } from "./nullable";
 
 export function RelationModel(
   data: Pick<DMMF.Model, "fields" | "documentation">,
+	referenceableEnums: Models,
   referenceableModels: Models,
 	additionalFields: DMMF.Model["fields"][number][] = [],
 ) {
@@ -15,7 +16,7 @@ export function RelationModel(
 
   const fields = data.fields.concat(additionalFields)
     .map((field) => {
-      if (isPrimitivePrismaFieldType(field.type)) return undefined;
+      if (isPrimitivePrismaFieldType(field.type) || referenceableEnums.has(field.type)) return undefined;
       const doc = parseDocumentation(field.documentation);
       if (doc.annotations.includes(Annotation.HIDDEN)) return undefined;
 

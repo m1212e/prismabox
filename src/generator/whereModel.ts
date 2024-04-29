@@ -2,9 +2,11 @@ import type { DMMF } from "@prisma/generator-helper";
 import { typeboxImportVariableName } from "./typeboxImport";
 import { Annotation, parseDocumentation } from "./documentation";
 import { PlainModel } from "./plainModel";
+import type { Models } from "../util/modelMap";
 
 export function WhereModel(
-  data: Pick<DMMF.Model, "fields" | "documentation" | "name" | "uniqueFields">
+  data: Pick<DMMF.Model, "fields" | "documentation" | "name" | "uniqueFields">,
+  referenceableEnums: Models
 ) {
   const modelDoc = parseDocumentation(data.documentation);
   if (modelDoc.annotations.includes(Annotation.HIDDEN)) return undefined;
@@ -30,7 +32,7 @@ export function WhereModel(
       const fields = data.fields.filter((field) =>
         uniqueFieldFields.includes(field.name)
       );
-      return `${uniqueFieldFields.join("_")}: ${PlainModel({ fields }, true)}`;
+      return `${uniqueFieldFields.join("_")}: ${PlainModel({ fields }, referenceableEnums, true)}`;
     })
     .filter((x) => x) as string[];
 

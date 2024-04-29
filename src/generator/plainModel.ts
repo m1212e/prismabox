@@ -2,12 +2,14 @@ import type { DMMF } from "@prisma/generator-helper";
 import { typeboxImportVariableName } from "./typeboxImport";
 import { Annotation, parseDocumentation } from "./documentation";
 import { NullableVariant, nullableVariableName } from "./nullable";
+import type { Models } from "../util/modelMap";
 
 /**
  * @param allowUndefinedFields In case we want to create input schemes, we want to allow fields to be undefined (just not set) if they are optional
  */
 export function PlainModel(
 	data: Pick<DMMF.Model, "fields" | "documentation">,
+	referenceableEnums: Models,
 	allowUndefinedFields = false,
 	additionalFields: DMMF.Model["fields"][number][] = [],
 ) {
@@ -15,23 +17,30 @@ export function PlainModel(
 
 	if (modelDoc.annotations.includes(Annotation.HIDDEN)) return undefined;
 
-	const fields = data.fields.concat(additionalFields)
+	const fields = data.fields
+		.concat(additionalFields)
 		.map((field) => {
-			if (!isPrimitivePrismaFieldType(field.type)) return undefined;
 			const doc = parseDocumentation(field.documentation);
 			if (doc.annotations.includes(Annotation.HIDDEN)) return undefined;
+			if (isPrimitivePrismaFieldType(field.type)) {
+				return PrimitiveField({
+					name: field.name,
+					fieldType: field.type,
+					list: field.isList,
+					optional: field.isRequired
+						? NullableVariant.REQUIRED
+						: allowUndefinedFields
+							? NullableVariant.OPTIONAL_NULLABLE
+							: NullableVariant.NULLABLE,
+					options: doc.options,
+				});
+			}
 
-			return PrimitiveField({
-				name: field.name,
-				fieldType: field.type,
-				list: field.isList,
-				optional: field.isRequired
-					? NullableVariant.REQUIRED
-					: allowUndefinedFields
-						? NullableVariant.OPTIONAL_NULLABLE
-						: NullableVariant.NULLABLE,
-				options: doc.options,
-			});
+			if (referenceableEnums.has(field.type)) {
+				return `${field.name}: ${referenceableEnums.get(field.type)}`;
+			}
+
+			return undefined;
 		})
 		.filter((x) => x) as string[];
 

@@ -77,18 +77,6 @@ generatorHandler({
 
 		await mkdir(outputDirectory, { recursive: true });
 
-		const plainTasks: Promise<void>[] = [];
-		const plainTypes: Models = new Map<string, string>();
-
-		plainTasks.push(
-			...options.dmmf.datamodel.models.map(async (e) => {
-				const model = PlainModel(e, false, plainAdditionalFields);
-				if (model) {
-					plainTypes.set(e.name, model);
-				}
-			}),
-		);
-
 		const enumTasks: Promise<void>[] = [];
 		const enumTypes: Models = new Map<string, string>();
 
@@ -101,12 +89,26 @@ generatorHandler({
 			}),
 		);
 
+		await Promise.all(enumTasks);
+
+		const plainTasks: Promise<void>[] = [];
+		const plainTypes: Models = new Map<string, string>();
+
+		plainTasks.push(
+			...options.dmmf.datamodel.models.map(async (e) => {
+				const model = PlainModel(e, enumTypes, false);
+				if (model) {
+					plainTypes.set(e.name, model);
+				}
+			}),
+		);
+
 		const whereTasks: Promise<void>[] = [];
 		const whereTypes: Models = new Map<string, string>();
 
 		whereTasks.push(
 			...options.dmmf.datamodel.models.map(async (e) => {
-				const model = WhereModel(e);
+				const model = WhereModel(e, enumTypes);
 				if (model) {
 					whereTypes.set(e.name, model);
 				}
@@ -178,7 +180,6 @@ generatorHandler({
 			...optionalDataPlainTasks,
 			...dataRelationTasks,
 			...optionalDataRelationTasks,
-			...enumTasks,
 		]);
 
 		const relationTasks: Promise<void>[] = [];
@@ -188,7 +189,8 @@ generatorHandler({
 			...options.dmmf.datamodel.models.map(async (e) => {
 				const model = RelationModel(
 					e,
-					mergeModels(plainTypes, enumTypes),
+					enumTypes,
+					plainTypes,
 					relationsAdditionalFields,
 				);
 				if (model) {
