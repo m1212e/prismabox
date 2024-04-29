@@ -17,7 +17,6 @@ export function parseAdditionalFields(config: Dictionary<string | string[]>) {
 				: config.plainAdditionalFields,
 		);
 		plainAdditionalFields.push(...fields);
-		console.log(plainAdditionalFields);
 		
 	}
 
