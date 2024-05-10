@@ -15,12 +15,10 @@ export function setAdditionalProperties(value: boolean) {
 }
 
 export function parseDocumentation(
-  raw: DMMF.Model["fields"][number]["documentation"]
+  input: DMMF.Model["fields"][number]["documentation"]
 ) {
-  if (!raw) {
-    return { options: "", annotations: [] };
-  }
 
+  const raw = input ?? "";
   const annotations: Annotation[] = [];
 
   let options = "{";
