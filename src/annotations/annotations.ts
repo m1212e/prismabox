@@ -25,18 +25,17 @@ export function isOptionsVariant(
 
 const annotationKeys: { type: Annotation["type"]; keys: string[] }[] = [
 	{
-		type: "HIDDEN",
-		keys: ["@prismabox.hide", "@prismabox.hidden"],
-	},
-	{
 		type: "HIDDEN_INPUT",
 		keys: [
-			"@prismabox.hide.input",
-			"@prismabox.hidden.input",
-			// here for legacy reasons
-			"@prismabox.hide.data",
-			"@prismabox.hidden.data",
+			// we need to use input.hide instead of hide.input because the latter is a substring of input.hidden
+			// and will falsely match
+			"@prismabox.input.hide",
+			"@prismabox.input.hidden",
 		],
+	},
+	{
+		type: "HIDDEN",
+		keys: ["@prismabox.hide", "@prismabox.hidden"],
 	},
 	{
 		type: "OPTIONS",
@@ -57,7 +56,10 @@ export function extractAnnotations(
 
 	const raw = input ?? "";
 
-	for (const line of raw.split("\n").map((l) => l.trim())) {
+	for (const line of raw
+		.split("\n")
+		.map((l) => l.trim())
+		.filter((l) => l.length > 0)) {
 		const annotationKey = annotationKeys.find((key) =>
 			key.keys.some((k) => line.startsWith(k)),
 		);
@@ -104,5 +106,5 @@ export function isHidden(annotations: Annotation[]): boolean {
 }
 
 export function isHiddenInput(annotations: Annotation[]): boolean {
-	return annotations.some((a) => a.type === "HIDDEN");
+	return annotations.some((a) => a.type === "HIDDEN_INPUT");
 }

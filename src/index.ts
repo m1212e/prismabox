@@ -19,18 +19,21 @@ generatorHandler({
 		};
 	},
 	async onGenerate(options) {
-		const config = setConfig({
+		setConfig({
 			...options.generator.config,
 			// for some reason, the output is an object with a value key
 			output: options.generator.output?.value,
 		});
 
+		console.log(getConfig());
+		
+
 		try {
-			await access(config.output);
-			await rm(config.output, { recursive: true });
+			await access(getConfig().output);
+			await rm(getConfig().output, { recursive: true });
 		} catch (error) {}
 
-		await mkdir(config.output, { recursive: true });
+		await mkdir(getConfig().output, { recursive: true });
 
 		processEnums(options.dmmf.datamodel.enums);
 		processPlain(options.dmmf.datamodel.models);

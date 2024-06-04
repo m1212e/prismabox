@@ -25,7 +25,6 @@ export function setConfig(input: unknown) {
 		Value.Default(configSchema, input);
 		config = Value.Decode(configSchema, Value.Convert(configSchema, input));
 		Object.freeze(config);
-		return config;
 	} catch (error) {
 		console.error(Value.Errors(configSchema, input).First);
 		throw error;

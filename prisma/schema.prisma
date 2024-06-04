@@ -9,10 +9,8 @@ generator client {
 
 generator prismabox {
   provider  = "node ./dist/cli.js"
-  dataModel = true
+  inputModel = true
   output                      = "./generated/schema"
-
-  plainAdditionalFields = ["$kind: String", "$kindOptional: String?", "$kindArray: String[]", "$kindOptionalArray: String[]?"]
 }
 
 model Password {
@@ -79,6 +77,7 @@ model ConferenceCreateToken {
 /// A conference in the system
 model Conference {
   id          String             @id @default(uuid())
+  /// @prismabox.hide
   name        String             @unique
   committees  Committee[]
   start       DateTime?
@@ -144,6 +143,7 @@ model Blah {
 model Committee {
   id                                            String            @id @default(uuid())
   name                                          String
+  /// @prismabox.input.hide
   abbreviation                                  String
   category                                      CommitteeCategory
   conference                                    Conference        @relation(fields: [conferenceId], references: [id])
