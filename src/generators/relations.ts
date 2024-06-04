@@ -112,7 +112,7 @@ export function stringifyRelationsInputCreate(data: DMMF.Model) {
 				connect: ${connectString},
 			}, ${generateTypeboxOptions()})`;
 
-			if (!field.isRequired) {
+			if (!field.isRequired || field.isList) {
 				stringifiedType = `${
 					getConfig().typeboxImportVariableName
 				}.Optional(${stringifiedType})`;

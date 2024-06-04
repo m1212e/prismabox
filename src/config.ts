@@ -11,7 +11,6 @@ const configSchema = Type.Object(
 		ignoreIdOnInputModel: Type.Boolean({ default: true }),
 		ignoreCreatedAtOnInputModel: Type.Boolean({ default: true }),
 		ignoreUpdatedAtOnInputModel: Type.Boolean({ default: true }),
-		plainAdditionalFields: Type.Array(Type.String(), { default: [] }),
 		nullableName: Type.String({ default: "__nullable__" }),
 	},
 	{ additionalProperties: false },

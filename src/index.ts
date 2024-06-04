@@ -19,7 +19,11 @@ generatorHandler({
 		};
 	},
 	async onGenerate(options) {
-		const config = setConfig(options.generator.config);
+		const config = setConfig({
+			...options.generator.config,
+			// for some reason, the output is an object with a value key
+			output: options.generator.output?.value,
+		});
 
 		try {
 			await access(config.output);

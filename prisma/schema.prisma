@@ -10,6 +10,7 @@ generator client {
 generator prismabox {
   provider  = "node ./dist/cli.js"
   dataModel = true
+  output                      = "./generated/schema"
 
   plainAdditionalFields = ["$kind: String", "$kindOptional: String?", "$kindArray: String[]", "$kindOptionalArray: String[]?"]
 }

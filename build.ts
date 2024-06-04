@@ -32,6 +32,7 @@ if (!version) {
 }
 
 await copyFile("./README.md", "./dist/README.md");
+await copyFile("./LICENSE", "./dist/LICENSE");
 await writeFile(
 	"./dist/package.json",
 	JSON.stringify({
