@@ -25,9 +25,6 @@ generatorHandler({
 			output: options.generator.output?.value,
 		});
 
-		console.log(getConfig());
-		
-
 		try {
 			await access(getConfig().output);
 			await rm(getConfig().output, { recursive: true });
