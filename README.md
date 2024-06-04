@@ -23,37 +23,11 @@ generator prismabox {
   // by default the generated schemes do not allow additional properties. You can allow them by setting this to true
   additionalProperties = true
   // optionally enable the data model generation. See the data model section below for more info
-  dataModel = true
-  // adds the specified fields to every plain model
-  plainAdditionalFields = ["$kind: String", "$kindOptional: String?", "$kindArray: String[]", "$kindOptionalArray: String[]?"]
+  inputModel = true
 }
 ```
 to your `prisma.schema`. You can modify the settings to your liking, please see the respective comments for info on what the option does.
-
-### Additional fields
-You can configure additional fields for various generated output via the below config fields. Doing so will add the specified fields to every schema of that type. E.g. adding
-```prisma
-plainAdditionalFields = ["$kind: String"]
-```
-to the config will result in the field added in every plain model:
-```ts
-const ... = Type.Object(
-  {
-    ...
-    $kind: Type.String(),
-  }
-);
-```
-Syntax for field definition is `<name>: <PrimitiveFieldType><[]><?>`. Please note, that you can only use primitive types.
-
-| Available options |
----|
-|plainAdditionalFields|
-|relationsAdditionalFields|
-|plainDataAdditionalFields|
-|relationsDataAdditionalFields|
-|plainDataOptionalAdditionalFields|
-|relationsDataOptionalAdditionalFields|
+> There are additional config options available which are mostly irrelevant to the average user. Please see [config.ts](src\config.ts) for all available options.
 
 ## Annotations
 Prismabox offers annotations to adjust the output of models and fields.
@@ -62,8 +36,9 @@ Prismabox offers annotations to adjust the output of models and fields.
 ---|---|---
 | @prismabox.hide | - | Hides the field or model from the output |
 | @prismabox.hidden | - | Alias for @prismabox.hide |
-| @prismabox.hide.data | - | Hides the field or model from the output only in the data model |
+| @prismabox.hide.input | - | Hides the field or model from the output only in the input model |
 | @prismabox.options | @prismabox.options{ min: 10, max: 20 } | Uses the provided options for the field or model in the generated schema. Be careful to use valid JS/TS syntax! |
+> For a more detailed list of available annotations, please see [annotations.ts](src/annotations/annotations.ts)
 
 A schema using annotations could look like this:
 ```prisma
@@ -89,7 +64,7 @@ enum Account {
 ```
 > Please note that you cannot use multiple annotations in one line! Each needs to be in its own!
 ## Generated Schemes
-The generator will output schema objects based on the models. It will output multiple variables for each model:
+The generator will output schema objects based on the models:
 ```ts
 // the plain object without any relations
 export const PostPlain = ...
@@ -100,25 +75,16 @@ export const PostRelations = ...
 // a composite model of the two, providing the full type
 export const Post = ...
 
-// a model enforcing a unique selector for a query to an entity
-// this can be passed to e.g. a `findUnique()` query in prisma
-export const PostWhere = ...
 ```
 
-### Data models
+### Input models
 To simplify the validation of input data, prismabox is able to generate schemes specifically for input data.
-These are called "DataModels" and need to be explicitly enabled in the generator settings (`dataModel = true`) because they expect some conventions/field naming patterns to work properly. If you want to see the specifics on how the model works, see [the code](./src/generator/dataModel.ts).
+These are called "InputModels" and need to be explicitly enabled in the generator settings (`inputModel = true`) because they expect some conventions/field naming patterns to work properly.
+> If you want to see the specifics on how the model behaves, see [here](src/generators/relations.ts) and [here](src/generators/plain.ts).
 
-1. Foreign Ids need to end in Id (case is ignored)
-2. To be detected as foreign key id, a relation field with a matching name must exist (case is ignored):
-```prisma
-  User   User? @relation(fields: [userId], references: [id])
-  // will be detected
-  userId Int?
+1. Foreign Ids need to end in Id (case is ignored, e.g. `userId` or `userid` will work)
+2. createdAt will be detected and ignored if it follows exactly this pattern: `createdAt DateTime @default(now())`
+3. updatedAt will be detected and ignored if it follows exactly this pattern: `updatedAt DateTime @updatedAt`
+4. Hide annotations marked for imports (`@prismabox.hide.input`) are respected.
 
-  // we change the name to something other than post
-  myCoolPost   Post? @relation(fields: [postId], references: [id])
-  // will NOT be detected
-  postId Int?
-```
-3. createdAt will be detected and ignored if it follows exactly this pattern: `createdAt DateTime @default(now())`
+If enabled, the generator will additonally output more schemes for each model which can be used for creating/updating entities. The model will only allow editing fields of the entity itself. For relations, only connecting/disconnecting is allowed, but changing/creating related entities is not possible.

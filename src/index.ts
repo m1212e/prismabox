@@ -1,9 +1,15 @@
 import { generatorHandler } from "@prisma/generator-helper";
-import { setConfig } from "./config";
+import { getConfig, setConfig } from "./config";
 import { mkdir, rm, access } from "node:fs/promises";
 import { processEnums } from "./generators/enum";
 import { write } from "./writer";
 import { processPlain } from "./generators/plain";
+import {
+	processRelations,
+	processRelationsInputCreate,
+	processRelationsInputUpdate,
+} from "./generators/relations";
+import { processPlainInput } from "./generators/plainInput";
 
 generatorHandler({
 	onManifest() {
@@ -24,6 +30,13 @@ generatorHandler({
 
 		processEnums(options.dmmf.datamodel.enums);
 		processPlain(options.dmmf.datamodel.models);
+		processRelations(options.dmmf.datamodel.models);
+		if (getConfig().inputModel) {
+			processPlainInput(options.dmmf.datamodel.models);
+			processRelationsInputCreate(options.dmmf.datamodel.models);
+			processRelationsInputUpdate(options.dmmf.datamodel.models);
+		}
+
 		await write();
 	},
 });

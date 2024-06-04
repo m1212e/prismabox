@@ -2,7 +2,7 @@ import type { DMMF } from "@prisma/generator-helper";
 
 export type Annotation =
 	| { type: "HIDDEN" }
-	| { type: "HIDDEN_DATA" }
+	| { type: "HIDDEN_INPUT" }
 	| { type: "OPTIONS"; value: string };
 
 export function isHiddenVariant(
@@ -11,10 +11,10 @@ export function isHiddenVariant(
 	return annotation.type === "HIDDEN";
 }
 
-export function isHiddenDataVariant(
+export function isHiddenInputVariant(
 	annotation: Annotation,
-): annotation is { type: "HIDDEN_DATA"; value: number } {
-	return annotation.type === "HIDDEN_DATA";
+): annotation is { type: "HIDDEN_INPUT"; value: number } {
+	return annotation.type === "HIDDEN_INPUT";
 }
 
 export function isOptionsVariant(
@@ -29,8 +29,14 @@ const annotationKeys: { type: Annotation["type"]; keys: string[] }[] = [
 		keys: ["@prismabox.hide", "@prismabox.hidden"],
 	},
 	{
-		type: "HIDDEN_DATA",
-		keys: ["@prismabox.hide.data", "@prismabox.hidden.data"],
+		type: "HIDDEN_INPUT",
+		keys: [
+			"@prismabox.hide.input",
+			"@prismabox.hidden.input",
+			// here for legacy reasons
+			"@prismabox.hide.data",
+			"@prismabox.hidden.data",
+		],
 	},
 	{
 		type: "OPTIONS",
@@ -44,7 +50,7 @@ export function extractAnnotations(
 	annotations: Annotation[];
 	description: string | undefined;
 	isHidden: boolean;
-	isHiddenData: boolean;
+	isHiddenInput: boolean;
 } {
 	const annotations: Annotation[] = [];
 	let description = "";
@@ -89,7 +95,7 @@ export function extractAnnotations(
 		annotations,
 		description: description.length > 0 ? description : undefined,
 		isHidden: isHidden(annotations),
-		isHiddenData: isHiddenData(annotations),
+		isHiddenInput: isHiddenInput(annotations),
 	};
 }
 
@@ -97,6 +103,6 @@ export function isHidden(annotations: Annotation[]): boolean {
 	return annotations.some((a) => a.type === "HIDDEN");
 }
 
-export function isHiddenData(annotations: Annotation[]): boolean {
+export function isHiddenInput(annotations: Annotation[]): boolean {
 	return annotations.some((a) => a.type === "HIDDEN");
 }

@@ -15,7 +15,6 @@ export function processEnums(
 			processedEnums.push({
 				name: e.name,
 				stringRepresentation,
-				needsNullableImport: false,
 			});
 		}
 	}

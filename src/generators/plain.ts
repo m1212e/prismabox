@@ -9,7 +9,7 @@ import {
 	type PrimitivePrismaFieldType,
 } from "./primitiveField";
 import { wrapWithArray } from "./array";
-import { NullableVariant, wrapWithNullable } from "./nullable";
+import { wrapWithNullable } from "./nullable";
 import { processedEnums } from "./enum";
 
 export const processedPlain: ProcessedModel[] = [];
@@ -18,21 +18,57 @@ export function processPlain(models: DMMF.Model[] | Readonly<DMMF.Model[]>) {
 	for (const m of models) {
 		const o = stringifyPlain(m);
 		if (o) {
-			processedPlain.push({ name: `${m.name}`, ...o });
+			processedPlain.push({ name: m.name, stringRepresentation: o });
 		}
 	}
 	Object.freeze(processedPlain);
 }
 
-export function stringifyPlain(data: DMMF.Model) {
+export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
 	const annotations = extractAnnotations(data.documentation);
-	if (annotations.isHidden) return undefined;
-	let needsNullableImport = false;
+	if (annotations.isHidden || (isInputModel && annotations.isHiddenInput))
+		return undefined;
 
 	const fields = data.fields
 		.map((field) => {
 			const annotations = extractAnnotations(field.documentation);
-			if (annotations.isHidden) return undefined;
+			if (annotations.isHidden || (isInputModel && annotations.isHiddenInput))
+				return undefined;
+
+			// ===============================
+			// INPUT MODEL FILTERS
+			// ===============================
+			// if we generate an input model we want to omit certain fields
+
+			if (getConfig().ignoreIdOnInputModel && isInputModel && field.isId)
+				return undefined;
+			if (
+				getConfig().ignoreCreatedAtOnInputModel &&
+				isInputModel &&
+				field.name === "createdAt" &&
+				field.hasDefaultValue
+			)
+				return undefined;
+			if (
+				getConfig().ignoreUpdatedAtOnInputModel &&
+				isInputModel &&
+				field.isUpdatedAt
+			)
+				return undefined;
+
+			if (
+				isInputModel &&
+				(field.name.toLowerCase().endsWith("id") ||
+					field.name.toLowerCase().endsWith("foreign") ||
+					field.name.toLowerCase().endsWith("foreignkey"))
+			) {
+				return undefined;
+			}
+
+			// ===============================
+			// INPUT MODEL FILTERS END
+			// ===============================
+
 			let stringifiedType = "";
 
 			if (isPrimitivePrismaFieldType(field.type)) {
@@ -54,21 +90,14 @@ export function stringifyPlain(data: DMMF.Model) {
 			}
 
 			if (!field.isRequired) {
-				needsNullableImport = true;
-				stringifiedType = wrapWithNullable({
-					input: stringifiedType,
-					variant: NullableVariant.NULLABLE,
-				});
+				stringifiedType = wrapWithNullable(stringifiedType);
 			}
 
 			return `${field.name}: ${stringifiedType}`;
 		})
 		.filter((x) => x) as string[];
 
-	return {
-		stringRepresentation: `${
-			getConfig().typeboxImportVariableName
-		}.Object({${fields.join(",")}},${generateTypeboxOptions(annotations)})\n`,
-		needsNullableImport,
-	};
+	return `${getConfig().typeboxImportVariableName}.Object({${fields.join(
+		",",
+	)}},${generateTypeboxOptions(annotations)})\n`;
 }

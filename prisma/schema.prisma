@@ -14,7 +14,6 @@ generator prismabox {
   plainAdditionalFields = ["$kind: String", "$kindOptional: String?", "$kindArray: String[]", "$kindOptionalArray: String[]?"]
 }
 
-
 model Password {
   id           String @id @default(uuid())
   user         User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -57,6 +56,8 @@ model Email {
 /// A user in the system
 model User {
   id                             String                        @id @default(uuid())
+  createdAt                      DateTime                      @default(now())
+  updatedAt                      DateTime                      @updatedAt
   name                           String
   conferenceMemberships          ConferenceMember[]
   committeeMemberships           CommitteeMember[]
@@ -64,9 +65,12 @@ model User {
   emails                         Email[]
   passwords                      Password[]
   pendingCredentialCreationTasks PendingCredentialCreateTask[]
+  Blah                           Blah?                         @relation(fields: [blahId], references: [id])
+  blahId                         String?
 }
 
 /// Consumeable token which grants the creation of a conference
+/// @prismabox.hide
 model ConferenceCreateToken {
   token String @id
 }
@@ -80,6 +84,7 @@ model Conference {
   end         DateTime?
   delegations Delegation[]
   members     ConferenceMember[]
+  Blah        Blah[]
 }
 
 /// The role of a user in a conference
@@ -125,6 +130,15 @@ enum CommitteeStatus {
   CLOSED /// Don't display a Widget
 }
 
+model Blah {
+  id           String      @id @default(uuid())
+  committee    Committee   @relation(fields: [committeeId], references: [id])
+  committeeId  String
+  conference   Conference? @relation(fields: [conferenceId], references: [id])
+  conferenceId String?
+  users        User[]
+}
+
 /// A committee in a conference
 model Committee {
   id                                            String            @id @default(uuid())
@@ -145,6 +159,7 @@ model Committee {
   statusHeadline                                String?
   statusUntil                                   DateTime?
   allowDelegationsToAddThemselvesToSpeakersList Boolean           @default(false)
+  Blah                                          Blah[]
 
   @@unique([name, conferenceId])
   @@unique([abbreviation, conferenceId])

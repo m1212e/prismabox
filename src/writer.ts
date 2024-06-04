@@ -10,7 +10,7 @@ export async function write() {
 			async ([name, content]) => {
 				return writeFile(
 					join(getConfig().output, `${name}.ts`),
-					await format(content.stringRepresentation),
+					await format(content),
 				);
 			},
 		),

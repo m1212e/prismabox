@@ -1,6 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { TypeCompiler } from "@sinclair/typebox/compiler";
 
 const configSchema = Type.Object(
 	{
@@ -8,7 +7,10 @@ const configSchema = Type.Object(
 		typeboxImportVariableName: Type.String({ default: "Type" }),
 		typeboxImportDependencyName: Type.String({ default: "@sinclair/typebox" }),
 		additionalProperties: Type.Boolean({ default: false }),
-		dataModel: Type.Boolean({ default: false }),
+		inputModel: Type.Boolean({ default: false }),
+		ignoreIdOnInputModel: Type.Boolean({ default: true }),
+		ignoreCreatedAtOnInputModel: Type.Boolean({ default: true }),
+		ignoreUpdatedAtOnInputModel: Type.Boolean({ default: true }),
 		plainAdditionalFields: Type.Array(Type.String(), { default: [] }),
 		nullableName: Type.String({ default: "__nullable__" }),
 	},
