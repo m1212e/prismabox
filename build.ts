@@ -1,5 +1,5 @@
 import { build } from "esbuild";
-import { exists, rm, copyFile, writeFile } from "fs/promises";
+import { exists, rm, copyFile, writeFile } from "node:fs/promises";
 import packagejson from "./package.json";
 
 if (await exists("./dist")) {
@@ -32,6 +32,7 @@ if (!version) {
 }
 
 await copyFile("./README.md", "./dist/README.md");
+await copyFile("./LICENSE", "./dist/LICENSE");
 await writeFile(
 	"./dist/package.json",
 	JSON.stringify({

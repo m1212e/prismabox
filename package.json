@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@prisma/generator-helper": "^5.10.2",
+    "@sinclair/typebox": "^0.32.15",
     "prettier": "^3.2.5"
   },
   "devDependencies": {
@@ -29,8 +30,7 @@
     "@types/bun": "latest",
     "esbuild": "^0.20.1",
     "prisma": "5.10.2",
-    "typescript": "^5.4.2",
-    "@sinclair/typebox": "^0.32.15"
+    "typescript": "^5.4.2"
   },
   "scripts": {
     "dev": "bun run build && bunx prisma generate",
