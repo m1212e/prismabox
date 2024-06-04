@@ -36,7 +36,7 @@ Prismabox offers annotations to adjust the output of models and fields.
 ---|---|---
 | @prismabox.hide | - | Hides the field or model from the output |
 | @prismabox.hidden | - | Alias for @prismabox.hide |
-| @prismabox.hide.input | - | Hides the field or model from the output only in the input model |
+| @prismabox.input.hide | - | Hides the field or model from the output only in the input model |
 | @prismabox.options | @prismabox.options{ min: 10, max: 20 } | Uses the provided options for the field or model in the generated schema. Be careful to use valid JS/TS syntax! |
 > For a more detailed list of available annotations, please see [annotations.ts](src/annotations/annotations.ts)
 
