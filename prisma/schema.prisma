@@ -26,6 +26,7 @@ model Token {
   /// @prismabox.hide
   tokenHash String
   expiresAt DateTime
+  tokenBuffer Bytes
 
   pendingEmailConfirmations  Email[]
   pendingCredentialCreations PendingCredentialCreateTask[]
