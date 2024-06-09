@@ -10,6 +10,7 @@ const PrimitiveFields = [
 	"Date",
 	"Json",
 	"Boolean",
+	"Bytes",
 ] as const;
 
 export type PrimitivePrismaFieldType = (typeof PrimitiveFields)[number];
@@ -50,6 +51,10 @@ export function stringifyPrimitiveType({
 
 	if (fieldType === "Boolean") {
 		return `${getConfig().typeboxImportVariableName}.Boolean(${options})`;
+	}
+
+	if (fieldType === "Bytes") {
+		return `${getConfig().typeboxImportVariableName}.Uint8Array(${options})`;
 	}
 
 	throw new Error("Invalid type for primitive generation");
