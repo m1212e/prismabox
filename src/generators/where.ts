@@ -11,7 +11,6 @@ import {
 import { wrapWithArray } from "./wrappers/array";
 import { processedEnums } from "./enum";
 import { wrapWithPartial } from "./wrappers/partial";
-import { makeComposite } from "./wrappers/composite";
 import { makeIntersection } from "./wrappers/intersect";
 import { makeUnion } from "./wrappers/union";
 
@@ -62,14 +61,22 @@ export function stringifyWhere(data: DMMF.Model) {
 		})
 		.filter((x) => x) as string[];
 
+	if (getConfig().allowRecursion) {
+		return wrapWithPartial(
+			`${
+				getConfig().typeboxImportVariableName
+			}.Recursive(${selfReferenceName} =>${
+				getConfig().typeboxImportVariableName
+			}.Object({${AND_OR_NOT()},${fields.join(",")}},${generateTypeboxOptions(
+				annotations,
+			)}), { $id: "${data.name}"})`,
+		);
+	}
+
 	return wrapWithPartial(
-		`${
-			getConfig().typeboxImportVariableName
-		}.Recursive(${selfReferenceName} =>${
-			getConfig().typeboxImportVariableName
-		}.Object({${AND_OR_NOT()},${fields.join(",")}},${generateTypeboxOptions(
-			annotations,
-		)}), { $id: "${data.name}"})`,
+		`${getConfig().typeboxImportVariableName}.Object({${fields.join(
+			",",
+		)}},${generateTypeboxOptions(annotations)})`,
 	);
 }
 
@@ -86,15 +93,6 @@ export function processWhereUnique(
 	}
 	Object.freeze(processedWhereUnique);
 }
-
-//     id?: string
-//     conferenceId_nationId?: DelegationConferenceIdNationIdCompoundUniqueInput
-//     AND?: DelegationWhereInput | DelegationWhereInput[]
-//     OR?: DelegationWhereInput[]
-//     NOT?: DelegationWhereInput | DelegationWhereInput[]
-//     conferenceId?: StringFilter<"Delegation"> | string
-//     nationId?: StringFilter<"Delegation"> | string
-//   }, "id" | "conferenceId_nationId">
 
 export function stringifyWhereUnique(data: DMMF.Model) {
 	const annotations = extractAnnotations(data.documentation);
@@ -203,9 +201,28 @@ export function stringifyWhereUnique(data: DMMF.Model) {
 		...uniqueCompositeFields,
 	].join(",")}},${generateTypeboxOptions(annotations)})`;
 
-	return `${
-		getConfig().typeboxImportVariableName
-	}.Recursive(${selfReferenceName} => ${makeIntersection([
+	if (getConfig().allowRecursion) {
+		return `${
+			getConfig().typeboxImportVariableName
+		}.Recursive(${selfReferenceName} => ${makeIntersection([
+			wrapWithPartial(uniqueBaseObject),
+			makeUnion(
+				[...uniqueFields, ...uniqueCompositeFields].map(
+					(f) => `${getConfig().typeboxImportVariableName}.Object({${f}})`,
+				),
+			),
+			wrapWithPartial(
+				`${getConfig().typeboxImportVariableName}.Object({${AND_OR_NOT()}})`,
+			),
+			wrapWithPartial(
+				`${
+					getConfig().typeboxImportVariableName
+				}.Object({${nonUniqueFields.join(",")}})`,
+			),
+		])}, { $id: "${data.name}"})`;
+	}
+
+	return makeIntersection([
 		wrapWithPartial(uniqueBaseObject),
 		makeUnion(
 			[...uniqueFields, ...uniqueCompositeFields].map(
@@ -213,14 +230,11 @@ export function stringifyWhereUnique(data: DMMF.Model) {
 			),
 		),
 		wrapWithPartial(
-			`${getConfig().typeboxImportVariableName}.Object({${AND_OR_NOT()}})`,
-		),
-		wrapWithPartial(
 			`${getConfig().typeboxImportVariableName}.Object({${nonUniqueFields.join(
 				",",
 			)}})`,
 		),
-	])}, { $id: "${data.name}"})`;
+	]);
 }
 
 function AND_OR_NOT() {

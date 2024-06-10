@@ -12,6 +12,7 @@ const configSchema = Type.Object(
 		ignoreCreatedAtOnInputModel: Type.Boolean({ default: true }),
 		ignoreUpdatedAtOnInputModel: Type.Boolean({ default: true }),
 		nullableName: Type.String({ default: "__nullable__" }),
+		allowRecursion: Type.Boolean({ default: true }),
 	},
 	{ additionalProperties: false },
 );
