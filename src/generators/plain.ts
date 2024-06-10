@@ -8,8 +8,8 @@ import {
 	stringifyPrimitiveType,
 	type PrimitivePrismaFieldType,
 } from "./primitiveField";
-import { wrapWithArray } from "./array";
-import { wrapWithNullable } from "./nullable";
+import { wrapWithArray } from "./wrappers/array";
+import { wrapWithNullable } from "./wrappers/nullable";
 import { processedEnums } from "./enum";
 
 export const processedPlain: ProcessedModel[] = [];

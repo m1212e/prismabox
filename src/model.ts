@@ -1,7 +1,7 @@
 import { getConfig } from "./config";
-import { makeComposite } from "./generators/composite";
+import { makeComposite } from "./generators/wrappers/composite";
 import { processedEnums } from "./generators/enum";
-import { nullableImport, nullableType } from "./generators/nullable";
+import { nullableImport, nullableType } from "./generators/wrappers/nullable";
 import { processedPlain } from "./generators/plain";
 import { processedPlainInput } from "./generators/plainInput";
 import {
@@ -9,6 +9,7 @@ import {
 	processedRelationsInputCreate,
 	processedRelationsInputUpdate,
 } from "./generators/relations";
+import { processedWhere, processedWhereUnique } from "./generators/where";
 
 export type ProcessedModel = {
 	name: string;
@@ -54,6 +55,8 @@ export function mapAllModelsForWrite() {
 	process(processedPlainInput, "PlainInput");
 	process(processedRelationsInputCreate, "RelationsInputCreate");
 	process(processedRelationsInputUpdate, "RelationsInputUpdate");
+	process(processedWhere, "Where");
+	process(processedWhereUnique, "WhereUnique");
 
 	for (const [key, value] of modelsPerName) {
 		const plain = processedPlain.find((e) => e.name === key);

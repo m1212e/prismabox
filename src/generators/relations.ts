@@ -4,10 +4,11 @@ import { getConfig } from "../config";
 import { generateTypeboxOptions } from "../annotations/options";
 import type { ProcessedModel } from "../model";
 import { isPrimitivePrismaFieldType } from "./primitiveField";
-import { wrapWithArray } from "./array";
-import { wrapWithNullable } from "./nullable";
+import { wrapWithArray } from "./wrappers/array";
+import { wrapWithNullable } from "./wrappers/nullable";
 import { processedEnums } from "./enum";
 import { processedPlain } from "./plain";
+import { wrapWithPartial } from "./wrappers/partial";
 
 export const processedRelations: ProcessedModel[] = [];
 
@@ -164,24 +165,22 @@ export function stringifyRelationsInputUpdate(data: DMMF.Model) {
 			let stringifiedType: string;
 
 			if (field.isList) {
-				stringifiedType = `${getConfig().typeboxImportVariableName}.Partial(
-					${getConfig().typeboxImportVariableName}.Object({
-						connect: ${getConfig().typeboxImportVariableName}.Array(
-							${getConfig().typeboxImportVariableName}.Object({
+				stringifiedType = wrapWithPartial(`${
+					getConfig().typeboxImportVariableName
+				}.Object({
+						connect: ${wrapWithArray(`${getConfig().typeboxImportVariableName}.Object({
 								id: ${
 									getConfig().typeboxImportVariableName
 								}.String(${generateTypeboxOptions(annotations)})
-							}, ${generateTypeboxOptions(annotations)})
-						),
-						disconnect: ${getConfig().typeboxImportVariableName}.Array(
-							${getConfig().typeboxImportVariableName}.Object({
+							}, ${generateTypeboxOptions(annotations)})`)},
+						disconnect: ${wrapWithArray(`${
+							getConfig().typeboxImportVariableName
+						}.Object({
 								id: ${
 									getConfig().typeboxImportVariableName
 								}.String(${generateTypeboxOptions(annotations)})
-							}, ${generateTypeboxOptions(annotations)})
-						)
-					}, ${generateTypeboxOptions(annotations)})
-				)`;
+							}, ${generateTypeboxOptions(annotations)})`)}
+					}, ${generateTypeboxOptions(annotations)})`);
 			} else {
 				if (field.isRequired) {
 					stringifiedType = `${getConfig().typeboxImportVariableName}.Object({
@@ -192,7 +191,7 @@ export function stringifyRelationsInputUpdate(data: DMMF.Model) {
 						}, ${generateTypeboxOptions(annotations)})
 					}, ${generateTypeboxOptions(annotations)})`;
 				} else {
-					stringifiedType = `${getConfig().typeboxImportVariableName}.Partial(${
+					stringifiedType = wrapWithPartial(`${
 						getConfig().typeboxImportVariableName
 					}.Object({
 						connect: ${getConfig().typeboxImportVariableName}.Object({
@@ -201,7 +200,7 @@ export function stringifyRelationsInputUpdate(data: DMMF.Model) {
 							}.String(${generateTypeboxOptions(annotations)})
 						}, ${generateTypeboxOptions(annotations)}),
 						disconnect: ${getConfig().typeboxImportVariableName}.Boolean()
-					}, ${generateTypeboxOptions(annotations)}))`;
+					}, ${generateTypeboxOptions(annotations)})`);
 				}
 			}
 
@@ -209,7 +208,9 @@ export function stringifyRelationsInputUpdate(data: DMMF.Model) {
 		})
 		.filter((x) => x) as string[];
 
-	return `${getConfig().typeboxImportVariableName}.Partial(${
-		getConfig().typeboxImportVariableName
-	}.Object({${fields.join(",")}},${generateTypeboxOptions(annotations)}))\n`;
+	return wrapWithPartial(
+		`${getConfig().typeboxImportVariableName}.Object({${fields.join(
+			",",
+		)}},${generateTypeboxOptions(annotations)})`,
+	);
 }

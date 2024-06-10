@@ -3,6 +3,7 @@ import { extractAnnotations } from "../annotations/annotations";
 import { getConfig } from "../config";
 import { generateTypeboxOptions } from "../annotations/options";
 import type { ProcessedModel } from "../model";
+import { makeUnion } from "./wrappers/union";
 
 export const processedEnums: ProcessedModel[] = [];
 
@@ -25,11 +26,9 @@ export function stringifyEnum(data: DMMF.DatamodelEnum) {
 	const annotations = extractAnnotations(data.documentation);
 	if (annotations.isHidden) return undefined;
 
-	const variantsString = data.values
-		.map((v) => `${getConfig().typeboxImportVariableName}.Literal('${v.name}')`)
-		.join(",");
+	const variantsString = data.values.map(
+		(v) => `${getConfig().typeboxImportVariableName}.Literal('${v.name}')`,
+	);
 
-	return `${
-		getConfig().typeboxImportVariableName
-	}.Union([${variantsString}],${generateTypeboxOptions(annotations)})\n`;
+	return makeUnion(variantsString, generateTypeboxOptions(annotations));
 }

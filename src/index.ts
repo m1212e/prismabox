@@ -10,6 +10,7 @@ import {
 	processRelationsInputUpdate,
 } from "./generators/relations";
 import { processPlainInput } from "./generators/plainInput";
+import { processWhere, processWhereUnique } from "./generators/where";
 
 generatorHandler({
 	onManifest() {
@@ -35,6 +36,8 @@ generatorHandler({
 		processEnums(options.dmmf.datamodel.enums);
 		processPlain(options.dmmf.datamodel.models);
 		processRelations(options.dmmf.datamodel.models);
+		processWhere(options.dmmf.datamodel.models);
+		processWhereUnique(options.dmmf.datamodel.models);
 		if (getConfig().inputModel) {
 			processPlainInput(options.dmmf.datamodel.models);
 			processRelationsInputCreate(options.dmmf.datamodel.models);

@@ -8,9 +8,9 @@ generator client {
 }
 
 generator prismabox {
-  provider  = "node ./dist/cli.js"
+  provider   = "node ./dist/cli.js"
   inputModel = true
-  output                      = "./generated/schema"
+  output     = "./generated/schema"
 }
 
 model Password {
@@ -22,10 +22,10 @@ model Password {
 }
 
 model Token {
-  id        String   @id @default(uuid())
+  id          String   @id @default(uuid())
   /// @prismabox.hide
-  tokenHash String
-  expiresAt DateTime
+  tokenHash   String
+  expiresAt   DateTime
   tokenBuffer Bytes
 
   pendingEmailConfirmations  Email[]
@@ -104,6 +104,7 @@ enum ConferenceRole {
 /// A user's membership in a conference, providing them with a role in the conference
 model ConferenceMember {
   id           String         @id @default(uuid())
+  blah         String         @unique
   conference   Conference     @relation(fields: [conferenceId], references: [id])
   conferenceId String
   user         User?          @relation(fields: [userId], references: [id])
