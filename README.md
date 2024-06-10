@@ -27,7 +27,7 @@ generator prismabox {
 }
 ```
 to your `prisma.schema`. You can modify the settings to your liking, please see the respective comments for info on what the option does.
-> There are additional config options available which are mostly irrelevant to the average user. Please see [config.ts](src\config.ts) for all available options.
+> There are additional config options available which are mostly irrelevant to the average user. Please see [config.ts](src/config.ts) for all available options.
 
 ## Annotations
 Prismabox offers annotations to adjust the output of models and fields.
