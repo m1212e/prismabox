@@ -3,16 +3,22 @@ import { join } from "node:path";
 import { getConfig } from "./config";
 import { format } from "./format";
 import { mapAllModelsForWrite } from "./model";
+import { generateBarrelFile } from "./barrel";
 
 export async function write() {
-	return Promise.all(
-		Array.from(mapAllModelsForWrite().entries()).map(
-			async ([name, content]) => {
-				return writeFile(
-					join(getConfig().output, `${name}.ts`),
-					await format(content),
-				);
-			},
+	const mappings = Array.from(mapAllModelsForWrite().entries());
+	return Promise.all([
+		...mappings.map(async ([name, content]) => {
+			return writeFile(
+				join(getConfig().output, `${name}.ts`),
+				await format(content),
+			);
+		}),
+		writeFile(
+			join(getConfig().output, "barrel.ts"),
+			await format(
+				generateBarrelFile(mappings.map(([key]) => key)),
+			),
 		),
-	);
+	]);
 }
