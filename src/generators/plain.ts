@@ -11,6 +11,7 @@ import {
 import { wrapWithArray } from "./wrappers/array";
 import { wrapWithNullable } from "./wrappers/nullable";
 import { processedEnums } from "./enum";
+import { wrapWithOptional } from "./wrappers/optional";
 
 export const processedPlain: ProcessedModel[] = [];
 
@@ -91,6 +92,9 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
 
 			if (!field.isRequired) {
 				stringifiedType = wrapWithNullable(stringifiedType);
+				if (isInputModel) {
+					stringifiedType = wrapWithOptional(stringifiedType);
+				}
 			}
 
 			return `${field.name}: ${stringifiedType}`;
