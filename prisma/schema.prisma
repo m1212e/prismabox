@@ -32,6 +32,19 @@ model Token {
   pendingCredentialCreations PendingCredentialCreateTask[]
 }
 
+model Item {
+  id         Int      @id @default(autoincrement())
+  name       String
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  Item Item[]
+}
+
 model PendingCredentialCreateTask {
   id String @id @default(uuid())
 

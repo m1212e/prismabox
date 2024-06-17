@@ -71,7 +71,7 @@ export function processRelationsInputCreate(
 	models: DMMF.Model[] | Readonly<DMMF.Model[]>,
 ) {
 	for (const m of models) {
-		const o = stringifyRelationsInputCreate(m);
+		const o = stringifyRelationsInputCreate(m, models);
 		if (o) {
 			processedRelationsInputCreate.push({
 				name: m.name,
@@ -82,7 +82,10 @@ export function processRelationsInputCreate(
 	Object.freeze(processedRelationsInputCreate);
 }
 
-export function stringifyRelationsInputCreate(data: DMMF.Model) {
+export function stringifyRelationsInputCreate(
+	data: DMMF.Model,
+	allModels: DMMF.Model[] | Readonly<DMMF.Model[]>,
+) {
 	const annotations = extractAnnotations(data.documentation);
 	if (annotations.isHidden || annotations.isHiddenInput) return undefined;
 
@@ -99,10 +102,29 @@ export function stringifyRelationsInputCreate(data: DMMF.Model) {
 				return undefined;
 			}
 
+			let typeboxIdType = "String";
+
+			switch (
+				allModels.find((m) => m.name === field.type)?.fields.find((f) => f.isId)
+					?.type
+			) {
+				case "String":
+					typeboxIdType = "String";
+					break;
+				case "Int":
+					typeboxIdType = "Integer";
+					break;
+				case "BigInt":
+					typeboxIdType = "Integer";
+					break;
+				default:
+					throw new Error("Unsupported id type");
+			}
+
 			let connectString = `${getConfig().typeboxImportVariableName}.Object({
 				id: ${
 					getConfig().typeboxImportVariableName
-				}.String(${generateTypeboxOptions(annotations)}),
+				}.${typeboxIdType}(${generateTypeboxOptions(annotations)}),
 			},${generateTypeboxOptions(annotations)})`;
 
 			if (field.isList) {
