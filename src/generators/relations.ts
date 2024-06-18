@@ -156,7 +156,7 @@ export function processRelationsInputUpdate(
 	models: DMMF.Model[] | Readonly<DMMF.Model[]>,
 ) {
 	for (const m of models) {
-		const o = stringifyRelationsInputUpdate(m);
+		const o = stringifyRelationsInputUpdate(m, models);
 		if (o) {
 			processedRelationsInputUpdate.push({
 				name: m.name,
@@ -167,7 +167,7 @@ export function processRelationsInputUpdate(
 	Object.freeze(processedRelationsInputUpdate);
 }
 
-export function stringifyRelationsInputUpdate(data: DMMF.Model) {
+export function stringifyRelationsInputUpdate(data: DMMF.Model, allModels: DMMF.Model[] | Readonly<DMMF.Model[]>) {
 	const annotations = extractAnnotations(data.documentation);
 	if (annotations.isHidden || annotations.isHiddenInput) return undefined;
 
@@ -184,6 +184,25 @@ export function stringifyRelationsInputUpdate(data: DMMF.Model) {
 				return undefined;
 			}
 
+			let typeboxIdType = "String";
+
+			switch (
+				allModels.find((m) => m.name === field.type)?.fields.find((f) => f.isId)
+					?.type
+			) {
+				case "String":
+					typeboxIdType = "String";
+					break;
+				case "Int":
+					typeboxIdType = "Integer";
+					break;
+				case "BigInt":
+					typeboxIdType = "Integer";
+					break;
+				default:
+					throw new Error("Unsupported id type");
+			}
+
 			let stringifiedType: string;
 
 			if (field.isList) {
@@ -193,14 +212,14 @@ export function stringifyRelationsInputUpdate(data: DMMF.Model) {
 						connect: ${wrapWithArray(`${getConfig().typeboxImportVariableName}.Object({
 								id: ${
 									getConfig().typeboxImportVariableName
-								}.String(${generateTypeboxOptions(annotations)})
+								}.${typeboxIdType}(${generateTypeboxOptions(annotations)})
 							}, ${generateTypeboxOptions(annotations)})`)},
 						disconnect: ${wrapWithArray(`${
 							getConfig().typeboxImportVariableName
 						}.Object({
 								id: ${
 									getConfig().typeboxImportVariableName
-								}.String(${generateTypeboxOptions(annotations)})
+								}.${typeboxIdType}(${generateTypeboxOptions(annotations)})
 							}, ${generateTypeboxOptions(annotations)})`)}
 					}, ${generateTypeboxOptions(annotations)})`);
 			} else {
@@ -209,7 +228,7 @@ export function stringifyRelationsInputUpdate(data: DMMF.Model) {
 						connect: ${getConfig().typeboxImportVariableName}.Object({
 							id: ${
 								getConfig().typeboxImportVariableName
-							}.String(${generateTypeboxOptions(annotations)})
+							}.${typeboxIdType}(${generateTypeboxOptions(annotations)})
 						}, ${generateTypeboxOptions(annotations)})
 					}, ${generateTypeboxOptions(annotations)})`;
 				} else {
@@ -219,7 +238,7 @@ export function stringifyRelationsInputUpdate(data: DMMF.Model) {
 						connect: ${getConfig().typeboxImportVariableName}.Object({
 							id: ${
 								getConfig().typeboxImportVariableName
-							}.String(${generateTypeboxOptions(annotations)})
+							}.${typeboxIdType}(${generateTypeboxOptions(annotations)})
 						}, ${generateTypeboxOptions(annotations)}),
 						disconnect: ${getConfig().typeboxImportVariableName}.Boolean()
 					}, ${generateTypeboxOptions(annotations)})`);
