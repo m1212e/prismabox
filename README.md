@@ -7,7 +7,7 @@ Install it in your project,
 ```bash
 npm i -D prismabox
 pnpm i -D prismabox
-bun i -D prismabox
+bun add -D prismabox
 ```
 
  then add
