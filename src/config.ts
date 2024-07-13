@@ -13,7 +13,7 @@ const configSchema = Type.Object(
 		ignoreUpdatedAtOnInputModel: Type.Boolean({ default: true }),
 		nullableName: Type.String({ default: "__nullable__" }),
 		allowRecursion: Type.Boolean({ default: true }),
-    useJsonTypes: Type.Boolean({ default: false })
+    	useJsonTypes: Type.Boolean({ default: false })
 	},
 	{ additionalProperties: false },
 );
