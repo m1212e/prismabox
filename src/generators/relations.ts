@@ -45,7 +45,7 @@ export function stringifyRelations(data: DMMF.Model) {
 			)?.stringRepresentation;
 
 			if (!stringifiedType) {
-				throw new Error("Could not find type for relation field.");
+				return '';
 			}
 
 			if (field.isList) {
