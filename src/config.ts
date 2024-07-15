@@ -3,16 +3,58 @@ import { Value } from "@sinclair/typebox/value";
 
 const configSchema = Type.Object(
   {
+    /**
+     * Where to output the generated files
+     */
     output: Type.String({ default: "./prisma/prismabox" }),
+    /**
+     * The name of the variable to import the Type from typebox
+     */
     typeboxImportVariableName: Type.String({ default: "Type" }),
+    /**
+     * The name of the dependency to import the Type from typebox
+     */
     typeboxImportDependencyName: Type.String({ default: "@sinclair/typebox" }),
+    /**
+     * Whether to allow additional properties in the generated schemes
+     */
     additionalProperties: Type.Boolean({ default: false }),
+    /**
+     * Should the input schemes be generated
+     */
     inputModel: Type.Boolean({ default: false }),
+    /**
+     * Prevents the ID field from being generated in the input model
+     */
     ignoreIdOnInputModel: Type.Boolean({ default: true }),
+    /**
+     * Prevents the createdAt field from being generated in the input model
+     */
     ignoreCreatedAtOnInputModel: Type.Boolean({ default: true }),
+    /**
+     * Prevents the updatedAt field from being generated in the input model
+     */
     ignoreUpdatedAtOnInputModel: Type.Boolean({ default: true }),
+    /**
+     * How the nullable union should be named
+     */
     nullableName: Type.String({ default: "__nullable__" }),
+    /**
+     * Wethter to allow recursion in the generated schemes (enabling reduces code size)
+     */
     allowRecursion: Type.Boolean({ default: true }),
+    /**
+     * Additional fields to add to the generated schemes (must be valid strings in the context of usage)
+	 * @example 
+	 * ```prisma
+	 * generator prismabox {
+      provider   = "node ./dist/cli.js"
+	     inputModel = true
+	     output     = "./generated/schema"
+	     additionalFieldsPlain = ["additional: Type.Optional(Type.String())"]
+	   }
+	 ```
+     */
     additionalFieldsPlain: Type.Optional(Type.Array(Type.String())),
   },
   { additionalProperties: false }
