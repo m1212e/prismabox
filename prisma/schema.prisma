@@ -11,6 +11,7 @@ generator prismabox {
   provider   = "node ./dist/cli.js"
   inputModel = true
   output     = "./generated/schema"
+  additionalFieldsPlain = ["additional: Type.Optional(Type.String())"]
 }
 
 model Password {

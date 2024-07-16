@@ -1,110 +1,110 @@
 import type { DMMF } from "@prisma/generator-helper";
 
 export type Annotation =
-	| { type: "HIDDEN" }
-	| { type: "HIDDEN_INPUT" }
-	| { type: "OPTIONS"; value: string };
+  | { type: "HIDDEN" }
+  | { type: "HIDDEN_INPUT" }
+  | { type: "OPTIONS"; value: string };
 
 export function isHiddenVariant(
-	annotation: Annotation,
+  annotation: Annotation,
 ): annotation is { type: "HIDDEN"; value: number } {
-	return annotation.type === "HIDDEN";
+  return annotation.type === "HIDDEN";
 }
 
 export function isHiddenInputVariant(
-	annotation: Annotation,
+  annotation: Annotation,
 ): annotation is { type: "HIDDEN_INPUT"; value: number } {
-	return annotation.type === "HIDDEN_INPUT";
+  return annotation.type === "HIDDEN_INPUT";
 }
 
 export function isOptionsVariant(
-	annotation: Annotation,
+  annotation: Annotation,
 ): annotation is { type: "OPTIONS"; value: string } {
-	return annotation.type === "OPTIONS";
+  return annotation.type === "OPTIONS";
 }
 
 const annotationKeys: { type: Annotation["type"]; keys: string[] }[] = [
-	{
-		type: "HIDDEN_INPUT",
-		keys: [
-			// we need to use input.hide instead of hide.input because the latter is a substring of input.hidden
-			// and will falsely match
-			"@prismabox.input.hide",
-			"@prismabox.input.hidden",
-		],
-	},
-	{
-		type: "HIDDEN",
-		keys: ["@prismabox.hide", "@prismabox.hidden"],
-	},
-	{
-		type: "OPTIONS",
-		keys: ["@prismabox.options"],
-	},
+  {
+    type: "HIDDEN_INPUT",
+    keys: [
+      // we need to use input.hide instead of hide.input because the latter is a substring of input.hidden
+      // and will falsely match
+      "@prismabox.input.hide",
+      "@prismabox.input.hidden",
+    ],
+  },
+  {
+    type: "HIDDEN",
+    keys: ["@prismabox.hide", "@prismabox.hidden"],
+  },
+  {
+    type: "OPTIONS",
+    keys: ["@prismabox.options"],
+  },
 ];
 
 export function extractAnnotations(
-	input: DMMF.Model["fields"][number]["documentation"],
+  input: DMMF.Model["fields"][number]["documentation"],
 ): {
-	annotations: Annotation[];
-	description: string | undefined;
-	isHidden: boolean;
-	isHiddenInput: boolean;
+  annotations: Annotation[];
+  description: string | undefined;
+  isHidden: boolean;
+  isHiddenInput: boolean;
 } {
-	const annotations: Annotation[] = [];
-	let description = "";
+  const annotations: Annotation[] = [];
+  let description = "";
 
-	const raw = input ?? "";
+  const raw = input ?? "";
 
-	for (const line of raw
-		.split("\n")
-		.map((l) => l.trim())
-		.filter((l) => l.length > 0)) {
-		const annotationKey = annotationKeys.find((key) =>
-			key.keys.some((k) => line.startsWith(k)),
-		);
+  for (const line of raw
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)) {
+    const annotationKey = annotationKeys.find((key) =>
+      key.keys.some((k) => line.startsWith(k)),
+    );
 
-		if (annotationKey) {
-			if (annotationKey.type === "OPTIONS") {
-				if (!line.startsWith(`${annotationKey.keys[0]}{`)) {
-					throw new Error(
-						"Invalid syntax, expected opening { after prismabox.options",
-					);
-				}
-				if (!line.endsWith("}")) {
-					throw new Error(
-						"Invalid syntax, expected closing } for prismabox.options",
-					);
-				}
+    if (annotationKey) {
+      if (annotationKey.type === "OPTIONS") {
+        if (!line.startsWith(`${annotationKey.keys[0]}{`)) {
+          throw new Error(
+            "Invalid syntax, expected opening { after prismabox.options",
+          );
+        }
+        if (!line.endsWith("}")) {
+          throw new Error(
+            "Invalid syntax, expected closing } for prismabox.options",
+          );
+        }
 
-				annotations.push({
-					type: "OPTIONS",
-					value: line.substring(
-						annotationKey.keys[0].length + 1,
-						line.length - 1,
-					),
-				});
-			} else {
-				annotations.push({ type: annotationKey.type });
-			}
-		} else {
-			description += `${line}\n`;
-		}
-	}
+        annotations.push({
+          type: "OPTIONS",
+          value: line.substring(
+            annotationKey.keys[0].length + 1,
+            line.length - 1,
+          ),
+        });
+      } else {
+        annotations.push({ type: annotationKey.type });
+      }
+    } else {
+      description += `${line}\n`;
+    }
+  }
 
-	description = description.trim();
-	return {
-		annotations,
-		description: description.length > 0 ? description : undefined,
-		isHidden: isHidden(annotations),
-		isHiddenInput: isHiddenInput(annotations),
-	};
+  description = description.trim();
+  return {
+    annotations,
+    description: description.length > 0 ? description : undefined,
+    isHidden: isHidden(annotations),
+    isHiddenInput: isHiddenInput(annotations),
+  };
 }
 
 export function isHidden(annotations: Annotation[]): boolean {
-	return annotations.some((a) => a.type === "HIDDEN");
+  return annotations.some((a) => a.type === "HIDDEN");
 }
 
 export function isHiddenInput(annotations: Annotation[]): boolean {
-	return annotations.some((a) => a.type === "HIDDEN_INPUT");
+  return annotations.some((a) => a.type === "HIDDEN_INPUT");
 }
