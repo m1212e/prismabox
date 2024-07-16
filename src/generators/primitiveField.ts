@@ -43,7 +43,7 @@ export function stringifyPrimitiveType({
 
   if (["DateTime", "Date"].includes(fieldType)) {
     const config = getConfig();
-    let opts = JSON.parse(options);
+    const opts = JSON.parse(options);
 
     if (config.useJsonTypes) {
       if (fieldType === "DateTime") {
