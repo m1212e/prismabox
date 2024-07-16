@@ -44,9 +44,9 @@ export function stringifyRelations(data: DMMF.Model) {
         (e) => e.name === field.type,
       )?.stringRepresentation;
 
-			if (!stringifiedType) {
-				return undefined;
-			}
+      if (!stringifiedType) {
+        return undefined;
+      }
 
       if (field.isList) {
         stringifiedType = wrapWithArray(stringifiedType);
