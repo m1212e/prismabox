@@ -56,6 +56,12 @@ const configSchema = Type.Object(
 	 ```
 		 */
     additionalFieldsPlain: Type.Optional(Type.Array(Type.String())),
+    /**
+     * When enabled, this option ensures that only primitive types are generated as JSON types.
+     * This ensures compatibility with tooling that only supports the serilization to JSON primitive types.
+     *
+     * E.g. Date will be of Type String when enabled.
+     */
     useJsonTypes: Type.Boolean({ default: false }),
   },
   { additionalProperties: false },
