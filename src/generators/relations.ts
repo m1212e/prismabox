@@ -45,7 +45,7 @@ export function stringifyRelations(data: DMMF.Model) {
 			)?.stringRepresentation;
 
 			if (!stringifiedType) {
-				return '';
+				return undefined;
 			}
 
 			if (field.isList) {
