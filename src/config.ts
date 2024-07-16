@@ -44,18 +44,25 @@ const configSchema = Type.Object(
      */
     allowRecursion: Type.Boolean({ default: true }),
     /**
-     * Additional fields to add to the generated schemes (must be valid strings in the context of usage)
+		 * Additional fields to add to the generated schemes (must be valid strings in the context of usage)
 	 * @example 
 	 * ```prisma
 	 * generator prismabox {
-      provider   = "node ./dist/cli.js"
-	     inputModel = true
-	     output     = "./generated/schema"
-	     additionalFieldsPlain = ["additional: Type.Optional(Type.String())"]
-	   }
+			provider   = "node ./dist/cli.js"
+			 inputModel = true
+			 output     = "./generated/schema"
+			 additionalFieldsPlain = ["additional: Type.Optional(Type.String())"]
+		 }
 	 ```
-     */
+		 */
     additionalFieldsPlain: Type.Optional(Type.Array(Type.String())),
+    /**
+     * When enabled, this option ensures that only primitive types are generated as JSON types.
+     * This ensures compatibility with tooling that only supports the serilization to JSON primitive types.
+     *
+     * E.g. Date will be of Type String when enabled.
+     */
+    useJsonTypes: Type.Boolean({ default: false }),
   },
   { additionalProperties: false },
 );

@@ -42,6 +42,19 @@ export function stringifyPrimitiveType({
   }
 
   if (["DateTime", "Date"].includes(fieldType)) {
+    const config = getConfig();
+    const opts = JSON.parse(options);
+
+    if (config.useJsonTypes) {
+      if (fieldType === "DateTime") {
+        opts.format = "date-time";
+      } else {
+        opts.format = "date";
+      }
+
+      return `${config.typeboxImportVariableName}.String(${JSON.stringify(opts)})`;
+    }
+
     return `${getConfig().typeboxImportVariableName}.Date(${options})`;
   }
 
