@@ -1,16 +1,16 @@
 import type { DMMF } from "@prisma/generator-helper";
 import { extractAnnotations } from "../annotations/annotations";
-import { getConfig } from "../config";
 import { generateTypeboxOptions } from "../annotations/options";
+import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
+import { processedEnums } from "./enum";
 import {
+  type PrimitivePrismaFieldType,
   isPrimitivePrismaFieldType,
   stringifyPrimitiveType,
-  type PrimitivePrismaFieldType,
 } from "./primitiveField";
 import { wrapWithArray } from "./wrappers/array";
 import { wrapWithNullable } from "./wrappers/nullable";
-import { processedEnums } from "./enum";
 import { wrapWithOptional } from "./wrappers/optional";
 
 export const processedPlain: ProcessedModel[] = [];
@@ -80,7 +80,7 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type
+          (e) => e.name === field.type,
         )!.stringRepresentation;
       } else {
         return undefined;

@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { type Static, Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
 const configSchema = Type.Object(
@@ -57,7 +57,7 @@ const configSchema = Type.Object(
      */
     additionalFieldsPlain: Type.Optional(Type.Array(Type.String())),
   },
-  { additionalProperties: false }
+  { additionalProperties: false },
 );
 
 // biome-ignore lint/suspicious/noExplicitAny: we want to set the default value

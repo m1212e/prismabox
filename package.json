@@ -20,21 +20,23 @@
   "repository": {
     "url": "https://github.com/m1212e/prismabox.git"
   },
+  "scripts": {
+    "dev": "bun run build && bunx prisma generate",
+    "build": "bun run typecheck && bun build.ts",
+    "lint": "biome check --write .",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@prisma/generator-helper": "^5.10.2",
     "@sinclair/typebox": "^0.32.15",
     "prettier": "^3.2.5"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
     "@prisma/client": "5.10.2",
     "@types/bun": "latest",
     "esbuild": "^0.20.1",
     "prisma": "5.10.2",
     "typescript": "^5.4.2"
-  },
-  "scripts": {
-    "dev": "bun run build && bunx prisma generate",
-    "build": "bun run typecheck && bun build.ts",
-    "typecheck": "tsc --noEmit"
   }
 }
