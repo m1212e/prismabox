@@ -7,7 +7,6 @@ const PrimitiveFields = [
   "Decimal",
   "String",
   "DateTime",
-  "Date",
   "Json",
   "Boolean",
   "Bytes",
@@ -16,7 +15,7 @@ const PrimitiveFields = [
 export type PrimitivePrismaFieldType = (typeof PrimitiveFields)[number];
 
 export function isPrimitivePrismaFieldType(
-  str: string,
+  str: string
 ): str is PrimitivePrismaFieldType {
   // biome-ignore lint/suspicious/noExplicitAny: we want to check if the string is a valid primitive field
   return PrimitiveFields.includes(str as any);
@@ -41,18 +40,16 @@ export function stringifyPrimitiveType({
     return `${getConfig().typeboxImportVariableName}.String(${options})`;
   }
 
-  if (["DateTime", "Date"].includes(fieldType)) {
+  if (["DateTime"].includes(fieldType)) {
     const config = getConfig();
-    const opts = JSON.parse(options);
-
+    let opts = options;
     if (config.useJsonTypes) {
-      if (fieldType === "DateTime") {
-        opts.format = "date-time";
+      if (opts.includes("{") && opts.includes("}")) {
+        opts = opts.replace("{", "{ format: 'date-time', ");
       } else {
-        opts.format = "date";
+        opts = `{ format: 'date-time' }`;
       }
-
-      return `${config.typeboxImportVariableName}.String(${JSON.stringify(opts)})`;
+      return `${config.typeboxImportVariableName}.String(${opts})`;
     }
 
     return `${getConfig().typeboxImportVariableName}.Date(${options})`;
