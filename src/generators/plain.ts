@@ -103,6 +103,6 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
 
   return `${getConfig().typeboxImportVariableName}.Object({${[
     ...fields,
-    getConfig().additionalFieldsPlain ?? [],
+    !isInputModel ? getConfig().additionalFieldsPlain ?? [] : [],
   ].join(",")}},${generateTypeboxOptions(annotations)})\n`;
 }
