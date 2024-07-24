@@ -3,7 +3,7 @@ import { getConfig } from "../../config";
 
 export function wrapWithPartial(
   input: string,
-  exludeAdditionalPropertiesInOptions = false
+  exludeAdditionalPropertiesInOptions = false,
 ) {
   return `${
     getConfig().typeboxImportVariableName

@@ -62,7 +62,7 @@ export function stringifyRelations(data: DMMF.Model) {
 
   return `${getConfig().typeboxImportVariableName}.Object({${fields.join(
     ",",
-  )}},${generateTypeboxOptions({input: annotations})})\n`;
+  )}},${generateTypeboxOptions({ input: annotations })})\n`;
 }
 
 export const processedRelationsInputCreate: ProcessedModel[] = [];
@@ -124,8 +124,8 @@ export function stringifyRelationsInputCreate(
       let connectString = `${getConfig().typeboxImportVariableName}.Object({
 				id: ${
           getConfig().typeboxImportVariableName
-        }.${typeboxIdType}(${generateTypeboxOptions({input: annotations})}),
-			},${generateTypeboxOptions({input: annotations})})`;
+        }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })}),
+			},${generateTypeboxOptions({ input: annotations })})`;
 
       if (field.isList) {
         connectString = wrapWithArray(connectString);
@@ -147,7 +147,7 @@ export function stringifyRelationsInputCreate(
 
   return `${getConfig().typeboxImportVariableName}.Object({${fields.join(
     ",",
-  )}},${generateTypeboxOptions({input: annotations})})\n`;
+  )}},${generateTypeboxOptions({ input: annotations })})\n`;
 }
 
 export const processedRelationsInputUpdate: ProcessedModel[] = [];
@@ -215,25 +215,25 @@ export function stringifyRelationsInputUpdate(
 						connect: ${wrapWithArray(`${getConfig().typeboxImportVariableName}.Object({
 								id: ${
                   getConfig().typeboxImportVariableName
-                }.${typeboxIdType}(${generateTypeboxOptions({input: annotations})})
-							}, ${generateTypeboxOptions({input: annotations})})`)},
+                }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })})
+							}, ${generateTypeboxOptions({ input: annotations })})`)},
 						disconnect: ${wrapWithArray(`${
               getConfig().typeboxImportVariableName
             }.Object({
 								id: ${
                   getConfig().typeboxImportVariableName
-                }.${typeboxIdType}(${generateTypeboxOptions({input: annotations})})
-							}, ${generateTypeboxOptions({input: annotations})})`)}
-					}, ${generateTypeboxOptions({input: annotations})})`);
+                }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })})
+							}, ${generateTypeboxOptions({ input: annotations })})`)}
+					}, ${generateTypeboxOptions({ input: annotations })})`);
       } else {
         if (field.isRequired) {
           stringifiedType = `${getConfig().typeboxImportVariableName}.Object({
 						connect: ${getConfig().typeboxImportVariableName}.Object({
 							id: ${
                 getConfig().typeboxImportVariableName
-              }.${typeboxIdType}(${generateTypeboxOptions({input: annotations})})
-						}, ${generateTypeboxOptions({input: annotations})})
-					}, ${generateTypeboxOptions({input: annotations})})`;
+              }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })})
+						}, ${generateTypeboxOptions({ input: annotations })})
+					}, ${generateTypeboxOptions({ input: annotations })})`;
         } else {
           stringifiedType = wrapWithPartial(`${
             getConfig().typeboxImportVariableName
@@ -241,10 +241,10 @@ export function stringifyRelationsInputUpdate(
 						connect: ${getConfig().typeboxImportVariableName}.Object({
 							id: ${
                 getConfig().typeboxImportVariableName
-              }.${typeboxIdType}(${generateTypeboxOptions({input: annotations})})
-						}, ${generateTypeboxOptions({input: annotations})}),
+              }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })})
+						}, ${generateTypeboxOptions({ input: annotations })}),
 						disconnect: ${getConfig().typeboxImportVariableName}.Boolean()
-					}, ${generateTypeboxOptions({input: annotations})})`);
+					}, ${generateTypeboxOptions({ input: annotations })})`);
         }
       }
 
@@ -255,6 +255,6 @@ export function stringifyRelationsInputUpdate(
   return wrapWithPartial(
     `${getConfig().typeboxImportVariableName}.Object({${fields.join(
       ",",
-    )}},${generateTypeboxOptions({input: annotations})})`,
+    )}},${generateTypeboxOptions({ input: annotations })})`,
   );
 }
