@@ -238,7 +238,7 @@ export function stringifyWhereUnique(data: DMMF.Model) {
   }
 
   return makeIntersection([
-    wrapWithPartial(uniqueBaseObject),
+    wrapWithPartial(uniqueBaseObject, true),
     makeUnion(
       [...uniqueFields, ...uniqueCompositeFields].map(
         (f) => `${getConfig().typeboxImportVariableName}.Object({${f}})`,

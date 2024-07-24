@@ -13,6 +13,7 @@ generator prismabox {
   output     = "./generated/schema"
   additionalFieldsPlain = ["additional: Type.Optional(Type.String())"]
   useJsonTypes = true
+  allowRecursion = false
 }
 
 model Password {
