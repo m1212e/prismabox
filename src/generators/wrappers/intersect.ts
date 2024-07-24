@@ -3,9 +3,9 @@ import { getConfig } from "../../config";
 
 export function makeIntersection(
   inputModels: string[],
-  options = generateTypeboxOptions(),
+  options = generateTypeboxOptions({ exludeAdditionalProperties: true })
 ) {
   return `${getConfig().typeboxImportVariableName}.Intersect([${inputModels.join(
-    ",",
+    ","
   )}], ${options})\n`;
 }

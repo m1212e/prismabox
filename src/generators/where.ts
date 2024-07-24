@@ -42,12 +42,15 @@ export function stringifyWhere(data: DMMF.Model) {
       if (isPrimitivePrismaFieldType(field.type)) {
         stringifiedType = stringifyPrimitiveType({
           fieldType: field.type as PrimitivePrismaFieldType,
-          options: generateTypeboxOptions(annotations),
+          options: generateTypeboxOptions({
+            exludeAdditionalProperties: true,
+            input: annotations,
+          }),
         });
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type,
+          (e) => e.name === field.type
         )!.stringRepresentation;
       } else {
         return undefined;
@@ -67,23 +70,24 @@ export function stringifyWhere(data: DMMF.Model) {
         getConfig().typeboxImportVariableName
       }.Recursive(${selfReferenceName} =>${
         getConfig().typeboxImportVariableName
-      }.Object({${AND_OR_NOT()},${fields.join(",")}},${generateTypeboxOptions(
-        annotations,
-      )}), { $id: "${data.name}"})`,
+      }.Object({${AND_OR_NOT()},${fields.join(",")}},${generateTypeboxOptions({
+        exludeAdditionalProperties: true,
+        input: annotations,
+      })}), { $id: "${data.name}"})`
     );
   }
 
   return wrapWithPartial(
     `${getConfig().typeboxImportVariableName}.Object({${fields.join(
-      ",",
-    )}},${generateTypeboxOptions(annotations)})`,
+      ","
+    )}},${generateTypeboxOptions({ exludeAdditionalProperties: true, input: annotations })})`
   );
 }
 
 export const processedWhereUnique: ProcessedModel[] = [];
 
 export function processWhereUnique(
-  models: DMMF.Model[] | Readonly<DMMF.Model[]>,
+  models: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   for (const m of models) {
     const o = stringifyWhereUnique(m);
@@ -102,7 +106,7 @@ export function stringifyWhereUnique(data: DMMF.Model) {
     const compositeName = fields.join("_");
     const fieldObjects = fields.map(
       // biome-ignore lint/style/noNonNullAssertion: this must exist
-      (f) => data.fields.find((field) => field.name === f)!,
+      (f) => data.fields.find((field) => field.name === f)!
     );
 
     const stringifiedFieldObjects = fieldObjects.map((f) => {
@@ -113,12 +117,15 @@ export function stringifyWhereUnique(data: DMMF.Model) {
       if (isPrimitivePrismaFieldType(f.type)) {
         stringifiedType = stringifyPrimitiveType({
           fieldType: f.type as PrimitivePrismaFieldType,
-          options: generateTypeboxOptions(annotations),
+          options: generateTypeboxOptions({
+            exludeAdditionalProperties: true,
+            input: annotations,
+          }),
         });
       } else if (processedEnums.find((e) => e.name === f.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === f.type,
+          (e) => e.name === f.type
         )!.stringRepresentation;
       } else {
         throw new Error("Invalid type for unique composite generation");
@@ -130,29 +137,31 @@ export function stringifyWhereUnique(data: DMMF.Model) {
     const compositeObject = `${
       getConfig().typeboxImportVariableName
     }.Object({${stringifiedFieldObjects.join(
-      ",",
-    )}}, ${generateTypeboxOptions()})`;
+      ","
+    )}}, ${generateTypeboxOptions({ exludeAdditionalProperties: true })})`;
 
     return `${compositeName}: ${compositeObject}`;
   });
 
-  const nonUniqueFields = data.fields
+  const allFields = data.fields
     .map((field) => {
       const annotations = extractAnnotations(field.documentation);
       if (annotations.isHidden) return undefined;
-      if (field.isUnique || field.isId) return undefined;
 
       let stringifiedType = "";
 
       if (isPrimitivePrismaFieldType(field.type)) {
         stringifiedType = stringifyPrimitiveType({
           fieldType: field.type as PrimitivePrismaFieldType,
-          options: generateTypeboxOptions(annotations),
+          options: generateTypeboxOptions({
+            exludeAdditionalProperties: true,
+            input: annotations,
+          }),
         });
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type,
+          (e) => e.name === field.type
         )!.stringRepresentation;
       } else {
         return undefined;
@@ -177,12 +186,15 @@ export function stringifyWhereUnique(data: DMMF.Model) {
       if (isPrimitivePrismaFieldType(field.type)) {
         stringifiedType = stringifyPrimitiveType({
           fieldType: field.type as PrimitivePrismaFieldType,
-          options: generateTypeboxOptions(annotations),
+          options: generateTypeboxOptions({
+            exludeAdditionalProperties: true,
+            input: annotations,
+          }),
         });
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type,
+          (e) => e.name === field.type
         )!.stringRepresentation;
       } else {
         return undefined;
@@ -199,25 +211,28 @@ export function stringifyWhereUnique(data: DMMF.Model) {
   const uniqueBaseObject = `${getConfig().typeboxImportVariableName}.Object({${[
     ...uniqueFields,
     ...uniqueCompositeFields,
-  ].join(",")}},${generateTypeboxOptions(annotations)})`;
+  ].join(
+    ","
+  )}},${generateTypeboxOptions({ exludeAdditionalProperties: true, input: annotations })})`;
 
   if (getConfig().allowRecursion) {
     return `${
       getConfig().typeboxImportVariableName
     }.Recursive(${selfReferenceName} => ${makeIntersection([
-      wrapWithPartial(uniqueBaseObject),
+      wrapWithPartial(uniqueBaseObject, true),
       makeUnion(
         [...uniqueFields, ...uniqueCompositeFields].map(
-          (f) => `${getConfig().typeboxImportVariableName}.Object({${f}})`,
-        ),
+          (f) => `${getConfig().typeboxImportVariableName}.Object({${f}})`
+        )
       ),
       wrapWithPartial(
         `${getConfig().typeboxImportVariableName}.Object({${AND_OR_NOT()}})`,
+        true
       ),
       wrapWithPartial(
         `${
           getConfig().typeboxImportVariableName
-        }.Object({${nonUniqueFields.join(",")}})`,
+        }.Object({${allFields.join(",")}}, ${generateTypeboxOptions()})`
       ),
     ])}, { $id: "${data.name}"})`;
   }
@@ -226,13 +241,13 @@ export function stringifyWhereUnique(data: DMMF.Model) {
     wrapWithPartial(uniqueBaseObject),
     makeUnion(
       [...uniqueFields, ...uniqueCompositeFields].map(
-        (f) => `${getConfig().typeboxImportVariableName}.Object({${f}})`,
-      ),
+        (f) => `${getConfig().typeboxImportVariableName}.Object({${f}})`
+      )
     ),
     wrapWithPartial(
-      `${getConfig().typeboxImportVariableName}.Object({${nonUniqueFields.join(
-        ",",
-      )}})`,
+      `${getConfig().typeboxImportVariableName}.Object({${allFields.join(
+        ","
+      )}})`
     ),
   ]);
 }

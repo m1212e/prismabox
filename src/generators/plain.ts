@@ -75,7 +75,7 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
       if (isPrimitivePrismaFieldType(field.type)) {
         stringifiedType = stringifyPrimitiveType({
           fieldType: field.type as PrimitivePrismaFieldType,
-          options: generateTypeboxOptions(annotations),
+          options: generateTypeboxOptions({input: annotations}),
         });
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
@@ -104,5 +104,5 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
   return `${getConfig().typeboxImportVariableName}.Object({${[
     ...fields,
     !isInputModel ? getConfig().additionalFieldsPlain ?? [] : [],
-  ].join(",")}},${generateTypeboxOptions(annotations)})\n`;
+  ].join(",")}},${generateTypeboxOptions({input: annotations})})\n`;
 }

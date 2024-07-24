@@ -30,5 +30,5 @@ export function stringifyEnum(data: DMMF.DatamodelEnum) {
     (v) => `${getConfig().typeboxImportVariableName}.Literal('${v.name}')`,
   );
 
-  return makeUnion(variantsString, generateTypeboxOptions(annotations));
+  return makeUnion(variantsString, generateTypeboxOptions({input: annotations}));
 }

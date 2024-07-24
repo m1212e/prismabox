@@ -1,9 +1,13 @@
 import { getConfig } from "../config";
 import { type extractAnnotations, isOptionsVariant } from "./annotations";
 
-export function generateTypeboxOptions(
-  input?: ReturnType<typeof extractAnnotations>,
-): string {
+export function generateTypeboxOptions({
+  input,
+  exludeAdditionalProperties = false,
+}: {
+  input?: ReturnType<typeof extractAnnotations>;
+  exludeAdditionalProperties?: boolean;
+} = {}): string {
   const stringifiedOptions: string[] = [];
   for (const annotation of input?.annotations ?? []) {
     if (isOptionsVariant(annotation)) {
@@ -11,9 +15,11 @@ export function generateTypeboxOptions(
     }
   }
 
-  stringifiedOptions.push(
-    `additionalProperties: ${getConfig().additionalProperties}`,
-  );
+  if (!exludeAdditionalProperties) {
+    stringifiedOptions.push(
+      `additionalProperties: ${getConfig().additionalProperties}`
+    );
+  }
 
   if (input?.description) {
     stringifiedOptions.push(`description: \`${input.description}\``);

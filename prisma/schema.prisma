@@ -316,3 +316,23 @@ model Message {
   metaCommittee  String?
   metaAgendaItem String?
 }
+
+model User2 {
+  id             String          @id @default(uuid())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  /// @prismabox.input.hide
+  authProviderId String          @unique
+  /// @prismabox.input.hide
+  domainId       String
+  firstName      String
+  lastName       String
+  username       String
+  email          String
+  sponsor        String
+  company        String
+  /// custom user attributes from the auth provider are stored here. In most cases you can expect a Record<string, string> here.
+  attributes     Json            @default("{}")
+
+  @@unique([email, domainId])
+}

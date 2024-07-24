@@ -3,9 +3,9 @@ import { getConfig } from "../../config";
 
 export function makeUnion(
   inputModels: string[],
-  options = generateTypeboxOptions(),
+  options = generateTypeboxOptions({ exludeAdditionalProperties: true })
 ) {
   return `${getConfig().typeboxImportVariableName}.Union([${inputModels.join(
-    ",",
+    ","
   )}], ${options})\n`;
 }
