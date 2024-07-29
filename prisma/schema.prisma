@@ -97,7 +97,9 @@ model Conference {
   /// @prismabox.hide
   name        String             @unique
   committees  Committee[]
+  /// @prismabox.options{format: 'date'}
   start       DateTime?
+  /// @prismabox.options{format: 'date'}
   end         DateTime?
   delegations Delegation[]
   members     ConferenceMember[]
