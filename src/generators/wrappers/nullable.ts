@@ -12,7 +12,7 @@ export const ${getConfig().nullableName} = <T extends TSchema>(schema: T) => ${
 export function nullableImport() {
   return `import { ${getConfig().nullableName} } from "./${
     getConfig().nullableName
-  }"\n`;
+  }${getConfig().explicitFileExtensions ? ".js" : ""}"\n`;
 }
 
 export function wrapWithNullable(input: string) {
