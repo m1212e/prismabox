@@ -63,11 +63,6 @@ const configSchema = Type.Object(
      * E.g. Date will be of Type String when enabled.
      */
     useJsonTypes: Type.Boolean({ default: false }),
-    /**
-     * When enabled, use schema "Type.Unsafe<Date>({ type: 'string', format: 'date-time' })" for Date fields.
-     * See https://github.com/m1212e/prismabox/issues/14 for details
-     */
-    fastifyDateCompat: Type.Boolean({ default: false }),
   },
   { additionalProperties: false },
 );

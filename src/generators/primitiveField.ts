@@ -45,15 +45,11 @@ export function stringifyPrimitiveType({
     let opts = options;
     if (config.useJsonTypes) {
       if (opts.includes("{") && opts.includes("}")) {
-        opts = opts.replace("{", "{ format: 'date-time', ");
+        opts = opts.replace("{", "{ type: 'string', format: 'date-time', ");
       } else {
-        opts = `{ format: 'date-time' }`;
+        opts = `{ type: 'string', format: 'date-time' }`;
       }
-      return `${config.typeboxImportVariableName}.String(${opts})`;
-    }
-
-    if (config.fastifyDateCompat) {
-      return `${config.typeboxImportVariableName}.Unsafe<Date>({ type: 'string', format: 'date-time' })`;
+      return `${config.typeboxImportVariableName}.Unsafe<Date>(${opts})`;
     }
 
     return `${getConfig().typeboxImportVariableName}.Date(${options})`;
