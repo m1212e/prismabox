@@ -52,6 +52,10 @@ export function stringifyPrimitiveType({
       return `${config.typeboxImportVariableName}.String(${opts})`;
     }
 
+    if (config.fastifyDateCompat) {
+      return `${config.typeboxImportVariableName}.Unsafe<Date>({ type: 'string', format: 'date-time' })`;
+    }
+
     return `${getConfig().typeboxImportVariableName}.Date(${options})`;
   }
 
