@@ -40,7 +40,7 @@ const configSchema = Type.Object(
      */
     nullableName: Type.String({ default: "__nullable__" }),
     /**
-     * Wether to allow recursion in the generated schemes (enabling reduces code size)
+     * Whether to allow recursion in the generated schemes (enabling reduces code size)
      */
     allowRecursion: Type.Boolean({ default: true }),
     /**
@@ -64,9 +64,9 @@ const configSchema = Type.Object(
      */
     useJsonTypes: Type.Boolean({ default: false }),
     /**
-     * Wether to add ".js" extensions to src file imports to support nodenext module resolution
+     * What file extension, if any, to add to src file imports. Set to ".js" to support nodenext module resolution
      */
-    explicitFileExtensions: Type.Boolean({ default: false }),
+    importFileExtension: Type.String({ default: '' }),
   },
   { additionalProperties: false },
 );
