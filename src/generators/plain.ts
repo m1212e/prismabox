@@ -25,15 +25,31 @@ export function processPlain(models: DMMF.Model[] | Readonly<DMMF.Model[]>) {
   Object.freeze(processedPlain);
 }
 
-export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
+export function stringifyPlain(
+  data: DMMF.Model,
+  isInputModelCreate = false,
+  isInputModelUpdate = false
+) {
   const annotations = extractAnnotations(data.documentation);
-  if (annotations.isHidden || (isInputModel && annotations.isHiddenInput))
+
+  if (
+    annotations.isHidden ||
+    ((isInputModelCreate || isInputModelUpdate) && annotations.isHiddenInput) ||
+    (isInputModelCreate && annotations.isHiddenInputCreate) ||
+    (isInputModelUpdate && annotations.isHiddenInputUpdate)
+  )
     return undefined;
 
   const fields = data.fields
     .map((field) => {
       const annotations = extractAnnotations(field.documentation);
-      if (annotations.isHidden || (isInputModel && annotations.isHiddenInput))
+      if (
+        annotations.isHidden ||
+        ((isInputModelCreate || isInputModelUpdate) &&
+          annotations.isHiddenInput) ||
+        (isInputModelCreate && annotations.isHiddenInputCreate) ||
+        (isInputModelUpdate && annotations.isHiddenInputUpdate)
+      )
         return undefined;
 
       // ===============================
@@ -41,24 +57,28 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
       // ===============================
       // if we generate an input model we want to omit certain fields
 
-      if (getConfig().ignoreIdOnInputModel && isInputModel && field.isId)
+      if (
+        getConfig().ignoreIdOnInputModel &&
+        (isInputModelCreate || isInputModelUpdate) &&
+        field.isId
+      )
         return undefined;
       if (
         getConfig().ignoreCreatedAtOnInputModel &&
-        isInputModel &&
+        (isInputModelCreate || isInputModelUpdate) &&
         field.name === "createdAt" &&
         field.hasDefaultValue
       )
         return undefined;
       if (
         getConfig().ignoreUpdatedAtOnInputModel &&
-        isInputModel &&
+        (isInputModelCreate || isInputModelUpdate) &&
         field.isUpdatedAt
       )
         return undefined;
 
       if (
-        isInputModel &&
+        (isInputModelCreate || isInputModelUpdate) &&
         (field.name.toLowerCase().endsWith("id") ||
           field.name.toLowerCase().endsWith("foreign") ||
           field.name.toLowerCase().endsWith("foreignkey"))
@@ -80,7 +100,7 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type,
+          (e) => e.name === field.type
         )!.stringRepresentation;
       } else {
         return undefined;
@@ -92,7 +112,7 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
 
       if (!field.isRequired) {
         stringifiedType = wrapWithNullable(stringifiedType);
-        if (isInputModel) {
+        if (isInputModelCreate || isInputModelUpdate) {
           stringifiedType = wrapWithOptional(stringifiedType);
         }
       }
@@ -103,6 +123,8 @@ export function stringifyPlain(data: DMMF.Model, isInputModel = false) {
 
   return `${getConfig().typeboxImportVariableName}.Object({${[
     ...fields,
-    !isInputModel ? getConfig().additionalFieldsPlain ?? [] : [],
+    !(isInputModelCreate || isInputModelUpdate)
+      ? getConfig().additionalFieldsPlain ?? []
+      : [],
   ].join(",")}},${generateTypeboxOptions({ input: annotations })})\n`;
 }

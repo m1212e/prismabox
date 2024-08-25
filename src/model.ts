@@ -1,7 +1,8 @@
 import { getConfig } from "./config";
 import { processedEnums } from "./generators/enum";
 import { processedPlain } from "./generators/plain";
-import { processedPlainInput } from "./generators/plainInput";
+import { processedPlainInputCreate } from "./generators/plainInputCreate";
+import { processedPlainInputUpdate } from "./generators/plainInputUpdate";
 import {
   processedRelations,
   processedRelationsInputCreate,
@@ -17,7 +18,7 @@ export type ProcessedModel = {
 };
 
 function convertModelToStandalone(
-  input: Pick<ProcessedModel, "name" | "stringRepresentation">,
+  input: Pick<ProcessedModel, "name" | "stringRepresentation">
 ) {
   return `export const ${input.name} = ${input.stringRepresentation}\n`;
 }
@@ -52,7 +53,8 @@ export function mapAllModelsForWrite() {
   process(processedEnums, "");
   process(processedPlain, "Plain");
   process(processedRelations, "Relations");
-  process(processedPlainInput, "PlainInput");
+  process(processedPlainInputCreate, "PlainInputCreate");
+  process(processedPlainInputUpdate, "PlainInputUpdate");
   process(processedRelationsInputCreate, "RelationsInputCreate");
   process(processedRelationsInputUpdate, "RelationsInputUpdate");
   process(processedWhere, "Where");
@@ -77,7 +79,7 @@ export function mapAllModelsForWrite() {
       `${value}\n${convertModelToStandalone({
         name: key,
         stringRepresentation: composite,
-      })}`,
+      })}`
     );
   }
 
@@ -86,7 +88,7 @@ export function mapAllModelsForWrite() {
 
     if (create) {
       const composite = makeComposite([
-        `${key}PlainInput`,
+        `${key}PlainInputCreate`,
         `${key}RelationsInputCreate`,
       ]);
       modelsPerName.set(
@@ -94,7 +96,7 @@ export function mapAllModelsForWrite() {
         `${value}\n${convertModelToStandalone({
           name: `${key}InputCreate`,
           stringRepresentation: composite,
-        })}`,
+        })}`
       );
     }
   }
@@ -104,7 +106,7 @@ export function mapAllModelsForWrite() {
 
     if (update) {
       const composite = makeComposite([
-        `${key}PlainInput`,
+        `${key}PlainInputUpdate`,
         `${key}RelationsInputUpdate`,
       ]);
       modelsPerName.set(
@@ -112,7 +114,7 @@ export function mapAllModelsForWrite() {
         `${value}\n${convertModelToStandalone({
           name: `${key}InputUpdate`,
           stringRepresentation: composite,
-        })}`,
+        })}`
       );
     }
   }
@@ -120,7 +122,7 @@ export function mapAllModelsForWrite() {
   for (const [key, value] of modelsPerName) {
     modelsPerName.set(
       key,
-      `${typepoxImportStatement()}\n${nullableImport()}\n${value}`,
+      `${typepoxImportStatement()}\n${nullableImport()}\n${value}`
     );
   }
 

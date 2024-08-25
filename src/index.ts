@@ -3,7 +3,6 @@ import { generatorHandler } from "@prisma/generator-helper";
 import { getConfig, setConfig } from "./config";
 import { processEnums } from "./generators/enum";
 import { processPlain } from "./generators/plain";
-import { processPlainInput } from "./generators/plainInput";
 import {
   processRelations,
   processRelationsInputCreate,
@@ -11,6 +10,8 @@ import {
 } from "./generators/relations";
 import { processWhere, processWhereUnique } from "./generators/where";
 import { write } from "./writer";
+import { processPlainInputCreate } from "./generators/plainInputCreate";
+import { processPlainInputUpdate } from "./generators/plainInputUpdate";
 
 generatorHandler({
   onManifest() {
@@ -39,7 +40,8 @@ generatorHandler({
     processWhere(options.dmmf.datamodel.models);
     processWhereUnique(options.dmmf.datamodel.models);
     if (getConfig().inputModel) {
-      processPlainInput(options.dmmf.datamodel.models);
+      processPlainInputCreate(options.dmmf.datamodel.models);
+      processPlainInputUpdate(options.dmmf.datamodel.models);
       processRelationsInputCreate(options.dmmf.datamodel.models);
       processRelationsInputUpdate(options.dmmf.datamodel.models);
     }
