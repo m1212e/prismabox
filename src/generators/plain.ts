@@ -112,9 +112,13 @@ export function stringifyPlain(
 
       if (!field.isRequired) {
         stringifiedType = wrapWithNullable(stringifiedType);
-        if (isInputModelCreate || isInputModelUpdate) {
+        if (isInputModelCreate) {
           stringifiedType = wrapWithOptional(stringifiedType);
         }
+      }
+
+      if (isInputModelUpdate) {
+        stringifiedType = wrapWithOptional(stringifiedType);
       }
 
       return `${field.name}: ${stringifiedType}`;
