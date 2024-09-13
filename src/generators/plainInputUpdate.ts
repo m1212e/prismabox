@@ -8,7 +8,7 @@ export function processPlainInputUpdate(
   models: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   for (const m of models) {
-    const o = stringifyPlain(m, false, true);
+    const o = stringifyPlain(m, { isInputModelUpdate: true });
     if (o) {
       processedPlainInputUpdate.push({ name: m.name, stringRepresentation: o });
     }

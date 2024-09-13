@@ -24,6 +24,18 @@ const configSchema = Type.Object(
      */
     inputModel: Type.Boolean({ default: false }),
     /**
+     * Should the input select be generated
+     */
+    inputSelect: Type.Boolean({ default: false }),
+    /**
+     * Should the input include be generated
+     */
+    inputInclude: Type.Boolean({ default: false }),
+    /**
+     * Should the input orderBy be generated
+     */
+    inputOrderBy: Type.Boolean({ default: false }),
+    /**
      * Prevents the ID field from being generated in the input model
      */
     ignoreIdOnInputModel: Type.Boolean({ default: true }),
@@ -68,7 +80,7 @@ const configSchema = Type.Object(
      */
     importFileExtension: Type.String({ default: "" }),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 // biome-ignore lint/suspicious/noExplicitAny: we want to set the default value

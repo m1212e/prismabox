@@ -3,7 +3,7 @@ import { extractAnnotations } from "../annotations/annotations";
 import { generateTypeboxOptions } from "../annotations/options";
 import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
-import { processedEnums } from "./enum";
+import { makeEnum, processedEnums, stringifyEnum } from "./enum";
 import {
   type PrimitivePrismaFieldType,
   isPrimitivePrismaFieldType,
@@ -25,18 +25,28 @@ export function processPlain(models: DMMF.Model[] | Readonly<DMMF.Model[]>) {
   Object.freeze(processedPlain);
 }
 
-export function stringifyPlain(
-  data: DMMF.Model,
-  isInputModelCreate = false,
-  isInputModelUpdate = false
-) {
+type StringifyPlainOption = {
+  isInputModelCreate?: boolean;
+  isInputModelUpdate?: boolean;
+  isInputSelect?: boolean;
+  isInputOrderBy?: boolean;
+};
+
+export function stringifyPlain(data: DMMF.Model, opt?: StringifyPlainOption) {
   const annotations = extractAnnotations(data.documentation);
+
+  const stringifyBoolean = stringifyPrimitiveType({
+    fieldType: "Boolean",
+    options: generateTypeboxOptions({ input: annotations }),
+  });
+  const stringifyOrderBy = makeEnum(["asc", "desc"]);
 
   if (
     annotations.isHidden ||
-    ((isInputModelCreate || isInputModelUpdate) && annotations.isHiddenInput) ||
-    (isInputModelCreate && annotations.isHiddenInputCreate) ||
-    (isInputModelUpdate && annotations.isHiddenInputUpdate)
+    ((opt?.isInputModelCreate || opt?.isInputModelUpdate) &&
+      annotations.isHiddenInput) ||
+    (opt?.isInputModelCreate && annotations.isHiddenInputCreate) ||
+    (opt?.isInputModelUpdate && annotations.isHiddenInputUpdate)
   )
     return undefined;
 
@@ -45,10 +55,10 @@ export function stringifyPlain(
       const annotations = extractAnnotations(field.documentation);
       if (
         annotations.isHidden ||
-        ((isInputModelCreate || isInputModelUpdate) &&
+        ((opt?.isInputModelCreate || opt?.isInputModelUpdate) &&
           annotations.isHiddenInput) ||
-        (isInputModelCreate && annotations.isHiddenInputCreate) ||
-        (isInputModelUpdate && annotations.isHiddenInputUpdate)
+        (opt?.isInputModelCreate && annotations.isHiddenInputCreate) ||
+        (opt?.isInputModelUpdate && annotations.isHiddenInputUpdate)
       )
         return undefined;
 
@@ -59,26 +69,26 @@ export function stringifyPlain(
 
       if (
         getConfig().ignoreIdOnInputModel &&
-        (isInputModelCreate || isInputModelUpdate) &&
+        (opt?.isInputModelCreate || opt?.isInputModelUpdate) &&
         field.isId
       )
         return undefined;
       if (
         getConfig().ignoreCreatedAtOnInputModel &&
-        (isInputModelCreate || isInputModelUpdate) &&
+        (opt?.isInputModelCreate || opt?.isInputModelUpdate) &&
         field.name === "createdAt" &&
         field.hasDefaultValue
       )
         return undefined;
       if (
         getConfig().ignoreUpdatedAtOnInputModel &&
-        (isInputModelCreate || isInputModelUpdate) &&
+        (opt?.isInputModelCreate || opt?.isInputModelUpdate) &&
         field.isUpdatedAt
       )
         return undefined;
 
       if (
-        (isInputModelCreate || isInputModelUpdate) &&
+        (opt?.isInputModelCreate || opt?.isInputModelUpdate) &&
         (field.name.toLowerCase().endsWith("id") ||
           field.name.toLowerCase().endsWith("foreign") ||
           field.name.toLowerCase().endsWith("foreignkey"))
@@ -92,33 +102,43 @@ export function stringifyPlain(
 
       let stringifiedType = "";
 
-      if (isPrimitivePrismaFieldType(field.type)) {
-        stringifiedType = stringifyPrimitiveType({
-          fieldType: field.type as PrimitivePrismaFieldType,
-          options: generateTypeboxOptions({ input: annotations }),
-        });
-      } else if (processedEnums.find((e) => e.name === field.type)) {
-        // biome-ignore lint/style/noNonNullAssertion: we checked this manually
-        stringifiedType = processedEnums.find(
-          (e) => e.name === field.type
-        )!.stringRepresentation;
+      if (opt?.isInputSelect) {
+        if (isPrimitivePrismaFieldType(field.type)) {
+          stringifiedType = wrapWithOptional(stringifyBoolean);
+        } else {
+          return undefined;
+        }
+      } else if (opt?.isInputOrderBy) {
+        stringifiedType = wrapWithOptional(stringifyOrderBy);
       } else {
-        return undefined;
-      }
+        if (isPrimitivePrismaFieldType(field.type)) {
+          stringifiedType = stringifyPrimitiveType({
+            fieldType: field.type as PrimitivePrismaFieldType,
+            options: generateTypeboxOptions({ input: annotations }),
+          });
+        } else if (processedEnums.find((e) => e.name === field.type)) {
+          // biome-ignore lint/style/noNonNullAssertion: we checked this manually
+          stringifiedType = processedEnums.find(
+            (e) => e.name === field.type
+          )!.stringRepresentation;
+        } else {
+          return undefined;
+        }
 
-      if (field.isList) {
-        stringifiedType = wrapWithArray(stringifiedType);
-      }
+        if (field.isList) {
+          stringifiedType = wrapWithArray(stringifiedType);
+        }
 
-      if (!field.isRequired) {
-        stringifiedType = wrapWithNullable(stringifiedType);
-        if (isInputModelCreate) {
+        if (!field.isRequired) {
+          stringifiedType = wrapWithNullable(stringifiedType);
+          if (opt?.isInputModelCreate) {
+            stringifiedType = wrapWithOptional(stringifiedType);
+          }
+        }
+
+        if (opt?.isInputModelUpdate) {
           stringifiedType = wrapWithOptional(stringifiedType);
         }
-      }
-
-      if (isInputModelUpdate) {
-        stringifiedType = wrapWithOptional(stringifiedType);
       }
 
       return `${field.name}: ${stringifiedType}`;
@@ -127,8 +147,11 @@ export function stringifyPlain(
 
   return `${getConfig().typeboxImportVariableName}.Object({${[
     ...fields,
-    !(isInputModelCreate || isInputModelUpdate)
-      ? getConfig().additionalFieldsPlain ?? []
-      : [],
+    opt?.isInputSelect
+      ? [`_count: ${wrapWithOptional(stringifyBoolean)}`]
+      : !opt?.isInputOrderBy &&
+          !(opt?.isInputModelCreate || opt?.isInputModelUpdate)
+        ? (getConfig().additionalFieldsPlain ?? [])
+        : [],
   ].join(",")}},${generateTypeboxOptions({ input: annotations })})\n`;
 }

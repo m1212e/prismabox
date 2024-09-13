@@ -5,10 +5,12 @@ import { stringifyPlain } from "./plain";
 export const processedPlainInputCreate: ProcessedModel[] = [];
 
 export function processPlainInputCreate(
-  models: DMMF.Model[] | Readonly<DMMF.Model[]>,
+  models: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   for (const m of models) {
-    const o = stringifyPlain(m, true, false);
+    const o = stringifyPlain(m, {
+      isInputModelCreate: true,
+    });
     if (o) {
       processedPlainInputCreate.push({ name: m.name, stringRepresentation: o });
     }

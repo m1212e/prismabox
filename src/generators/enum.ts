@@ -8,7 +8,7 @@ import { makeUnion } from "./wrappers/union";
 export const processedEnums: ProcessedModel[] = [];
 
 export function processEnums(
-  enums: DMMF.DatamodelEnum[] | Readonly<DMMF.DatamodelEnum[]>,
+  enums: DMMF.DatamodelEnum[] | Readonly<DMMF.DatamodelEnum[]>
 ) {
   for (const e of enums) {
     const stringRepresentation = stringifyEnum(e);
@@ -22,16 +22,24 @@ export function processEnums(
   Object.freeze(processedEnums);
 }
 
+export function makeEnum(values: string[]) {
+  const variantsString = values.map(
+    (v) => `${getConfig().typeboxImportVariableName}.Literal('${v}')`
+  );
+
+  return makeUnion(variantsString);
+}
+
 export function stringifyEnum(data: DMMF.DatamodelEnum) {
   const annotations = extractAnnotations(data.documentation);
   if (annotations.isHidden) return undefined;
 
   const variantsString = data.values.map(
-    (v) => `${getConfig().typeboxImportVariableName}.Literal('${v.name}')`,
+    (v) => `${getConfig().typeboxImportVariableName}.Literal('${v.name}')`
   );
 
   return makeUnion(
     variantsString,
-    generateTypeboxOptions({ input: annotations }),
+    generateTypeboxOptions({ input: annotations })
   );
 }
