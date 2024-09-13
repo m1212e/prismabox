@@ -8,6 +8,7 @@ import {
   processedRelationsInputCreate,
   processedRelationsInputUpdate,
 } from "./generators/relations";
+import { processedSelect } from "./generators/select";
 import { processedWhere, processedWhereUnique } from "./generators/where";
 import { makeComposite } from "./generators/wrappers/composite";
 import { nullableImport, nullableType } from "./generators/wrappers/nullable";
@@ -59,6 +60,7 @@ export function mapAllModelsForWrite() {
   process(processedRelationsInputUpdate, "RelationsInputUpdate");
   process(processedWhere, "Where");
   process(processedWhereUnique, "WhereUnique");
+  process(processedSelect, "Select");
 
   for (const [key, value] of modelsPerName) {
     const plain = processedPlain.find((e) => e.name === key);

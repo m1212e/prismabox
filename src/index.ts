@@ -12,6 +12,7 @@ import { processWhere, processWhereUnique } from "./generators/where";
 import { write } from "./writer";
 import { processPlainInputCreate } from "./generators/plainInputCreate";
 import { processPlainInputUpdate } from "./generators/plainInputUpdate";
+import { processSelect } from "./generators/select";
 
 generatorHandler({
   onManifest() {
@@ -45,6 +46,7 @@ generatorHandler({
       processRelationsInputCreate(options.dmmf.datamodel.models);
       processRelationsInputUpdate(options.dmmf.datamodel.models);
     }
+    processSelect(options.dmmf.datamodel.models);
 
     await write();
   },
