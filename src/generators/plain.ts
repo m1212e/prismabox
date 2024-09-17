@@ -129,6 +129,8 @@ export function stringifyPlain(data: DMMF.Model, opt?: StringifyPlainOption) {
           stringifiedType = wrapWithArray(stringifiedType);
         }
 
+        let madeOptional = false;
+
         if (!field.isRequired) {
           stringifiedType = wrapWithNullable(stringifiedType);
           if (opt?.isInputModelCreate) {
@@ -138,6 +140,16 @@ export function stringifyPlain(data: DMMF.Model, opt?: StringifyPlainOption) {
 
         if (opt?.isInputModelUpdate) {
           stringifiedType = wrapWithOptional(stringifiedType);
+          madeOptional = true;
+        }
+
+        if (
+          !madeOptional &&
+          field.hasDefaultValue &&
+          (opt?.isInputModelCreate || opt?.isInputModelUpdate)
+        ) {
+          stringifiedType = wrapWithOptional(stringifiedType);
+          madeOptional = true;
         }
       }
 
@@ -151,7 +163,7 @@ export function stringifyPlain(data: DMMF.Model, opt?: StringifyPlainOption) {
       ? [`_count: ${wrapWithOptional(stringifyBoolean)}`]
       : !opt?.isInputOrderBy &&
           !(opt?.isInputModelCreate || opt?.isInputModelUpdate)
-        ? (getConfig().additionalFieldsPlain ?? [])
+        ? getConfig().additionalFieldsPlain ?? []
         : [],
   ].join(",")}},${generateTypeboxOptions({ input: annotations })})\n`;
 }
