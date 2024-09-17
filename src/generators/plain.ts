@@ -110,15 +110,23 @@ export function stringifyPlain(
         stringifiedType = wrapWithArray(stringifiedType);
       }
 
+      let madeOptional = false;
+
       if (!field.isRequired) {
         stringifiedType = wrapWithNullable(stringifiedType);
         if (isInputModelCreate) {
           stringifiedType = wrapWithOptional(stringifiedType);
+          madeOptional = true;
         }
       }
 
-      if (isInputModelUpdate) {
+      if (
+        !madeOptional &&
+        field.hasDefaultValue &&
+        (isInputModelCreate || isInputModelUpdate)
+      ) {
         stringifiedType = wrapWithOptional(stringifiedType);
+        madeOptional = true;
       }
 
       return `${field.name}: ${stringifiedType}`;
