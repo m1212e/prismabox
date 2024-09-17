@@ -8,13 +8,13 @@ import { processWhere, processWhereUnique } from "./generators/where";
 import { write } from "./writer";
 import { processPlainInputCreate } from "./generators/plainInputCreate";
 import { processPlainInputUpdate } from "./generators/plainInputUpdate";
-import { processPlainInputSelect } from "./generators/plainInputSelect";
+import { processPlainSelect } from "./generators/plainInputSelect";
 import { processRelationsInputCreate } from "./generators/relationsInputCreate";
 import { processRelationsInputUpdate } from "./generators/relationsInputUpdate";
-import { processRelationsInputSelect } from "./generators/relationsInputSelect";
-import { processRelationsInputInclude } from "./generators/relationsInputInclude";
-import { processPlainInputOrderBy } from "./generators/plainInputOrderBy";
-import { processRelationsInputOrderBy } from "./generators/relationsInputOrderBy";
+import { processRelationsSelect } from "./generators/relationsInputSelect";
+import { processRelationsInclude as processRelationInclude } from "./generators/relationsInputInclude";
+import { processPlainOrderBy } from "./generators/plainInputOrderBy";
+import { processRelationsOrderBy } from "./generators/relationsInputOrderBy";
 
 generatorHandler({
   onManifest() {
@@ -48,16 +48,16 @@ generatorHandler({
       processRelationsInputCreate(options.dmmf.datamodel.models);
       processRelationsInputUpdate(options.dmmf.datamodel.models);
     }
-    if (getConfig().inputSelect) {
-      processPlainInputSelect(options.dmmf.datamodel.models);
-      processRelationsInputSelect(options.dmmf.datamodel.models);
+    if (getConfig().selectModel) {
+      processPlainSelect(options.dmmf.datamodel.models);
+      processRelationsSelect(options.dmmf.datamodel.models);
     }
-    if (getConfig().inputInclude) {
-      processRelationsInputInclude(options.dmmf.datamodel.models);
+    if (getConfig().includeModel) {
+      processRelationInclude(options.dmmf.datamodel.models);
     }
-    if (getConfig().inputOrderBy) {
-      processPlainInputOrderBy(options.dmmf.datamodel.models);
-      processRelationsInputOrderBy(options.dmmf.datamodel.models);
+    if (getConfig().orderByModel) {
+      processPlainOrderBy(options.dmmf.datamodel.models);
+      processRelationsOrderBy(options.dmmf.datamodel.models);
     }
 
     await write();

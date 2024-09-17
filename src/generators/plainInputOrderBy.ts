@@ -1,20 +1,23 @@
 import type { DMMF } from "@prisma/generator-helper";
 import type { ProcessedModel } from "../model";
 import { stringifyPlain } from "./plain";
+import { makeEnum } from "./enum";
 
-export const processedPlainInputOrderBy: ProcessedModel[] = [];
+const stringifiedOrderDirectionEnum = makeEnum(["asc", "desc"]);
 
-export function processPlainInputOrderBy(
+export const processedPlainOrderBy: ProcessedModel[] = [];
+
+export function processPlainOrderBy(
   models: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   for (const m of models) {
     const o = stringifyPlain(m, { isInputOrderBy: true });
     if (o) {
-      processedPlainInputOrderBy.push({
+      processedPlainOrderBy.push({
         name: m.name,
         stringRepresentation: o,
       });
     }
   }
-  Object.freeze(processedPlainInputOrderBy);
+  Object.freeze(processedPlainOrderBy);
 }

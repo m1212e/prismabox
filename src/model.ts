@@ -2,14 +2,14 @@ import { getConfig } from "./config";
 import { processedEnums } from "./generators/enum";
 import { processedPlain } from "./generators/plain";
 import { processedPlainInputCreate } from "./generators/plainInputCreate";
-import { processedPlainInputOrderBy } from "./generators/plainInputOrderBy";
-import { processedPlainInputSelect } from "./generators/plainInputSelect";
+import { processedPlainOrderBy } from "./generators/plainInputOrderBy";
+import { processedPlainSelect } from "./generators/plainInputSelect";
 import { processedPlainInputUpdate } from "./generators/plainInputUpdate";
 import { processedRelations } from "./generators/relations";
 import { processedRelationsInputCreate } from "./generators/relationsInputCreate";
-import { processedRelationsInputInclude } from "./generators/relationsInputInclude";
-import { processedRelationsInputOrderBy } from "./generators/relationsInputOrderBy";
-import { processedRelationsInputSelect } from "./generators/relationsInputSelect";
+import { processedRelationsInclude } from "./generators/relationsInputInclude";
+import { processedRelationsOrderBy } from "./generators/relationsInputOrderBy";
+import { processedRelationsSelect } from "./generators/relationsInputSelect";
 import { processedRelationsInputUpdate } from "./generators/relationsInputUpdate";
 import { processedWhere, processedWhereUnique } from "./generators/where";
 import { makeComposite } from "./generators/wrappers/composite";
@@ -58,13 +58,13 @@ export function mapAllModelsForWrite() {
   process(processedRelations, "Relations");
   process(processedPlainInputCreate, "PlainInputCreate");
   process(processedPlainInputUpdate, "PlainInputUpdate");
-  process(processedPlainInputSelect, "PlainInputSelect");
-  process(processedPlainInputOrderBy, "PlainInputOrderBy");
+  process(processedPlainSelect, "PlainSelect");
+  process(processedPlainOrderBy, "PlainOrderBy");
   process(processedRelationsInputCreate, "RelationsInputCreate");
   process(processedRelationsInputUpdate, "RelationsInputUpdate");
-  process(processedRelationsInputSelect, "RelationsInputSelect");
-  process(processedRelationsInputInclude, "RelationsInputInclude");
-  process(processedRelationsInputOrderBy, "RelationsInputOrderBy");
+  process(processedRelationsSelect, "RelationsSelect");
+  process(processedRelationsInclude, "RelationsInclude");
+  process(processedRelationsOrderBy, "RelationsOrderBy");
   process(processedWhere, "Where");
   process(processedWhereUnique, "WhereUnique");
 
@@ -92,18 +92,18 @@ export function mapAllModelsForWrite() {
   }
 
   for (const [key, value] of modelsPerName) {
-    const plain = processedPlainInputSelect.find((e) => e.name === key);
-    const relations = processedRelationsInputSelect.find((e) => e.name === key);
+    const plain = processedPlainSelect.find((e) => e.name === key);
+    const relations = processedRelationsSelect.find((e) => e.name === key);
     let composite: string;
     if (plain && relations) {
       composite = makeComposite([
-        `${key}PlainInputSelect`,
-        `${key}RelationsInputSelect`,
+        `${key}PlainSelect`,
+        `${key}RelationsSelect`,
       ]);
     } else if (plain) {
-      composite = `${key}PlainInputSelect`;
+      composite = `${key}PlainSelect`;
     } else if (relations) {
-      composite = `${key}RelationsInputSelect`;
+      composite = `${key}RelationsSelect`;
     } else {
       continue;
     }
@@ -111,27 +111,25 @@ export function mapAllModelsForWrite() {
     modelsPerName.set(
       key,
       `${value}\n${convertModelToStandalone({
-        name: `${key}InputSelect`,
+        name: `${key}Select`,
         stringRepresentation: composite,
       })}`
     );
   }
 
   for (const [key, value] of modelsPerName) {
-    const plain = processedPlainInputOrderBy.find((e) => e.name === key);
-    const relations = processedRelationsInputOrderBy.find(
-      (e) => e.name === key
-    );
+    const plain = processedPlainOrderBy.find((e) => e.name === key);
+    const relations = processedRelationsOrderBy.find((e) => e.name === key);
     let composite: string;
     if (plain && relations) {
       composite = makeComposite([
-        `${key}PlainInputOrderBy`,
-        `${key}RelationsInputOrderBy`,
+        `${key}PlainOrderBy`,
+        `${key}RelationsOrderBy`,
       ]);
     } else if (plain) {
-      composite = `${key}PlainInputOrderBy`;
+      composite = `${key}PlainOrderBy`;
     } else if (relations) {
-      composite = `${key}RelationsInputOrderBy`;
+      composite = `${key}RelationsOrderBy`;
     } else {
       continue;
     }
@@ -139,19 +137,17 @@ export function mapAllModelsForWrite() {
     modelsPerName.set(
       key,
       `${value}\n${convertModelToStandalone({
-        name: `${key}InputOrderBy`,
+        name: `${key}OrderBy`,
         stringRepresentation: composite,
       })}`
     );
   }
 
   for (const [key, value] of modelsPerName) {
-    const relations = processedRelationsInputInclude.find(
-      (e) => e.name === key
-    );
+    const relations = processedRelationsInclude.find((e) => e.name === key);
     let composite: string;
     if (relations) {
-      composite = `${key}RelationsInputInclude`;
+      composite = `${key}RelationsInclude`;
     } else {
       continue;
     }
@@ -159,7 +155,7 @@ export function mapAllModelsForWrite() {
     modelsPerName.set(
       key,
       `${value}\n${convertModelToStandalone({
-        name: `${key}InputInclude`,
+        name: `${key}Include`,
         stringRepresentation: composite,
       })}`
     );

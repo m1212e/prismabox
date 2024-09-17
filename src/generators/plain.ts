@@ -35,20 +35,15 @@ type StringifyPlainOption = {
 export function stringifyPlain(data: DMMF.Model, opt?: StringifyPlainOption) {
   const annotations = extractAnnotations(data.documentation);
 
-  const stringifyBoolean = stringifyPrimitiveType({
-    fieldType: "Boolean",
-    options: generateTypeboxOptions({ input: annotations }),
-  });
-  const stringifyOrderBy = makeEnum(["asc", "desc"]);
-
   if (
     annotations.isHidden ||
     ((opt?.isInputModelCreate || opt?.isInputModelUpdate) &&
       annotations.isHiddenInput) ||
     (opt?.isInputModelCreate && annotations.isHiddenInputCreate) ||
     (opt?.isInputModelUpdate && annotations.isHiddenInputUpdate)
-  )
+  ) {
     return undefined;
+  }
 
   const fields = data.fields
     .map((field) => {
@@ -59,8 +54,9 @@ export function stringifyPlain(data: DMMF.Model, opt?: StringifyPlainOption) {
           annotations.isHiddenInput) ||
         (opt?.isInputModelCreate && annotations.isHiddenInputCreate) ||
         (opt?.isInputModelUpdate && annotations.isHiddenInputUpdate)
-      )
+      ) {
         return undefined;
+      }
 
       // ===============================
       // INPUT MODEL FILTERS

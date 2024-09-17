@@ -5,7 +5,7 @@ import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
 import { processedEnums } from "./enum";
 import { processedPlain } from "./plain";
-import { processedPlainInputSelect } from "./plainInputSelect";
+import { processedPlainSelect } from "./plainInputSelect";
 import {
   isPrimitivePrismaFieldType,
   stringifyPrimitiveType,
@@ -14,7 +14,7 @@ import { wrapWithArray } from "./wrappers/array";
 import { wrapWithNullable } from "./wrappers/nullable";
 import { wrapWithSelect } from "./wrappers/select";
 import { wrapWithOptional } from "./wrappers/optional";
-import { processedPlainInputOrderBy } from "./plainInputOrderBy";
+import { processedPlainOrderBy } from "./plainInputOrderBy";
 
 export const processedRelations: ProcessedModel[] = [];
 
@@ -63,9 +63,9 @@ export function stringifyRelations(
 
       let stringifiedType = (
         opt?.isInputSelect
-          ? processedPlainInputSelect
+          ? processedPlainSelect
           : opt?.isInputOrderBy
-            ? processedPlainInputOrderBy
+            ? processedPlainOrderBy
             : processedPlain
       ).find((e) => e.name === field.type)?.stringRepresentation;
 

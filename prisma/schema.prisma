@@ -10,9 +10,9 @@ generator client {
 generator prismabox {
   provider              = "node ./dist/cli.js"
   inputModel            = true
-  inputSelect           = true
-  inputInclude          = true
-  inputOrderBy          = true
+  selectModel           = true
+  includeModel          = true
+  orderByModel          = true
   output                = "./generated/schema"
   additionalFieldsPlain = ["additional: Type.Optional(Type.String())"]
   useJsonTypes          = true

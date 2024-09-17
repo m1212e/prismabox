@@ -28,11 +28,11 @@
   },
   "dependencies": {
     "@prisma/generator-helper": "^5.19.1",
-    "@sinclair/typebox": "^0.33.9",
+    "@sinclair/typebox": "^0.33.11",
     "prettier": "^3.3.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.8.3",
+    "@biomejs/biome": "^1.9.1",
     "@prisma/client": "5.19.1",
     "@types/bun": "latest",
     "esbuild": "^0.23.1",

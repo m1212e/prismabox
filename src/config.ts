@@ -26,15 +26,15 @@ const configSchema = Type.Object(
     /**
      * Should the input select be generated
      */
-    inputSelect: Type.Boolean({ default: false }),
+    selectModel: Type.Boolean({ default: false }),
     /**
      * Should the input include be generated
      */
-    inputInclude: Type.Boolean({ default: false }),
+    includeModel: Type.Boolean({ default: false }),
     /**
      * Should the input orderBy be generated
      */
-    inputOrderBy: Type.Boolean({ default: false }),
+    orderByModel: Type.Boolean({ default: false }),
     /**
      * Prevents the ID field from being generated in the input model
      */
