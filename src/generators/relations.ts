@@ -13,7 +13,7 @@ import { wrapWithPartial } from "./wrappers/partial";
 export const processedRelations: ProcessedModel[] = [];
 
 export function processRelations(
-  models: DMMF.Model[] | Readonly<DMMF.Model[]>
+  models: DMMF.Model[] | Readonly<DMMF.Model[]>,
 ) {
   for (const m of models) {
     const o = stringifyRelations(m);
@@ -41,7 +41,7 @@ export function stringifyRelations(data: DMMF.Model) {
       }
 
       let stringifiedType = processedPlain.find(
-        (e) => e.name === field.type
+        (e) => e.name === field.type,
       )?.stringRepresentation;
 
       if (!stringifiedType) {
@@ -61,14 +61,14 @@ export function stringifyRelations(data: DMMF.Model) {
     .filter((x) => x) as string[];
 
   return `${getConfig().typeboxImportVariableName}.Object({${fields.join(
-    ","
+    ",",
   )}},${generateTypeboxOptions({ input: annotations })})\n`;
 }
 
 export const processedRelationsInputCreate: ProcessedModel[] = [];
 
 export function processRelationsInputCreate(
-  models: DMMF.Model[] | Readonly<DMMF.Model[]>
+  models: DMMF.Model[] | Readonly<DMMF.Model[]>,
 ) {
   for (const m of models) {
     const o = stringifyRelationsInputCreate(m, models);
@@ -84,7 +84,7 @@ export function processRelationsInputCreate(
 
 export function stringifyRelationsInputCreate(
   data: DMMF.Model,
-  allModels: DMMF.Model[] | Readonly<DMMF.Model[]>
+  allModels: DMMF.Model[] | Readonly<DMMF.Model[]>,
 ) {
   const annotations = extractAnnotations(data.documentation);
   if (
@@ -152,14 +152,14 @@ export function stringifyRelationsInputCreate(
     .filter((x) => x) as string[];
 
   return `${getConfig().typeboxImportVariableName}.Object({${fields.join(
-    ","
+    ",",
   )}},${generateTypeboxOptions({ input: annotations })})\n`;
 }
 
 export const processedRelationsInputUpdate: ProcessedModel[] = [];
 
 export function processRelationsInputUpdate(
-  models: DMMF.Model[] | Readonly<DMMF.Model[]>
+  models: DMMF.Model[] | Readonly<DMMF.Model[]>,
 ) {
   for (const m of models) {
     const o = stringifyRelationsInputUpdate(m, models);
@@ -175,7 +175,7 @@ export function processRelationsInputUpdate(
 
 export function stringifyRelationsInputUpdate(
   data: DMMF.Model,
-  allModels: DMMF.Model[] | Readonly<DMMF.Model[]>
+  allModels: DMMF.Model[] | Readonly<DMMF.Model[]>,
 ) {
   const annotations = extractAnnotations(data.documentation);
   if (
@@ -264,7 +264,7 @@ export function stringifyRelationsInputUpdate(
 
   return wrapWithPartial(
     `${getConfig().typeboxImportVariableName}.Object({${fields.join(
-      ","
-    )}},${generateTypeboxOptions({ input: annotations })})`
+      ",",
+    )}},${generateTypeboxOptions({ input: annotations })})`,
   );
 }

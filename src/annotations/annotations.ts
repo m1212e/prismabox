@@ -8,31 +8,31 @@ export type Annotation =
   | { type: "OPTIONS"; value: string };
 
 export function isHiddenVariant(
-  annotation: Annotation
+  annotation: Annotation,
 ): annotation is { type: "HIDDEN"; value: number } {
   return annotation.type === "HIDDEN";
 }
 
 export function isHiddenInputVariant(
-  annotation: Annotation
+  annotation: Annotation,
 ): annotation is { type: "HIDDEN_INPUT"; value: number } {
   return annotation.type === "HIDDEN_INPUT";
 }
 
 export function isHiddenInputCreateVariant(
-  annotation: Annotation
+  annotation: Annotation,
 ): annotation is { type: "HIDDEN_INPUT_CREATE"; value: number } {
   return annotation.type === "HIDDEN_INPUT_CREATE";
 }
 
 export function isHiddenInputUpdateVariant(
-  annotation: Annotation
+  annotation: Annotation,
 ): annotation is { type: "HIDDEN_INPUT_UPDATE"; value: number } {
   return annotation.type === "HIDDEN_INPUT_UPDATE";
 }
 
 export function isOptionsVariant(
-  annotation: Annotation
+  annotation: Annotation,
 ): annotation is { type: "OPTIONS"; value: string } {
   return annotation.type === "OPTIONS";
 }
@@ -66,7 +66,7 @@ const annotationKeys: { type: Annotation["type"]; keys: string[] }[] = [
 ];
 
 export function extractAnnotations(
-  input: DMMF.Model["fields"][number]["documentation"]
+  input: DMMF.Model["fields"][number]["documentation"],
 ): {
   annotations: Annotation[];
   description: string | undefined;
@@ -85,19 +85,19 @@ export function extractAnnotations(
     .map((l) => l.trim())
     .filter((l) => l.length > 0)) {
     const annotationKey = annotationKeys.find((key) =>
-      key.keys.some((k) => line.startsWith(k))
+      key.keys.some((k) => line.startsWith(k)),
     );
 
     if (annotationKey) {
       if (annotationKey.type === "OPTIONS") {
         if (!line.startsWith(`${annotationKey.keys[0]}{`)) {
           throw new Error(
-            "Invalid syntax, expected opening { after prismabox.options"
+            "Invalid syntax, expected opening { after prismabox.options",
           );
         }
         if (!line.endsWith("}")) {
           throw new Error(
-            "Invalid syntax, expected closing } for prismabox.options"
+            "Invalid syntax, expected closing } for prismabox.options",
           );
         }
 
@@ -105,7 +105,7 @@ export function extractAnnotations(
           type: "OPTIONS",
           value: line.substring(
             annotationKey.keys[0].length + 1,
-            line.length - 1
+            line.length - 1,
           ),
         });
       } else {

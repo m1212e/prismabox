@@ -2,19 +2,19 @@ import { access, mkdir, rm } from "node:fs/promises";
 import { generatorHandler } from "@prisma/generator-helper";
 import { getConfig, setConfig } from "./config";
 import { processEnums } from "./generators/enum";
+import { processInclude } from "./generators/include";
+import { processOrderBy } from "./generators/orderBy";
 import { processPlain } from "./generators/plain";
+import { processPlainInputCreate } from "./generators/plainInputCreate";
+import { processPlainInputUpdate } from "./generators/plainInputUpdate";
 import {
   processRelations,
   processRelationsInputCreate,
   processRelationsInputUpdate,
 } from "./generators/relations";
+import { processSelect } from "./generators/select";
 import { processWhere, processWhereUnique } from "./generators/where";
 import { write } from "./writer";
-import { processPlainInputCreate } from "./generators/plainInputCreate";
-import { processPlainInputUpdate } from "./generators/plainInputUpdate";
-import { processSelect } from "./generators/select";
-import { processInclude } from "./generators/include";
-import { processOrderBy } from "./generators/orderBy";
 
 generatorHandler({
   onManifest() {

@@ -3,9 +3,9 @@ import { extractAnnotations } from "../annotations/annotations";
 import { generateTypeboxOptions } from "../annotations/options";
 import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
+import { isPrimitivePrismaFieldType } from "./primitiveField";
 import { wrapWithPartial } from "./wrappers/partial";
 import { makeUnion } from "./wrappers/union";
-import { isPrimitivePrismaFieldType } from "./primitiveField";
 
 export const processedOrderBy: ProcessedModel[] = [];
 

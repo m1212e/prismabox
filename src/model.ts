@@ -21,7 +21,7 @@ export type ProcessedModel = {
 };
 
 function convertModelToStandalone(
-  input: Pick<ProcessedModel, "name" | "stringRepresentation">
+  input: Pick<ProcessedModel, "name" | "stringRepresentation">,
 ) {
   return `export const ${input.name} = ${input.stringRepresentation}\n`;
 }
@@ -85,7 +85,7 @@ export function mapAllModelsForWrite() {
       `${value}\n${convertModelToStandalone({
         name: key,
         stringRepresentation: composite,
-      })}`
+      })}`,
     );
   }
 
@@ -102,7 +102,7 @@ export function mapAllModelsForWrite() {
         `${value}\n${convertModelToStandalone({
           name: `${key}InputCreate`,
           stringRepresentation: composite,
-        })}`
+        })}`,
       );
     }
   }
@@ -120,7 +120,7 @@ export function mapAllModelsForWrite() {
         `${value}\n${convertModelToStandalone({
           name: `${key}InputUpdate`,
           stringRepresentation: composite,
-        })}`
+        })}`,
       );
     }
   }
@@ -128,7 +128,7 @@ export function mapAllModelsForWrite() {
   for (const [key, value] of modelsPerName) {
     modelsPerName.set(
       key,
-      `${typepoxImportStatement()}\n${nullableImport()}\n${value}`
+      `${typepoxImportStatement()}\n${nullableImport()}\n${value}`,
     );
   }
 

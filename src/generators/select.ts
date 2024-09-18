@@ -31,7 +31,7 @@ export function stringifySelect(data: DMMF.Model) {
     })
     .filter((x) => x) as string[];
 
-    fields.push(`_count: ${getConfig().typeboxImportVariableName}.Boolean()`)
+  fields.push(`_count: ${getConfig().typeboxImportVariableName}.Boolean()`);
 
   const ret = `${getConfig().typeboxImportVariableName}.Object({${[
     ...fields,

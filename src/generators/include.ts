@@ -3,8 +3,8 @@ import { extractAnnotations } from "../annotations/annotations";
 import { generateTypeboxOptions } from "../annotations/options";
 import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
-import { wrapWithPartial } from "./wrappers/partial";
 import { isPrimitivePrismaFieldType } from "./primitiveField";
+import { wrapWithPartial } from "./wrappers/partial";
 
 export const processedInclude: ProcessedModel[] = [];
 
