@@ -13,6 +13,7 @@ import { write } from "./writer";
 import { processPlainInputCreate } from "./generators/plainInputCreate";
 import { processPlainInputUpdate } from "./generators/plainInputUpdate";
 import { processSelect } from "./generators/select";
+import { processInclude } from "./generators/include";
 
 generatorHandler({
   onManifest() {
@@ -47,6 +48,7 @@ generatorHandler({
       processRelationsInputUpdate(options.dmmf.datamodel.models);
     }
     processSelect(options.dmmf.datamodel.models);
+    processInclude(options.dmmf.datamodel.models);
 
     await write();
   },
