@@ -1,6 +1,7 @@
 import { getConfig } from "./config";
 import { processedEnums } from "./generators/enum";
 import { processedInclude } from "./generators/include";
+import { processedOrderBy } from "./generators/orderBy";
 import { processedPlain } from "./generators/plain";
 import { processedPlainInputCreate } from "./generators/plainInputCreate";
 import { processedPlainInputUpdate } from "./generators/plainInputUpdate";
@@ -63,6 +64,7 @@ export function mapAllModelsForWrite() {
   process(processedWhereUnique, "WhereUnique");
   process(processedSelect, "Select");
   process(processedInclude, "Include");
+  process(processedOrderBy, "OrderBy");
 
   for (const [key, value] of modelsPerName) {
     const plain = processedPlain.find((e) => e.name === key);

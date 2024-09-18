@@ -14,6 +14,7 @@ import { processPlainInputCreate } from "./generators/plainInputCreate";
 import { processPlainInputUpdate } from "./generators/plainInputUpdate";
 import { processSelect } from "./generators/select";
 import { processInclude } from "./generators/include";
+import { processOrderBy } from "./generators/orderBy";
 
 generatorHandler({
   onManifest() {
@@ -49,6 +50,7 @@ generatorHandler({
     }
     processSelect(options.dmmf.datamodel.models);
     processInclude(options.dmmf.datamodel.models);
+    processOrderBy(options.dmmf.datamodel.models);
 
     await write();
   },
