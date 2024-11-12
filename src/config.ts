@@ -67,6 +67,10 @@ const configSchema = Type.Object(
      * What file extension, if any, to add to src file imports. Set to ".js" to support nodenext module resolution
      */
     importFileExtension: Type.String({ default: "" }),
+    /**
+     * The prefix to add to exported types
+     */
+    exportedTypePrefix: Type.String({ default: "" }),
   },
   { additionalProperties: false },
 );

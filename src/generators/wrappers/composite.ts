@@ -4,5 +4,5 @@ import { getConfig } from "../../config";
 export function makeComposite(inputModels: string[]) {
   return `${
     getConfig().typeboxImportVariableName
-  }.Composite([${inputModels.join(",")}], ${generateTypeboxOptions()})\n`;
+  }.Composite([${inputModels.map((i) => `${getConfig().exportedTypePrefix}${i}`).join(",")}], ${generateTypeboxOptions()})\n`;
 }

@@ -23,7 +23,7 @@ export type ProcessedModel = {
 function convertModelToStandalone(
   input: Pick<ProcessedModel, "name" | "stringRepresentation">,
 ) {
-  return `export const ${input.name} = ${input.stringRepresentation}\n`;
+  return `export const ${getConfig().exportedTypePrefix}${input.name} = ${input.stringRepresentation}\n`;
 }
 
 function typepoxImportStatement() {
