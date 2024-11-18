@@ -15,7 +15,7 @@ const PrimitiveFields = [
 export type PrimitivePrismaFieldType = (typeof PrimitiveFields)[number];
 
 export function isPrimitivePrismaFieldType(
-  str: string
+  str: string,
 ): str is PrimitivePrismaFieldType {
   // biome-ignore lint/suspicious/noExplicitAny: we want to check if the string is a valid primitive field
   return PrimitiveFields.includes(str as any);
