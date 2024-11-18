@@ -78,7 +78,7 @@ const configSchema = Type.Object(
      */
     exportedTypePrefix: Type.String({ default: "" }),
   },
-  { additionalProperties: false }
+  { additionalProperties: false },
 );
 
 // biome-ignore lint/suspicious/noExplicitAny: we want to set the default value
