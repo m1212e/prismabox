@@ -14,6 +14,10 @@ import { processedSelect } from "./generators/select";
 import { processedWhere, processedWhereUnique } from "./generators/where";
 import { makeComposite } from "./generators/wrappers/composite";
 import { nullableImport, nullableType } from "./generators/wrappers/nullable";
+import {
+  transformDateType,
+  transformDateImportStatement,
+} from "./generators/transformDate";
 
 export type ProcessedModel = {
   name: string;
@@ -21,7 +25,7 @@ export type ProcessedModel = {
 };
 
 function convertModelToStandalone(
-  input: Pick<ProcessedModel, "name" | "stringRepresentation">,
+  input: Pick<ProcessedModel, "name" | "stringRepresentation">
 ) {
   return `export const ${getConfig().exportedTypePrefix}${input.name} = ${input.stringRepresentation}\n`;
 }
@@ -85,7 +89,7 @@ export function mapAllModelsForWrite() {
       `${value}\n${convertModelToStandalone({
         name: key,
         stringRepresentation: composite,
-      })}`,
+      })}`
     );
   }
 
@@ -102,7 +106,7 @@ export function mapAllModelsForWrite() {
         `${value}\n${convertModelToStandalone({
           name: `${key}InputCreate`,
           stringRepresentation: composite,
-        })}`,
+        })}`
       );
     }
   }
@@ -120,7 +124,7 @@ export function mapAllModelsForWrite() {
         `${value}\n${convertModelToStandalone({
           name: `${key}InputUpdate`,
           stringRepresentation: composite,
-        })}`,
+        })}`
       );
     }
   }
@@ -128,11 +132,12 @@ export function mapAllModelsForWrite() {
   for (const [key, value] of modelsPerName) {
     modelsPerName.set(
       key,
-      `${typepoxImportStatement()}\n${nullableImport()}\n${value}`,
+      `${typepoxImportStatement()}\n${transformDateImportStatement()}\n${nullableImport()}\n${value}`
     );
   }
 
   modelsPerName.set(getConfig().nullableName, nullableType());
+  modelsPerName.set(getConfig().transformDateName, transformDateType());
 
   return modelsPerName;
 }

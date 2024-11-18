@@ -57,6 +57,10 @@ const configSchema = Type.Object(
 		 */
     additionalFieldsPlain: Type.Optional(Type.Array(Type.String())),
     /**
+     * How the transform date type should be named
+     */
+    transformDateName: Type.String({ default: "__transformDate__" }),
+    /**
      * When enabled, this option ensures that only primitive types are generated as JSON types.
      * This ensures compatibility with tooling that only supports the serilization to JSON primitive types.
      *
@@ -72,7 +76,7 @@ const configSchema = Type.Object(
      */
     exportedTypePrefix: Type.String({ default: "" }),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 // biome-ignore lint/suspicious/noExplicitAny: we want to set the default value
