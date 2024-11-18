@@ -66,7 +66,9 @@ const configSchema = Type.Object(
      *
      * E.g. Date will be of Type String when enabled.
      */
-    useJsonTypes: Type.Boolean({ default: false }),
+    useJsonTypes: Type.Union([Type.Boolean(), Type.Literal("transformer")], {
+      default: false,
+    }),
     /**
      * What file extension, if any, to add to src file imports. Set to ".js" to support nodenext module resolution
      */
@@ -76,7 +78,7 @@ const configSchema = Type.Object(
      */
     exportedTypePrefix: Type.String({ default: "" }),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 // biome-ignore lint/suspicious/noExplicitAny: we want to set the default value
