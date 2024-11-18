@@ -17,7 +17,16 @@ jobs:
         run: bun run build
         env:
           REF_NAME: ${{ github.ref_name }}
+      - name: Set tag
+        id: tag
+        run: |
+          if [[ "${{ github.event.release.prerelease }}" == "true"  ]]; then
+            echo "tag=dev" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.release.prerelease }}" == "false" ]]; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          fi
       - uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./dist/package.json
+          tag: ${{ steps.tag.outputs.tag }}
