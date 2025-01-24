@@ -15,6 +15,7 @@ import {
 import { processSelect } from "./generators/select";
 import { processWhere, processWhereUnique } from "./generators/where";
 import { write } from "./writer";
+import { processComposites } from "./generators/composite";
 
 generatorHandler({
   onManifest() {
@@ -38,6 +39,7 @@ generatorHandler({
     await mkdir(getConfig().output, { recursive: true });
 
     processEnums(options.dmmf.datamodel.enums);
+    processComposites(options.dmmf.datamodel.types);
     processPlain(options.dmmf.datamodel.models);
     processRelations(options.dmmf.datamodel.models);
     processWhere(options.dmmf.datamodel.models);

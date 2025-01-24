@@ -9,11 +9,12 @@ import { isPrimitivePrismaFieldType } from "./primitiveField";
 import { wrapWithArray } from "./wrappers/array";
 import { wrapWithNullable } from "./wrappers/nullable";
 import { wrapWithPartial } from "./wrappers/partial";
+import { processedComposites } from "./composite";
 
 export const processedRelations: ProcessedModel[] = [];
 
 export function processRelations(
-  models: DMMF.Model[] | Readonly<DMMF.Model[]>,
+  models: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   for (const m of models) {
     const o = stringifyRelations(m);
@@ -35,13 +36,14 @@ export function stringifyRelations(data: DMMF.Model) {
       if (
         annotations.isHidden ||
         isPrimitivePrismaFieldType(field.type) ||
-        processedEnums.find((e) => e.name === field.type)
+        processedEnums.find((e) => e.name === field.type) ||
+        processedComposites.find((c) => c.name === field.type)
       ) {
         return undefined;
       }
 
       let stringifiedType = processedPlain.find(
-        (e) => e.name === field.type,
+        (e) => e.name === field.type
       )?.stringRepresentation;
 
       if (!stringifiedType) {
@@ -61,14 +63,14 @@ export function stringifyRelations(data: DMMF.Model) {
     .filter((x) => x) as string[];
 
   return `${getConfig().typeboxImportVariableName}.Object({${fields.join(
-    ",",
+    ","
   )}},${generateTypeboxOptions({ input: annotations })})\n`;
 }
 
 export const processedRelationsInputCreate: ProcessedModel[] = [];
 
 export function processRelationsInputCreate(
-  models: DMMF.Model[] | Readonly<DMMF.Model[]>,
+  models: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   for (const m of models) {
     const o = stringifyRelationsInputCreate(m, models);
@@ -84,7 +86,7 @@ export function processRelationsInputCreate(
 
 export function stringifyRelationsInputCreate(
   data: DMMF.Model,
-  allModels: DMMF.Model[] | Readonly<DMMF.Model[]>,
+  allModels: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   const annotations = extractAnnotations(data.documentation);
   if (
@@ -110,10 +112,10 @@ export function stringifyRelationsInputCreate(
 
       let typeboxIdType = "String";
 
-      switch (
-        allModels.find((m) => m.name === field.type)?.fields.find((f) => f.isId)
-          ?.type
-      ) {
+      const t = allModels
+        .find((m) => m.name === field.type)
+        ?.fields.find((f) => f.isId)?.type;
+      switch (t) {
         case "String":
           typeboxIdType = "String";
           break;
@@ -125,7 +127,7 @@ export function stringifyRelationsInputCreate(
           break;
         default:
           throw new Error(
-            `Unsupported ID type: ${field.type} on model ${data.name} in relation ${field.name}`,
+            `Unsupported ID type: ${field.type} on model ${data.name} in relation ${field.name}`
           );
       }
 
@@ -154,14 +156,14 @@ export function stringifyRelationsInputCreate(
     .filter((x) => x) as string[];
 
   return `${getConfig().typeboxImportVariableName}.Object({${fields.join(
-    ",",
+    ","
   )}},${generateTypeboxOptions({ input: annotations })})\n`;
 }
 
 export const processedRelationsInputUpdate: ProcessedModel[] = [];
 
 export function processRelationsInputUpdate(
-  models: DMMF.Model[] | Readonly<DMMF.Model[]>,
+  models: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   for (const m of models) {
     const o = stringifyRelationsInputUpdate(m, models);
@@ -177,7 +179,7 @@ export function processRelationsInputUpdate(
 
 export function stringifyRelationsInputUpdate(
   data: DMMF.Model,
-  allModels: DMMF.Model[] | Readonly<DMMF.Model[]>,
+  allModels: DMMF.Model[] | Readonly<DMMF.Model[]>
 ) {
   const annotations = extractAnnotations(data.documentation);
   if (
@@ -203,10 +205,10 @@ export function stringifyRelationsInputUpdate(
 
       let typeboxIdType = "String";
 
-      switch (
-        allModels.find((m) => m.name === field.type)?.fields.find((f) => f.isId)
-          ?.type
-      ) {
+      const t = allModels
+        .find((m) => m.name === field.type)
+        ?.fields.find((f) => f.isId)?.type;
+      switch (t) {
         case "String":
           typeboxIdType = "String";
           break;
@@ -218,7 +220,7 @@ export function stringifyRelationsInputUpdate(
           break;
         default:
           throw new Error(
-            `Unsupported ID type: ${field.type} on model ${data.name} in relation ${field.name}`,
+            `Unsupported ID type: ${field.type} on model ${data.name} in relation ${field.name}`
           );
       }
 
@@ -268,7 +270,7 @@ export function stringifyRelationsInputUpdate(
 
   return wrapWithPartial(
     `${getConfig().typeboxImportVariableName}.Object({${fields.join(
-      ",",
-    )}},${generateTypeboxOptions({ input: annotations })})`,
+      ","
+    )}},${generateTypeboxOptions({ input: annotations })})`
   );
 }

@@ -15,6 +15,7 @@ import {
 import { wrapWithArray } from "./wrappers/array";
 import { wrapWithNullable } from "./wrappers/nullable";
 import { wrapWithOptional } from "./wrappers/optional";
+import { processedComposites } from "./composite";
 
 export const processedPlain: ProcessedModel[] = [];
 
@@ -31,7 +32,7 @@ export function processPlain(models: DMMF.Model[] | Readonly<DMMF.Model[]>) {
 export function stringifyPlain(
   data: DMMF.Model,
   isInputModelCreate = false,
-  isInputModelUpdate = false,
+  isInputModelUpdate = false
 ) {
   const annotations = extractAnnotations(data.documentation);
 
@@ -111,7 +112,11 @@ export function stringifyPlain(
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type,
+          (e) => e.name === field.type
+        )!.stringRepresentation;
+      } else if (processedComposites.find((c) => c.name === field.type)) {
+        stringifiedType = processedComposites.find(
+          (c) => c.name === field.type
         )!.stringRepresentation;
       } else {
         return undefined;
