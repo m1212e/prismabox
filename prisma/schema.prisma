@@ -8,12 +8,12 @@ generator client {
 }
 
 generator prismabox {
-  provider   = "node ./dist/cli.js"
-  inputModel = true
-  output     = "./generated/schema"
+  provider              = "node ./dist/cli.js"
+  inputModel            = true
+  output                = "./generated/schema"
   additionalFieldsPlain = ["additional: Type.Optional(Type.String())"]
-  useJsonTypes = true
-  allowRecursion = false
+  useJsonTypes          = true
+  allowRecursion        = false
 }
 
 model Password {
@@ -69,7 +69,7 @@ model Email {
   @@unique([userId, email])
 }
 
-/// A user in the system
+/// A `user` in the system
 model User {
   id                             String                        @id @default(uuid())
   createdAt                      DateTime                      @default(now())
@@ -319,11 +319,11 @@ model Message {
 }
 
 model User2 {
-  id             String          @id @default(uuid())
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   /// @prismabox.input.hide
-  authProviderId String          @unique
+  authProviderId String   @unique
   /// @prismabox.input.hide
   domainId       String
   firstName      String
@@ -333,7 +333,7 @@ model User2 {
   sponsor        String
   company        String
   /// custom user attributes from the auth provider are stored here. In most cases you can expect a Record<string, string> here.
-  attributes     Json            @default("{}")
+  attributes     Json     @default("{}")
 
   @@unique([email, domainId])
 }
