@@ -1,5 +1,8 @@
 import type { DMMF } from "@prisma/generator-helper";
-import { extractAnnotations } from "../annotations/annotations";
+import {
+  extractAnnotations,
+  isTypeOverwriteVariant,
+} from "../annotations/annotations";
 import { generateTypeboxOptions } from "../annotations/options";
 import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
@@ -93,10 +96,18 @@ export function stringifyPlain(
       let stringifiedType = "";
 
       if (isPrimitivePrismaFieldType(field.type)) {
-        stringifiedType = stringifyPrimitiveType({
-          fieldType: field.type as PrimitivePrismaFieldType,
-          options: generateTypeboxOptions({ input: annotations }),
-        });
+        const overwrittenType = annotations.annotations
+          .filter(isTypeOverwriteVariant)
+          .at(0)?.value;
+
+        if (overwrittenType) {
+          stringifiedType = overwrittenType;
+        } else {
+          stringifiedType = stringifyPrimitiveType({
+            fieldType: field.type as PrimitivePrismaFieldType,
+            options: generateTypeboxOptions({ input: annotations }),
+          });
+        }
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(

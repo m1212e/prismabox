@@ -37,9 +37,11 @@ Prismabox offers annotations to adjust the output of models and fields.
 | @prismabox.hide | - | Hides the field or model from the output |
 | @prismabox.hidden | - | Alias for @prismabox.hide |
 | @prismabox.input.hide | - | Hides the field or model from the output only in the input model |
-|@prismabox.create.input.hide| - | Hides the field or model from the outputs only in the input create model|
-|@prismabox.update.input.hide| - | Hides the field or model from the outputs only in the input update model|
+| @prismabox.create.input.hide | - | Hides the field or model from the outputs only in the input create model|
+| @prismabox.update.input.hide | - | Hides the field or model from the outputs only in the input update model|
 | @prismabox.options | @prismabox.options{ min: 10, max: 20 } | Uses the provided options for the field or model in the generated schema. Be careful to use valid JS/TS syntax! |
+| @prismabox.typeOverwrite | @prismabox.typeOverwrite=Type.CustomName | Overwrite the type prismabox outputs for a field with a custom string. See [m1212e/prismabox#29](https://github.com/m1212e/prismabox/issues/29) for an extended usecase |
+
 > For a more detailed list of available annotations, please see [annotations.ts](src/annotations/annotations.ts)
 
 A schema using annotations could look like this:

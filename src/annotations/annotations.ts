@@ -5,7 +5,8 @@ export type Annotation =
   | { type: "HIDDEN_INPUT" }
   | { type: "HIDDEN_INPUT_CREATE" }
   | { type: "HIDDEN_INPUT_UPDATE" }
-  | { type: "OPTIONS"; value: string };
+  | { type: "OPTIONS"; value: string }
+  | { type: "TYPE_OVERWRITE"; value: string };
 
 export function isHiddenVariant(
   annotation: Annotation,
@@ -37,6 +38,12 @@ export function isOptionsVariant(
   return annotation.type === "OPTIONS";
 }
 
+export function isTypeOverwriteVariant(
+  annotation: Annotation,
+): annotation is { type: "TYPE_OVERWRITE"; value: string } {
+  return annotation.type === "TYPE_OVERWRITE";
+}
+
 const annotationKeys: { type: Annotation["type"]; keys: string[] }[] = [
   {
     type: "HIDDEN_INPUT_CREATE",
@@ -62,6 +69,10 @@ const annotationKeys: { type: Annotation["type"]; keys: string[] }[] = [
   {
     type: "OPTIONS",
     keys: ["@prismabox.options"],
+  },
+  {
+    type: "TYPE_OVERWRITE",
+    keys: ["@prismabox.typeOverwrite"],
   },
 ];
 
@@ -107,6 +118,15 @@ export function extractAnnotations(
             annotationKey.keys[0].length + 1,
             line.length - 1,
           ),
+        });
+      } else if (annotationKey.type === "TYPE_OVERWRITE") {
+        if (!line.startsWith(`${annotationKey.keys[0]}=`)) {
+          throw new Error("Invalid syntax, expected = after prismabox.type");
+        }
+
+        annotations.push({
+          type: "TYPE_OVERWRITE",
+          value: line.split("=")[1],
         });
       } else {
         annotations.push({ type: annotationKey.type });
