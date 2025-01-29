@@ -136,7 +136,7 @@ export function extractAnnotations(
     }
   }
 
-  description = description.trim();
+  description = description.trim().replaceAll("`", "\\`");
   return {
     annotations,
     description: description.length > 0 ? description : undefined,

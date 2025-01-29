@@ -69,7 +69,7 @@ model Email {
   @@unique([userId, email])
 }
 
-/// A user in the system
+/// A `user` in the system
 model User {
   id                             String                        @id @default(uuid())
   createdAt                      DateTime                      @default(now())
