@@ -17,7 +17,7 @@ export function generateTypeboxOptions({
 
   if (!exludeAdditionalProperties) {
     stringifiedOptions.push(
-      `additionalProperties: ${getConfig().additionalProperties}`
+      `additionalProperties: ${getConfig().additionalProperties}`,
     );
   }
 

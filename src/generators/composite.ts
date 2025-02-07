@@ -16,7 +16,7 @@ import { wrapWithOptional } from "./wrappers/optional";
 export const processedComposites: ProcessedModel[] = [];
 
 export function processComposites(
-  types: DMMF.Model[] | Readonly<DMMF.Model[]>
+  types: DMMF.Model[] | Readonly<DMMF.Model[]>,
 ) {
   for (const t of types) {
     const o = stringifyComposite(t);
@@ -30,7 +30,7 @@ export function processComposites(
 export function stringifyComposite(
   data: DMMF.Model,
   isInputModelCreate = false,
-  isInputModelUpdate = false
+  isInputModelUpdate = false,
 ) {
   const annotations = extractAnnotations(data.documentation);
 
@@ -55,7 +55,7 @@ export function stringifyComposite(
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type
+          (e) => e.name === field.type,
         )!.stringRepresentation;
       }
 
