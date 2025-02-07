@@ -124,7 +124,7 @@ export function stringifyRelationsInputCreate(
           typeboxIdType = "Integer";
           break;
         default:
-          throw new Error("Unsupported id type");
+          throw new Error(`Unsupported ID type: ${field.type} on model ${data.name} in relation ${field.name}`);
       }
 
       let connectString = `${getConfig().typeboxImportVariableName}.Object({
@@ -215,7 +215,7 @@ export function stringifyRelationsInputUpdate(
           typeboxIdType = "Integer";
           break;
         default:
-          throw new Error("Unsupported id type");
+          throw new Error(`Unsupported ID type: ${field.type} on model ${data.name} in relation ${field.name}`);
       }
 
       let stringifiedType: string;
