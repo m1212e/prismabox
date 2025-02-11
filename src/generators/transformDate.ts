@@ -1,8 +1,8 @@
 import { getConfig } from "../config";
 
 export function transformDateType() {
-  return `import { type StringOptions, ${getConfig().typeboxImportVariableName} } from "${getConfig().typeboxImportDependencyName}";
-  export const ${getConfig().transformDateName} = (options?: StringOptions) => ${
+  return `import { ${getConfig().typeboxImportVariableName} } from "${getConfig().typeboxImportDependencyName}";
+  export const ${getConfig().transformDateName} = (options?: Parameters<typeof ${getConfig().typeboxImportVariableName}.String>[0]) => ${
     getConfig().typeboxImportVariableName
   }.Transform(${getConfig().typeboxImportVariableName}.String({ format: 'date-time', ...options }))
    .Decode((value) => new Date(value))
