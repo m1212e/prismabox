@@ -127,7 +127,7 @@ export function stringifyPlain(
         stringifiedType = wrapWithNullable(stringifiedType);
       }
 
-      if (isInputModelUpdate) {
+      if (isInputModelUpdate || (isInputModelCreate && !field.isRequired && !field.hasDefaultValue)) {
         stringifiedType = wrapWithOptional(stringifiedType);
         madeOptional = true;
       }
