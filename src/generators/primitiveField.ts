@@ -29,9 +29,9 @@ export function stringifyPrimitiveType({
   options: string;
 }) {
   // Remove `additionalProperties` from options for primitives
-  let optionsObject = JSON.parse(options)
-  delete optionsObject.additionalProperties
-  options = JSON.stringify(optionsObject)
+  const optionsObject = JSON.parse(options);
+  delete optionsObject.additionalProperties;
+  options = JSON.stringify(optionsObject);
 
   if (["Int", "BigInt"].includes(fieldType)) {
     return `${getConfig().typeboxImportVariableName}.Integer(${options})`;
