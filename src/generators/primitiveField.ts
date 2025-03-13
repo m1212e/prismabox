@@ -30,7 +30,7 @@ export function stringifyPrimitiveType({
 }) {
   // Remove `additionalProperties` from options for primitives
   const optionsObject = JSON.parse(options);
-  delete optionsObject.additionalProperties;
+  optionsObject.additionalProperties = undefined;
   options = JSON.stringify(optionsObject);
 
   if (["Int", "BigInt"].includes(fieldType)) {
