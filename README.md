@@ -106,3 +106,11 @@ These are called "InputModels" and need to be explicitly enabled in the generato
 4. Hide annotations marked for imports (`@prismabox.input.hide`) are respected.
 
 If enabled, the generator will additonally output more schemes for each model which can be used for creating/updating entities. The model will only allow editing fields of the entity itself. For relations, only connecting/disconnecting is allowed, but changing/creating related entities is not possible.
+
+
+## Notes
+### `__nullable__` vs `Type.Optional`
+
+Prismabox wraps nullable fields in a custom `__nullable__` method which allows `null` in addition to `undefined`. From the relevant [issue comment](https://github.com/m1212e/prismabox/issues/33#issuecomment-2708755442):
+>  prisma in some scenarios allows null OR undefined as types where optional only allows for undefined/is reflected as undefined in TS types
+

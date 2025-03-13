@@ -31,7 +31,7 @@ export function processPlain(models: DMMF.Model[] | Readonly<DMMF.Model[]>) {
 export function stringifyPlain(
   data: DMMF.Model,
   isInputModelCreate = false,
-  isInputModelUpdate = false
+  isInputModelUpdate = false,
 ) {
   const annotations = extractAnnotations(data.documentation);
 
@@ -111,7 +111,7 @@ export function stringifyPlain(
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type
+          (e) => e.name === field.type,
         )!.stringRepresentation;
       } else {
         return undefined;
@@ -127,7 +127,10 @@ export function stringifyPlain(
         stringifiedType = wrapWithNullable(stringifiedType);
       }
 
-      if (isInputModelUpdate || (isInputModelCreate && !field.isRequired && !field.hasDefaultValue)) {
+      if (
+        isInputModelUpdate ||
+        (isInputModelCreate && !field.isRequired && !field.hasDefaultValue)
+      ) {
         stringifiedType = wrapWithOptional(stringifiedType);
         madeOptional = true;
       }
