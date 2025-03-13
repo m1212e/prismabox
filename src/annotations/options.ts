@@ -3,11 +3,16 @@ import { type extractAnnotations, isOptionsVariant } from "./annotations";
 
 export function generateTypeboxOptions({
   input,
-  exludeAdditionalProperties = false,
+  exludeAdditionalProperties,
 }: {
   input?: ReturnType<typeof extractAnnotations>;
   exludeAdditionalProperties?: boolean;
 } = {}): string {
+  if(exludeAdditionalProperties === undefined) {
+    exludeAdditionalProperties = !getConfig().additionalProperties
+  }
+
+
   const stringifiedOptions: string[] = [];
   for (const annotation of input?.annotations ?? []) {
     if (isOptionsVariant(annotation)) {
@@ -15,7 +20,7 @@ export function generateTypeboxOptions({
     }
   }
 
-  if (!exludeAdditionalProperties) {
+  if (exludeAdditionalProperties) {
     stringifiedOptions.push(
       `additionalProperties: ${getConfig().additionalProperties}`,
     );

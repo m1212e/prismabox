@@ -74,9 +74,7 @@ model User {
   id                             String                        @id @default(uuid())
   createdAt                      DateTime                      @default(now())
   updatedAt                      DateTime                      @updatedAt
-  /// @prismabox.typeOverwrite=CustomName
   name                           String
-  /// @prismabox.typeOverwrite=CustomConferenceMember
   conferenceMemberships          ConferenceMember[]
   committeeMemberships           CommitteeMember[]
   messages                       Message[]

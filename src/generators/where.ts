@@ -53,7 +53,7 @@ export function stringifyWhere(data: DMMF.Model) {
           stringifiedType = stringifyPrimitiveType({
             fieldType: field.type as PrimitivePrismaFieldType,
             options: generateTypeboxOptions({
-              exludeAdditionalProperties: true,
+              exludeAdditionalProperties: false,
               input: annotations,
             }),
           });
@@ -136,7 +136,7 @@ export function stringifyWhereUnique(data: DMMF.Model) {
           stringifiedType = stringifyPrimitiveType({
             fieldType: f.type as PrimitivePrismaFieldType,
             options: generateTypeboxOptions({
-              exludeAdditionalProperties: true,
+              exludeAdditionalProperties: false,
               input: annotations,
             }),
           });
@@ -180,7 +180,7 @@ export function stringifyWhereUnique(data: DMMF.Model) {
           stringifiedType = stringifyPrimitiveType({
             fieldType: field.type as PrimitivePrismaFieldType,
             options: generateTypeboxOptions({
-              exludeAdditionalProperties: true,
+              exludeAdditionalProperties: false,
               input: annotations,
             }),
           });
@@ -221,7 +221,7 @@ export function stringifyWhereUnique(data: DMMF.Model) {
           stringifiedType = stringifyPrimitiveType({
             fieldType: field.type as PrimitivePrismaFieldType,
             options: generateTypeboxOptions({
-              exludeAdditionalProperties: true,
+              exludeAdditionalProperties: false,
               input: annotations,
             }),
           });

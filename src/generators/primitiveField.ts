@@ -28,11 +28,6 @@ export function stringifyPrimitiveType({
   fieldType: PrimitivePrismaFieldType;
   options: string;
 }) {
-  // Remove `additionalProperties` from options for primitives
-  const optionsObject = JSON.parse(options);
-  optionsObject.additionalProperties = undefined;
-  options = JSON.stringify(optionsObject);
-
   if (["Int", "BigInt"].includes(fieldType)) {
     return `${getConfig().typeboxImportVariableName}.Integer(${options})`;
   }
