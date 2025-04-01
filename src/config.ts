@@ -63,6 +63,9 @@ const configSchema = Type.Object(
     /**
      * When enabled, this option ensures that only primitive types are generated as JSON types.
      * This ensures compatibility with tooling that only supports the serilization to JSON primitive types.
+     *	
+     * This can be false (off), true (will result in formatted string type) or "transformer" which will use Tybepox transformers
+     * to output native JS Date types but transforms those to strings on processing
      *
      * E.g. Date will be of Type String when enabled.
      */
