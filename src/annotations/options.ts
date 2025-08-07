@@ -8,10 +8,9 @@ export function generateTypeboxOptions({
   input?: ReturnType<typeof extractAnnotations>;
   exludeAdditionalProperties?: boolean;
 } = {}): string {
-  if(exludeAdditionalProperties === undefined) {
-    exludeAdditionalProperties = !getConfig().additionalProperties
+  if (exludeAdditionalProperties === undefined) {
+    exludeAdditionalProperties = !getConfig().additionalProperties;
   }
-
 
   const stringifiedOptions: string[] = [];
   for (const annotation of input?.annotations ?? []) {
