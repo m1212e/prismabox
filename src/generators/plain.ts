@@ -81,6 +81,7 @@ export function stringifyPlain(
         return undefined;
 
       if (
+        getConfig().ignoreForeignOnInputModel &&
         (isInputModelCreate || isInputModelUpdate) &&
         (field.name.toLowerCase().endsWith("id") ||
           field.name.toLowerCase().endsWith("foreign") ||

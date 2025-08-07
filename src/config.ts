@@ -36,6 +36,10 @@ const configSchema = Type.Object(
      */
     ignoreUpdatedAtOnInputModel: Type.Boolean({ default: true }),
     /**
+     * Prevents the foreignId field from being generated in the input model
+     */
+    ignoreForeignOnInputModel: Type.Boolean({ default: true }),
+    /**
      * How the nullable union should be named
      */
     nullableName: Type.String({ default: "__nullable__" }),
