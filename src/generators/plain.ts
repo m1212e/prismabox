@@ -8,8 +8,8 @@ import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
 import { processedEnums } from "./enum";
 import {
-  type PrimitivePrismaFieldType,
   isPrimitivePrismaFieldType,
+  type PrimitivePrismaFieldType,
   stringifyPrimitiveType,
 } from "./primitiveField";
 import { wrapWithArray } from "./wrappers/array";
@@ -31,7 +31,7 @@ export function processPlain(models: DMMF.Model[] | Readonly<DMMF.Model[]>) {
 export function stringifyPlain(
   data: DMMF.Model,
   isInputModelCreate = false,
-  isInputModelUpdate = false
+  isInputModelUpdate = false,
 ) {
   const annotations = extractAnnotations(data.documentation);
 
@@ -115,7 +115,7 @@ export function stringifyPlain(
       } else if (processedEnums.find((e) => e.name === field.type)) {
         // biome-ignore lint/style/noNonNullAssertion: we checked this manually
         stringifiedType = processedEnums.find(
-          (e) => e.name === field.type
+          (e) => e.name === field.type,
         )!.stringRepresentation;
       } else {
         return undefined;

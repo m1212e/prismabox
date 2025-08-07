@@ -8,8 +8,8 @@ import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
 import { processedEnums } from "./enum";
 import {
-  type PrimitivePrismaFieldType,
   isPrimitivePrismaFieldType,
+  type PrimitivePrismaFieldType,
   stringifyPrimitiveType,
 } from "./primitiveField";
 import { wrapWithArray } from "./wrappers/array";
