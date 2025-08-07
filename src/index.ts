@@ -33,7 +33,7 @@ generatorHandler({
     try {
       await access(getConfig().output);
       await rm(getConfig().output, { recursive: true });
-    } catch (error) {}
+    } catch (_error) {}
 
     await mkdir(getConfig().output, { recursive: true });
 
