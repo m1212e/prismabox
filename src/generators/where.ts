@@ -19,6 +19,14 @@ import { makeUnion } from "./wrappers/union";
 
 const selfReferenceName = "Self";
 
+function selfReferenceToken() {
+  if (getConfig().typeboxImportDependencyName === "typebox") {
+    return `${getConfig().typeboxImportVariableName}.Ref("${selfReferenceName}")`;
+  }
+
+  return selfReferenceName;
+}
+
 export const processedWhere: ProcessedModel[] = [];
 
 export function processWhere(models: DMMF.Model[] | Readonly<DMMF.Model[]>) {
@@ -76,6 +84,21 @@ export function stringifyWhere(data: DMMF.Model) {
     .filter((x) => x) as string[];
 
   if (getConfig().allowRecursion) {
+    if (getConfig().typeboxImportDependencyName === "typebox") {
+      return `${
+        getConfig().typeboxImportVariableName
+      }.Cyclic({ ${selfReferenceName}: ${wrapWithPartial(
+        `${
+          getConfig().typeboxImportVariableName
+        }.Object({${AND_OR_NOT()},${fields.join(",")}},${generateTypeboxOptions(
+          {
+            exludeAdditionalProperties: true,
+            input: annotations,
+          },
+        )})`,
+      )} }, "${selfReferenceName}", { $id: "${data.name}" })`;
+    }
+
     return wrapWithPartial(
       `${
         getConfig().typeboxImportVariableName
@@ -253,9 +276,7 @@ export function stringifyWhereUnique(data: DMMF.Model) {
   )}},${generateTypeboxOptions({ exludeAdditionalProperties: true, input: annotations })})`;
 
   if (getConfig().allowRecursion) {
-    return `${
-      getConfig().typeboxImportVariableName
-    }.Recursive(${selfReferenceName} => ${makeIntersection([
+    const recursiveType = makeIntersection([
       wrapWithPartial(uniqueBaseObject, true),
       makeUnion(
         [...uniqueFields, ...uniqueCompositeFields].map(
@@ -271,7 +292,17 @@ export function stringifyWhereUnique(data: DMMF.Model) {
           getConfig().typeboxImportVariableName
         }.Object({${allFields.join(",")}}, ${generateTypeboxOptions()})`,
       ),
-    ])}, { $id: "${data.name}"})`;
+    ]);
+
+    if (getConfig().typeboxImportDependencyName === "typebox") {
+      return `${
+        getConfig().typeboxImportVariableName
+      }.Cyclic({ ${selfReferenceName}: ${recursiveType} }, "${selfReferenceName}", { $id: "${data.name}" })`;
+    }
+
+    return `${
+      getConfig().typeboxImportVariableName
+    }.Recursive(${selfReferenceName} => ${recursiveType}, { $id: "${data.name}"})`;
   }
 
   return makeIntersection([
@@ -290,11 +321,12 @@ export function stringifyWhereUnique(data: DMMF.Model) {
 }
 
 function AND_OR_NOT() {
+  const token = selfReferenceToken();
   return `AND: ${
     getConfig().typeboxImportVariableName
-  }.Union([${selfReferenceName}, ${wrapWithArray(selfReferenceName)}]),
+  }.Union([${token}, ${wrapWithArray(token)}]),
 	NOT: ${
     getConfig().typeboxImportVariableName
-  }.Union([${selfReferenceName}, ${wrapWithArray(selfReferenceName)}]),
-	OR: ${wrapWithArray(selfReferenceName)}`;
+  }.Union([${token}, ${wrapWithArray(token)}]),
+	OR: ${wrapWithArray(token)}`;
 }

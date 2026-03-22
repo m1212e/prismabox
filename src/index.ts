@@ -1,5 +1,5 @@
 import { access, mkdir, rm } from "node:fs/promises";
-import { generatorHandler } from "@prisma/generator-helper";
+import generatorHelper from "@prisma/generator-helper";
 import { getConfig, setConfig } from "./config";
 import { processEnums } from "./generators/enum";
 import { processInclude } from "./generators/include";
@@ -15,6 +15,8 @@ import {
 import { processSelect } from "./generators/select";
 import { processWhere, processWhereUnique } from "./generators/where";
 import { write } from "./writer";
+
+const { generatorHandler } = generatorHelper;
 
 generatorHandler({
   onManifest() {

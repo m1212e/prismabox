@@ -43,6 +43,7 @@ export function stringifyOrderBy(data: DMMF.Model) {
       //     `${getConfig().typeboxImportVariableName}.Literal('desc')`,
       //   ]
       // )}})`;
+      return undefined;
     })
     .filter((x) => x) as string[];
 

@@ -1,4 +1,8 @@
 import { getConfig } from "../config";
+import {
+  TYPEBOX_DATE_NAME,
+  TYPEBOX_UINT8_ARRAY_NAME,
+} from "./wrappers/typeboxCompat";
 
 const PrimitiveFields = [
   "Int",
@@ -56,6 +60,10 @@ export function stringifyPrimitiveType({
       return `${config.typeboxImportVariableName}.String(${opts})`;
     }
 
+    if (getConfig().typeboxImportDependencyName === "typebox") {
+      return `${TYPEBOX_DATE_NAME}(${options})`;
+    }
+
     return `${getConfig().typeboxImportVariableName}.Date(${options})`;
   }
 
@@ -68,6 +76,10 @@ export function stringifyPrimitiveType({
   }
 
   if (fieldType === "Bytes") {
+    if (getConfig().typeboxImportDependencyName === "typebox") {
+      return `${TYPEBOX_UINT8_ARRAY_NAME}(${options})`;
+    }
+
     return `${getConfig().typeboxImportVariableName}.Uint8Array(${options})`;
   }
 

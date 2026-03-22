@@ -1,20 +1,39 @@
 import { getConfig } from "../../config";
 
 export function nullableType() {
+  const {
+    typeboxImportDependencyName,
+    typeboxImportVariableName,
+    nullableName,
+  } = getConfig();
+
+  if (typeboxImportDependencyName === "typebox") {
+    return `import ${
+      typeboxImportVariableName
+    }, { type TSchema } from "${typeboxImportDependencyName}"
+export const ${nullableName} = <T extends TSchema>(schema: T) => ${
+      typeboxImportVariableName
+    }.Union([${typeboxImportVariableName}.Null(), schema])\n`;
+  }
+
   return `import { ${
-    getConfig().typeboxImportVariableName
-  }, type TSchema } from "${getConfig().typeboxImportDependencyName}"
-export const ${getConfig().nullableName} = <T extends TSchema>(schema: T) => ${
-    getConfig().typeboxImportVariableName
-  }.Union([${getConfig().typeboxImportVariableName}.Null(), schema])\n`;
+    typeboxImportVariableName
+  }, type TSchema } from "${typeboxImportDependencyName}"
+export const ${nullableName} = <T extends TSchema>(schema: T) => ${
+    typeboxImportVariableName
+  }.Union([${typeboxImportVariableName}.Null(), schema])\n`;
 }
 
 export function nullableImport() {
-  return `import { ${getConfig().nullableName} } from "./${
-    getConfig().nullableName
-  }${getConfig().importFileExtension}"\n`;
+  const { nullableName, importFileExtension } = getConfig();
+
+  return `import { ${nullableName} } from "./${
+    nullableName
+  }${importFileExtension}"\n`;
 }
 
 export function wrapWithNullable(input: string) {
-  return `${getConfig().nullableName}(${input})`;
+  const { nullableName } = getConfig();
+
+  return `${nullableName}(${input})`;
 }

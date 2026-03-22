@@ -10,7 +10,7 @@ const output = await build({
   entryPoints: ["./src/cli.ts"],
   outdir: "./dist",
   platform: "node",
-  format: "cjs",
+  format: "esm",
   sourcemap: "external",
   minify: true,
   bundle: true,
@@ -20,7 +20,7 @@ const output = await build({
   ],
 });
 
-if (output.errors) {
+if (output.errors.length > 0) {
   console.error(output.errors);
 } else {
   console.info("Built successfully!");
@@ -37,6 +37,7 @@ await writeFile(
   "./dist/package.json",
   JSON.stringify({
     ...packagejson,
+    type: "module",
     version,
     bin: { prismabox: "cli.js" },
   }),

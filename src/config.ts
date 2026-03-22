@@ -1,5 +1,5 @@
-import { type Static, Type } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { type Static, Type } from "typebox";
+import { Value } from "typebox/value";
 
 const configSchema = Type.Object(
   {
@@ -14,7 +14,7 @@ const configSchema = Type.Object(
     /**
      * The name of the dependency to import the Type from typebox
      */
-    typeboxImportDependencyName: Type.String({ default: "@sinclair/typebox" }),
+    typeboxImportDependencyName: Type.String({ default: "typebox" }),
     /**
      * Whether to allow additional properties in the generated schemes
      */
@@ -49,7 +49,7 @@ const configSchema = Type.Object(
     allowRecursion: Type.Boolean({ default: true }),
     /**
 		 * Additional fields to add to the generated schemes (must be valid strings in the context of usage)
-	 * @example 
+	 * @example
 	 * ```prisma
 	 * generator prismabox {
 			provider   = "node ./dist/cli.js"
@@ -93,12 +93,13 @@ let config: Static<typeof configSchema> = {} as unknown as any;
 
 export function setConfig(input: unknown) {
   try {
-    Value.Clean(configSchema, input);
-    Value.Default(configSchema, input);
-    config = Value.Decode(configSchema, Value.Convert(configSchema, input));
+    const converted = Value.Convert(configSchema, input);
+    Value.Default(configSchema, converted);
+    Value.Clean(configSchema, converted);
+    config = Value.Parse(configSchema, converted);
     Object.freeze(config);
   } catch (error) {
-    console.error(Value.Errors(configSchema, input).First);
+    console.error(Value.Errors(configSchema, input)[0]);
     throw error;
   }
 }

@@ -12,6 +12,8 @@ pnpm i -D prismabox
 bun add -D prismabox
 ```
 
+If you use Prisma 7+, configure your datasource URL in `prisma.config.ts` (instead of `schema.prisma`) before running `prisma generate`.
+
  then add
 ```prisma
 generator prismabox {
@@ -20,12 +22,23 @@ generator prismabox {
   output = "./myCoolPrismaboxDirectory"
   // if you want, you can customize the imported variable name that is used for the schemes. Defaults to "Type" which is what the standard typebox package offers
   typeboxImportVariableName = "t"
-  // you also can specify the dependency from which the above import should happen. This is useful if a package re-exports the typebox package and you would like to use that
-  typeboxImportDependencyName = "elysia"
+  // you also can specify the dependency from which the above import should happen. Defaults to "typebox"
+  // this is useful if a package re-exports the typebox package and you would like to use that
+  typeboxImportDependencyName = "@sinclair/typebox" | "elysia"
   // by default the generated schemes do not allow additional properties. You can allow them by setting this to true
   additionalProperties = true
   // optionally enable the data model generation. See the data model section below for more info
   inputModel = true
+  // DateTime handling:
+  // false (default): use native date-compatible type
+  // true: emit string with format "date-time"
+  // "transformer": use generated transform helper (__transformDate__)
+  useJsonTypes = false
+  // recursion handling for where/whereUnique:
+  // true (default): generate recursive schema
+  // false: generate non-recursive schema
+  // in typebox mode this uses Type.Cyclic, in legacy mode Type.Recursive
+  allowRecursion = true
 }
 ```
 to your `prisma.schema`. You can modify the settings to your liking, please see the respective comments for info on what the option does.
@@ -69,6 +82,22 @@ enum Account {
 
 ```
 > Please note that you cannot use multiple annotations in one line! Each needs to be in its own!
+
+## TypeBox Compatibility
+By default prismabox targets `typebox` (1.x). If you need legacy output, set `typeboxImportDependencyName = "@sinclair/typebox"`.
+
+- `typebox` mode includes compatibility mappings for TypeBox 1.x:
+  - `Composite -> Evaluate(Intersect(...))`
+  - `Transform -> Codec`
+  - `Recursive -> Cyclic`
+- `@sinclair/typebox` mode preserves legacy output behavior.
+
+Dependency note:
+- Default mode (`typeboxImportDependencyName = "typebox"`): install `typebox`.
+- Legacy mode (`typeboxImportDependencyName = "@sinclair/typebox"`): install `@sinclair/typebox`.
+- `useJsonTypes` default is `false`.
+- `allowRecursion` default is `true`.
+
 ## Generated Schemes
 The generator will output schema objects based on the models:
 ```ts
@@ -115,4 +144,3 @@ If enabled, the generator will additonally output more schemes for each model wh
 
 Prismabox wraps nullable fields in a custom `__nullable__` method which allows `null` in addition to `undefined`. From the relevant [issue comment](https://github.com/m1212e/prismabox/issues/33#issuecomment-2708755442):
 >  prisma in some scenarios allows null OR undefined as types where optional only allows for undefined/is reflected as undefined in TS types
-

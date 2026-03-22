@@ -18,6 +18,13 @@ import {
 import { processedWhere, processedWhereUnique } from "./generators/where";
 import { makeComposite } from "./generators/wrappers/composite";
 import { nullableImport, nullableType } from "./generators/wrappers/nullable";
+import {
+  TYPEBOX_DATE_NAME,
+  TYPEBOX_UINT8_ARRAY_NAME,
+  typeboxCompatImportStatement,
+  typeboxDateType,
+  typeboxUint8ArrayType,
+} from "./generators/wrappers/typeboxCompat";
 
 export type ProcessedModel = {
   name: string;
@@ -27,16 +34,28 @@ export type ProcessedModel = {
 function convertModelToStandalone(
   input: Pick<ProcessedModel, "name" | "stringRepresentation">,
 ) {
-  return `export const ${getConfig().exportedTypePrefix}${input.name} = ${input.stringRepresentation}\n`;
+  const { exportedTypePrefix } = getConfig();
+  return `export const ${exportedTypePrefix}${input.name} = ${input.stringRepresentation}\n`;
 }
 
 function typepoxImportStatement() {
-  return `import { ${getConfig().typeboxImportVariableName} } from "${
-    getConfig().typeboxImportDependencyName
+  const { typeboxImportDependencyName, typeboxImportVariableName } =
+    getConfig();
+  if (typeboxImportDependencyName === "typebox") {
+    return `import ${typeboxImportVariableName} from "${
+      typeboxImportDependencyName
+    }"\n`;
+  }
+
+  return `import { ${typeboxImportVariableName} } from "${
+    typeboxImportDependencyName
   }"\n`;
 }
 
 export function mapAllModelsForWrite() {
+  const { nullableName, transformDateName, typeboxImportDependencyName } =
+    getConfig();
+
   const modelsPerName = new Map<
     ProcessedModel["name"],
     ProcessedModel["stringRepresentation"]
@@ -132,12 +151,16 @@ export function mapAllModelsForWrite() {
   for (const [key, value] of modelsPerName) {
     modelsPerName.set(
       key,
-      `${typepoxImportStatement()}\n${transformDateImportStatement()}\n${nullableImport()}\n${value}`,
+      `${typepoxImportStatement()}\n${transformDateImportStatement()}\n${nullableImport()}\n${typeboxCompatImportStatement()}\n${value}`,
     );
   }
 
-  modelsPerName.set(getConfig().nullableName, nullableType());
-  modelsPerName.set(getConfig().transformDateName, transformDateType());
+  modelsPerName.set(nullableName, nullableType());
+  modelsPerName.set(transformDateName, transformDateType());
+  if (typeboxImportDependencyName === "typebox") {
+    modelsPerName.set(TYPEBOX_DATE_NAME, typeboxDateType());
+    modelsPerName.set(TYPEBOX_UINT8_ARRAY_NAME, typeboxUint8ArrayType());
+  }
 
   return modelsPerName;
 }
