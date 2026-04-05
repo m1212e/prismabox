@@ -1,15 +1,13 @@
-# prismabox
+# @hyoretsu/prismabox
 Generate versatile [typebox](https://github.com/sinclairzx81/typebox) schemes from your [prisma](https://github.com/prisma) schema.
 
 > Currently does not support [mongoDB composite types](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-composite-types)
 
-> Development is currently on hold, please see [here](https://github.com/m1212e/prismabox/issues/59) 
-
 Install it in your project,
 ```bash
-npm i -D prismabox
-pnpm i -D prismabox
-bun add -D prismabox
+npm i -D @hyoretsu/prismabox
+pnpm i -D @hyoretsu/prismabox
+bun a -D @hyoretsu/prismabox
 ```
 
  then add
@@ -22,6 +20,10 @@ generator prismabox {
   typeboxImportVariableName = "t"
   // you also can specify the dependency from which the above import should happen. This is useful if a package re-exports the typebox package and you would like to use that
   typeboxImportDependencyName = "elysia"
+  // optionally generate TS aliases for each schema: export type MySchema = UnwrapSchema<typeof MySchema>
+  generateTsTypes = true
+  // optionally customize the unwrap utility type symbol (imported from the same package as typeboxImportDependencyName)
+  unwrapSchemaImportName = "UnwrapSchema"
   // by default the generated schemes do not allow additional properties. You can allow them by setting this to true
   additionalProperties = true
   // optionally enable the data model generation. See the data model section below for more info
@@ -42,7 +44,7 @@ Prismabox offers annotations to adjust the output of models and fields.
 | @prismabox.create.input.hide | - | Hides the field or model from the outputs only in the input create model|
 | @prismabox.update.input.hide | - | Hides the field or model from the outputs only in the input update model|
 | @prismabox.options | @prismabox.options{ min: 10, max: 20 } | Uses the provided options for the field or model in the generated schema. Be careful to use valid JS/TS syntax! |
-| @prismabox.typeOverwrite | @prismabox.typeOverwrite=Type.CustomName | Overwrite the type prismabox outputs for a field with a custom string. See [m1212e/prismabox#29](https://github.com/m1212e/prismabox/issues/29) for an extended usecase |
+| @prismabox.typeOverwrite | @prismabox.typeOverwrite=Type.CustomName | Overwrite the type prismabox outputs for a field with a custom string. See [hyoretsu/prismabox#29](https://github.com/hyoretsu/prismabox/issues/29) for an extended usecase |
 
 > For a more detailed list of available annotations, please see [annotations.ts](src/annotations/annotations.ts)
 
@@ -113,6 +115,6 @@ If enabled, the generator will additonally output more schemes for each model wh
 ## Notes
 ### `__nullable__` vs `Type.Optional`
 
-Prismabox wraps nullable fields in a custom `__nullable__` method which allows `null` in addition to `undefined`. From the relevant [issue comment](https://github.com/m1212e/prismabox/issues/33#issuecomment-2708755442):
+Prismabox wraps nullable fields in a custom `__nullable__` method which allows `null` in addition to `undefined`. From the relevant [issue comment](https://github.com/hyoretsu/prismabox/issues/33#issuecomment-2708755442):
 >  prisma in some scenarios allows null OR undefined as types where optional only allows for undefined/is reflected as undefined in TS types
 

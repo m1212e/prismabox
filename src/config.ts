@@ -16,6 +16,18 @@ const configSchema = Type.Object(
      */
     typeboxImportDependencyName: Type.String({ default: "@sinclair/typebox" }),
     /**
+     * Whether to generate TypeScript type aliases for each generated schema.
+     *
+     * When enabled, every `export const Foo = ...` also emits
+     * `export type Foo = UnwrapSchema<typeof Foo>`.
+     */
+    generateTsTypes: Type.Boolean({ default: true }),
+    /**
+     * The symbol name used to unwrap a schema into a TypeScript type.
+     * Imported as a type from `typeboxImportDependencyName`.
+     */
+    unwrapSchemaImportName: Type.String({ default: "Static" }),
+    /**
      * Whether to allow additional properties in the generated schemes
      */
     additionalProperties: Type.Boolean({ default: false }),
@@ -49,7 +61,7 @@ const configSchema = Type.Object(
     allowRecursion: Type.Boolean({ default: true }),
     /**
 		 * Additional fields to add to the generated schemes (must be valid strings in the context of usage)
-	 * @example 
+	 * @example
 	 * ```prisma
 	 * generator prismabox {
 			provider   = "node ./dist/cli.js"

@@ -1,10 +1,10 @@
 {
-  "name": "prismabox",
-  "version": "2.2.0",
+  "name": "@hyoretsu/prismabox",
+  "version": "1.2.2",
   "license": "MIT",
   "description": "Typebox generator for prisma schema",
   "author": {
-    "name": "Ade Yahya Prasetyo, m1212e"
+    "name": "Ade Yahya Prasetyo, m1212e, Aran Leite"
   },
   "keywords": [
     "prisma2",
@@ -16,15 +16,22 @@
     "typebox-generator",
     "prismabox"
   ],
-  "homepage": "https://github.com/m1212e/prismabox",
+  "homepage": "https://github.com/hyoretsu/prismabox",
   "repository": {
-    "url": "https://github.com/m1212e/prismabox.git"
+    "url": "git+https://github.com/hyoretsu/prismabox.git"
   },
+  "bin": {
+    "prismabox": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "bun run build && bunx prisma generate",
     "build": "bun run typecheck && bun build.ts",
     "lint": "biome check --write .",
     "format": "bun run lint",
+    "prepublishOnly": "bun run build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
