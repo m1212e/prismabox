@@ -132,7 +132,7 @@ export function stringifyRelationsInputCreate(
       let connectString = `${getConfig().typeboxImportVariableName}.Object({
 				id: ${
           getConfig().typeboxImportVariableName
-        }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })}),
+        }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations, exludeAdditionalProperties: false })}),
 			},${generateTypeboxOptions({ input: annotations })})`;
 
       if (field.isList) {
@@ -231,12 +231,12 @@ export function stringifyRelationsInputUpdate(
 						connect: ${wrapWithArray(`${getConfig().typeboxImportVariableName}.Object({
 								id: ${
                   getConfig().typeboxImportVariableName
-                }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })})
+                }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations, exludeAdditionalProperties: false })})
 							}, ${generateTypeboxOptions({ input: annotations })})`)},
 						disconnect: ${wrapWithArray(`${getConfig().typeboxImportVariableName}.Object({
 								id: ${
                   getConfig().typeboxImportVariableName
-                }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })})
+                }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations, exludeAdditionalProperties: false })})
 							}, ${generateTypeboxOptions({ input: annotations })})`)}
 					}, ${generateTypeboxOptions({ input: annotations })})`);
       } else {
@@ -245,7 +245,7 @@ export function stringifyRelationsInputUpdate(
 						connect: ${getConfig().typeboxImportVariableName}.Object({
 							id: ${
                 getConfig().typeboxImportVariableName
-              }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })})
+              }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations, exludeAdditionalProperties: false })})
 						}, ${generateTypeboxOptions({ input: annotations })})
 					}, ${generateTypeboxOptions({ input: annotations })})`;
         } else {
@@ -255,7 +255,7 @@ export function stringifyRelationsInputUpdate(
 						connect: ${getConfig().typeboxImportVariableName}.Object({
 							id: ${
                 getConfig().typeboxImportVariableName
-              }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations })})
+              }.${typeboxIdType}(${generateTypeboxOptions({ input: annotations, exludeAdditionalProperties: false })})
 						}, ${generateTypeboxOptions({ input: annotations })}),
 						disconnect: ${getConfig().typeboxImportVariableName}.Boolean()
 					}, ${generateTypeboxOptions({ input: annotations })})`);
