@@ -23,6 +23,7 @@
   "scripts": {
     "dev": "bun run build && bunx prisma generate",
     "build": "bun run typecheck && bun build.ts",
+    "test": "bun test",
     "lint": "biome check --write .",
     "format": "bun run lint",
     "typecheck": "tsc --noEmit"

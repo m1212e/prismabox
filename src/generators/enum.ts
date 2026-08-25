@@ -32,6 +32,12 @@ export function stringifyEnum(data: DMMF.DatamodelEnum) {
 
   return makeUnion(
     variantsString,
-    generateTypeboxOptions({ input: annotations }),
+    // An enum is a union of literals, never an object: `additionalProperties` has no
+    // meaning here, and Ajv in strict mode refuses to compile a schema that carries it
+    // without `type: "object"`.
+    generateTypeboxOptions({
+      input: annotations,
+      exludeAdditionalProperties: false,
+    }),
   );
 }
